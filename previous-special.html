@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Previous Special Meetings — Town Board Meetings</title>
+  <link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="https://winchesterwi.com">
+    <div class="seal">TW</div>
+    <span class="brand-name">TOWN OF WINCHESTER, WI</span>
+  </a>
+  <a class="back-link" href="https://winchesterwi.com">&#8592; Back to main site</a>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Town Board Meetings</div>
+  <h1>Previous Special Meetings</h1>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <span style="color:rgba(255,255,255,0.8);">Previous Special Meetings</span>
+  </nav>
+</div>
+
+<div class="next-bar" id="next-bar" style="display:none;">
+  <div class="next-dot"></div>
+  <div class="next-text" id="next-text"></div>
+</div>
+
+<main>
+  <div id="stat-tiles-container"></div>
+  <div class="page-body">
+    <div class="section-label">Select a meeting</div>
+    <div class="folder-grid" id="folder-grid">
+      <div class="no-docs">Loading&hellip;</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>Town of Winchester &middot; Winchester, WI 54557 &middot; (715) 686-2123</span>
+  <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+async function init() {
+  try {
+    const data = await loadData();
+    const meetings = data.meetings || [];
+    const upcoming = meetings.find(m => m.status === 'upcoming');
+
+    if (upcoming) {
+      const parts = [upcoming.time, upcoming.location].filter(Boolean).join(' \u00b7 ');
+      document.getElementById('next-text').innerHTML = `Next meeting &mdash; <strong>${formatDate(upcoming.date)}</strong>${parts ? ' \u00b7 ' + parts : ''}`;
+      document.getElementById('next-bar').style.display = 'flex';
+    }
+
+    const special = meetings.filter(m => m.type === 'special');
+    const totalDocs = special.reduce((s, m) => s + (m.documents || []).length, 0);
+    document.getElementById('stat-tiles-container').innerHTML = renderStatTiles(data, totalDocs);
+
+    if (!special.length) {
+      document.getElementById('folder-grid').innerHTML = '<div class="no-docs">No special meetings on record.</div>';
+      return;
+    }
+
+    document.getElementById('folder-grid').innerHTML = special.map(m => {
+      const docCount = (m.documents || []).length;
+      return renderFolderCard(
+        m.title,
+        formatDate(m.date),
+        `${docCount} document${docCount !== 1 ? 's' : ''}`,
+        `meeting.html?id=${encodeURIComponent(m.id)}`
+      );
+    }).join('');
+  } catch (e) {
+    document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load meetings. Please try again later.</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
