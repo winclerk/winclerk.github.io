@@ -31,10 +31,11 @@
       "status": "complete",
       "date": "2026-06-02",
       "documents": [
-        { "label": "Agenda", "filename": "Agenda_STBM_20260602.pdf", "url": "SHAREPOINT_LINK_HERE", "date": "2026-06-02" },
-        { "label": "Minutes (Draft)", "filename": "Minutes_STBM_20260602_DRAFT.pdf", "url": "SHAREPOINT_LINK_HERE", "date": "2026-06-04", "draft": true },
-        { "label": "Letter of Intent — D. Dye", "filename": "D-Dye_Letter-of-Intent_20260528.pdf", "url": "SHAREPOINT_LINK_HERE", "date": "2026-05-28" },
-        { "label": "Letter of Intent — S. Wainio", "filename": "S-Wainio_Letter-of-Intent_20260531.pdf", "url": "SHAREPOINT_LINK_HERE", "date": "2026-05-31" }
+        { "label": "Agenda", "filename": "Agenda_STBM_20260602.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQABOgj03yKJRord6znXBSz2AcO5Bv2K7UIa3daWm2A5EaQ?e=8LZyIp", "date": "2026-06-02" },
+        { "label": "Minutes (Draft)", "filename": "Minutes_STBM_20260602_DRAFT.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCSZCOienXsSaMTaXUG4gVcAT9_fajBTj_lS80kXzPtcqI?e=fm7Gvq", "date": "2026-06-04", "draft": true },
+        { "label": "Letter of Intent — D. Dye", "filename": "D-Dye_Letter-of-Intent_20260528.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCkJ6t6iOrxS4iSeBlSOy4JAW1EyKwqZjpYzwYbSuczPdE?e=JpW0jQ", "date": "2026-05-28" },
+        { "label": "Letter of Intent — S. Wainio", "filename": "S-Wainio_Letter-of-Intent_20260531.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCE0uwHeDzkQ66ck16aDhVkAYXZIKwIyf5I2hwEl-hDk3I?e=PCzTQj", "date": "2026-05-31" }
+        { "label": "Resignation — J. Discianno", "filename": "J-Discianno_Resignation_20260527", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA4-dPLdy88T5HXMNinba7-AW813sqfvjwTCDPKmjInmvY?e=1S7gnZ", "date": "2026-05-27" }
       ]
     },
     {
