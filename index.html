@@ -130,7 +130,7 @@ async function init() {
       nextBar.style.display = 'flex';
     }
 
-    const totalDocs = allMeetings.reduce((s, m) => s + (m.documents || []).length, 0);
+    const totalDocs = allMeetings.reduce((s, m) => s + (m.documents || []).reduce((ds, d) => ds + (d.documentCount || 1), 0), 0);
     const nextDate = upcoming ? formatDate(upcoming.date) : 'TBD';
     const nextSub = upcoming ? [upcoming.time, upcoming.location].filter(Boolean).join(' &middot; ') : '';
     document.getElementById('stat-tiles-container').innerHTML = `
