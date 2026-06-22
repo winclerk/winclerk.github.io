@@ -1,33 +1,32 @@
 {
   "meetings": [
     {
+      "id": "special-2026-06-22",
+      "title": "Special Town Board Meeting — June 22, 2026",
+      "type": "special",
+      "status": "upcoming",
+      "date": "2026-06-22",
+      "location": "Winchester Town Hall",
+      "documents": [
+        { "label": "Agenda", "filename": "Agenda_STBM_20260622.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB5YB5a_DK7T6ph6GDg6RiUAY22_UNaYLBxxShTaiGUgWI?e=ovdeK0", "updated": "2026-06-22" },
+        { "label": "Employee Handbook", "filename": "Handbook_TOW-Employee_20260619.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCsEJW5moDhQLsZ6eqCWhdSAcKpMEzpJKcfOEnH5FHesh8?e=EghCOd", "updated": "2026-06-19" },
+        { "label": "Policy 2026-01 — Town Facility Use", "filename": "Policy_2026-01_Town-Facility-Use_20260619.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCv5SbY6O1VQZ1lhudaqV_ZAdKpZwXe7RsuqO104j5DZWA?e=gVRnkw", "updated": "2026-06-19" },
+        { "label": "Policy 2026-02 — Facility Reservations Key Access Code Management", "filename": "Policy_2026-02_Facility-Reservations-Key-Access-Code-Management_20260617.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA1yy8QWifoQbqudpKSkfcKAWc8lbqatDBM7qK-GSJrVGQ?e=6pSeff", "updated": "2026-06-17" },
+        { "label": "Policy 2026-03 — Check Expiration", "filename": "Policy_2026-03_Check-Expiration_20260617.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDQkoGR056xSKXDuarYgeRDAcvlB9LE7sm7d46IbEhwfCE?e=hDTvGa", "updated": "2026-06-17" }
+      ]
+    },
+    {
       "id": "regular-2026-06-08",
       "title": "Regular Town Board Meeting — June 8, 2026",
       "type": "regular",
-      "status": "upcoming",
+      "status": "complete",
       "date": "2026-06-08",
       "time": "6:05 PM",
       "location": "Winchester Town Hall",
       "documents": [
-        { "label": "Agenda (Board of Review)", "filename": "Agenda_BOR_20260608.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAU2IiilTAYTpNB9_OSDNC6ARH-CDrrLafHoFuU7FyCFlM?e=roXmUt", "updated": "2026-06-06", "draft": true },
-        { "label": "Agenda (Regular Town Board)", "filename": "Agenda_RTBM_20260608.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDGAbbRHcCyQLgVv3fdl6iVAQqJnGkK8EJFXUM264njl4U?e=w4vOig", "updated": "2026-06-06", "draft": true },
-        { "label": "Minutes — May 11, 2026 (Draft)", "filename": "Minutes_20260511_DRAFT.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAGseKdEfwlSpj-MfbERGAvAUsk8OinYzFrWUxmVsdIha8?e=aopWZn", "date": "2026-06-04", "draft": true },
-        { "label": "Minutes — Special Meeting June 2, 2026 (Draft)", "filename": "Minutes_STBM_20260602_DRAFT.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCrILdHt0OfSoqx4BbYPKA-AeLK_Tl9qTZyR8gOwWlh5vo?e=TEb2WB", "date": "2026-06-04", "draft": true },
-        { "label": "Minutes — Special Meeting May 21, 2026 (Draft)", "filename": "Minutes_TBSM_20260521_DRAFT.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCFEHHW5AMZTKi-lmwHkx51AUWiwyzODThV40BudD8q5Xw?e=Xh6nNP", "date": "2026-06-04", "draft": true },
-        { "label": "Form PRB-002 GRS Adoption", "filename": "Form_PRB-002_GRS-Adoption_20260515.docx", "url": "https://townofwinchester54557.sharepoint.com/:w:/s/TownBoard/IQDeNxqt19XtQIE8hUNLJ-H8AY_ugdkSRK_wjhj-dTDnTCo?e=UpKgCu", "date": "2026-05-15" },
-        { "label": "Ordinance 2026-01 — Driveway", "filename": "Ordinance_2026-01_Driveway_20260223.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCiarTDBNsiQpWCU484B851AbrXTPIaxSROL6-d5YoCViw?e=hfzv4f", "date": "2026-02-23" },
-        { "label": "Driveway Permit", "filename": "Permit_Driveway_20260223.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBjyrFW6ZVxSLLx-bTH4zrrAYT8-T2ZQoJEod_XX9nSgr8?e=3r5IG0", "date": "2026-02-23" },
-        { "label": "Policy 2026-01 — Town Facility Use", "filename": "Policy_2026-01_Town-Facility-Use.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDgt0QFYVq5TZNDBQWfJVApAT8rzzGmQWMWLoVfHi9O5yA?e=tOHav5", "date": "2026-01-01" },
-        { "label": "Employee Handbook", "filename": "Policy_TOW-Employee-Handbook_20251010.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBv4WOWbux5RoA1ChWWhZcyAUmTxUZn3iNVCiE04vrfxbc?e=G8LwTq", "date": "2025-10-10" },
-        { "label": "Clerk Report", "filename": "Report_Clerk_20260606.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAPBBrChBO5S6XMavqGVJoUAYd-QWlowctS1F_fE1hIRT8?e=PsObVe", "date": "2026-06-06" },
-        { "label": "NEMSD Report — May 2026", "filename": "Report_NEMSD_202605.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCnOTZtbxZ8SoU5A0b-SiDDAaap_QWDE2WabNIij8pVNHg?e=aNCUdA", "date": "2026-05-01" },
-        { "label": "Pedalers Report — May 2026", "filename": "Report_Pedalers_202605.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCggHrfI3g5QK246Hd7_AmQAf5O04rBv0K8lK0bzgWpFRg?e=lOjeUX", "date": "2026-05-01" },
-        { "label": "Treasurer Report — May 2026", "filename": "Report_Treasurer_202605.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAD08RI9QBfQaX-zVYZwcsJAdtQDeKY0waDIQ3eoxBgBgI?e=m43q0q", "date": "2026-05-01" },
-        { "label": "Resolution 2026-02 — WMRS Form Submission", "filename": "Resolution_2026-02_Winchester-WMRS-Form-PR-B002-Submission_20260523.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA37N6IrCO9Rp_ClJYcq3XvARar5jAVAhQ9Tli1QixPhm4?e=m1qz30", "date": "2026-05-23" },
-        { "label": "Resolution 2026-04 — Uniform Chart of Accounts", "filename": "Resolution_2026-04_Uniform-Chart-of-Accounts-WI-Munis_20260523.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBgEYdPpPzBRYLeR6i3EdiwAZD-S_n364LsOEJkWCayYBY?e=eaawTj", "date": "2026-05-23" },
-        { "label": "Financial Documents (Folder)", "filename": "Financial", "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgDVHiZMxdO8QpckdfA1v1ArAQIO0wTO0bH3szLxCDS7rFE?e=hKjSLv", "date": "2026-06-06" },
-        { "label": "WMRS Reference Documents (Folder)", "filename": "WMRS", "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgDSd2B-LUR0RqntikemELIQAcF5ipRxRoxSgu2lJ5JQTCs?e=un01eQ", "date": "2026-06-06" },
-        { "label": "UCA Reference Documents (Folder)", "filename": "UCA", "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgAbNbtQQUKERINFnDNKoYoaAcgBChXdI4nmWUu7ao7_cgE?e=0qPdMp", "date": "2026-06-06" }
+        { "label": "Agenda (Board of Review)", "filename": "Agenda_BOR_20260608.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAU2IiilTAYTpNB9_OSDNC6ARH-CDrrLafHoFuU7FyCFlM?e=gGPOe1", "updated": "2026-06-08" },
+        { "label": "Agenda (Regular Town Board)", "filename": "Agenda_RTBM_20260608.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDGAbbRHcCyQLgVv3fdl6iVAQqJnGkK8EJFXUM264njl4U?e=ca30Eh", "updated": "2026-06-08" },
+        { "label": "Meeting Documents (Folder)", "filename": "RTBM_20260608", "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgDeUvugtC1sTIQXQ2yMNc99AV2pAxckMW58q-fKtzzUKn8?e=etHSmf", "updated": "2026-06-08" }
       ]
     },
     {
@@ -41,50 +40,4 @@
         { "label": "Minutes (Draft)", "filename": "Minutes_STBM_20260602_DRAFT.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCSZCOienXsSaMTaXUG4gVcAT9_fajBTj_lS80kXzPtcqI?e=fm7Gvq", "date": "2026-06-04", "draft": true },
         { "label": "Letter of Intent — D. Dye", "filename": "D-Dye_Letter-of-Intent_20260528.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCkJ6t6iOrxS4iSeBlSOy4JAW1EyKwqZjpYzwYbSuczPdE?e=JpW0jQ", "date": "2026-05-28" },
         { "label": "Letter of Intent — S. Wainio", "filename": "S-Wainio_Letter-of-Intent_20260531.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCE0uwHeDzkQ66ck16aDhVkAYXZIKwIyf5I2hwEl-hDk3I?e=PCzTQj", "date": "2026-05-31" },
-        { "label": "Resignation — J. Discianno", "filename": "J-Discianno_Resignation_20260527.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA4-dPLdy88T5HXMNinba7-AW813sqfvjwTCDPKmjInmvY?e=1S7gnZ", "date": "2026-05-27" }
-      ]
-    },
-    {
-      "id": "special-2026-05-21",
-      "title": "Special Town Board Meeting — May 21, 2026",
-      "type": "special",
-      "status": "complete",
-      "date": "2026-05-21",
-      "documents": [
-        { "label": "Agenda", "filename": "Agenda_TBSM_20260521.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCpLriJVv0HRbGC0F6FI75sAce9nZVaLf5bih8bf_r4cAM?e=D6itTL", "date": "2026-05-21" },
-        { "label": "Minutes (Draft)", "filename": "Minutes_TBSM_20260521_DRAFT.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBKYLd2DpDIQrsHMtx-5XDPAQ0xow323fqWQMoclw-iOR4?e=kOTnuD", "date": "2026-06-04", "draft": true },
-        { "label": "NEMSD Intermunicipal Agreement — Bylaws (Signed)", "filename": "NEMSD Intermunicipal Agreement - Bylaws, revised 10-30-24, SIGNED.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA67uTFgU2vQbsfMFnO7OE5AVlvO3NSonPIYtaS9CWCIwc?e=MaTsBj", "date": "2026-05-21" },
-        { "label": "NEMSD Revised Intermunicipal Agreement — April 2026", "filename": "NEMSD REVISED INTERMUNICIPAL AGREEMENT April 15, 2026.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA99o1T-VXnRpsSuc3keMwQAbXQkJaT66rxbeZ3k0jqv7w?e=agxHgK", "date": "2026-05-21" },
-        { "label": "Minutes — Special Meeting September 10, 2025", "filename": "Town.Board.minutes special meeting 09.10.25.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBwwAl-SpgKSoEyjwGJ-YvwAQHh-RrVv_T2TR2E5iisLgI?e=8ufSOi", "date": "2025-09-10" },
-        { "label": "Minutes — Special Meeting December 2, 2025", "filename": "Town.Board.minutes special meeting 12.02.25.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBLva3fALvWQJdJCJ1x0KMpAaCBNOs5suFTdPkNyudriZU?e=UANsuO", "date": "2025-12-02" },
-        { "label": "Minutes — Special Meeting July 1, 2025", "filename": "Town.Board.minutes special meeting 7.01.25.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDH_dUQYUp5TqbsQxkyYQ13AUtC2-FHVyQeUgE8zipimKI?e=lvW5iM", "date": "2025-07-01" }
-      ]
-    },
-    {
-      "id": "regular-2026-05",
-      "title": "Regular Town Board Meeting — May 2026",
-      "type": "regular",
-      "status": "complete",
-      "date": "2026-05-12",
-      "documents": [
-        { "label": "Agenda", "filename": "Agenda_20260511.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDd8S9xkC7eSbjG4yEGiDV-AQaxfVmhnrH0jIYDjC7SMdU?e=Mu166B", "date": "2026-05-12" },
-        { "label": "Treasurer's Report — April 2026", "filename": "Apr 2026 Treasurers report.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQABn7rQ0fbwS67-wxR1N3rIAVoFVHPpJ2MxZw1y4aacjf0?e=4ScUfb", "date": "2026-05-12" },
-        { "label": "April 2026 Disbursements", "filename": "April 2026 Disbursements.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBIEcn1BCYGQ4Z_-zGQx2TBAfBfTOIi3hD7aBlJXdu4xPE?e=ecDXXL", "date": "2026-05-12" },
-        { "label": "Bank Reconciliation — MMA March 2026", "filename": "assoc bank reconciliation MMA 3.31.26.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBDnsiSulMaTo8u8rASRs4-Aegcoezx7gdWZ1xN9M0q7HU?e=jL6gM8", "date": "2026-05-12" },
-        { "label": "Bank Reconciliation — MMA April 2026", "filename": "Associated Bank MMA reconciliation 4.30.26.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCnsANJKF-PQLACU53zhZDMAYQDTBq6dbnuEN_lYWLSAZs?e=IjFFTl", "date": "2026-05-12" },
-        { "label": "Bank Reconciliation Detail — MMA April 2026", "filename": "Associated Bank MMA reconciliation detail 4.30.26.xlsx", "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQCG59Wt8p9wS7XNhyUf-amsAZCuiUMH5MFp3pRjIOr_weA?e=jf1uIj", "date": "2026-05-12" },
-        { "label": "Bank Reconciliation Detail — Checking April 2026", "filename": "Associated Bank reconciliation detail checking 4.30.26.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCu3gmEJqOzTrh7Ab4TNxU3AeUmiupyGRu34qGtAhwcnyY?e=DlE050", "date": "2026-05-12" },
-        { "label": "Clerk Report", "filename": "Clerks_Report_20260511.docx", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCu3gmEJqOzTrh7Ab4TNxU3AeUmiupyGRu34qGtAhwcnyY?e=DlE050", "date": "2026-05-12" },
-        { "label": "Deposit — Checking April 2026", "filename": "Deposit Checking 260430.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBloT6hqc3rS41MDNtJaI7_AbOxetF84nMeM7-OnVKhw3Y?e=w7i8mJ", "date": "2026-05-12" },
-        { "label": "Deposit — Money Market April 2026", "filename": "Deposit MM 260430.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBloT6hqc3rS41MDNtJaI7_AbOxetF84nMeM7-OnVKhw3Y?e=w7i8mJ", "date": "2026-05-12" },
-        { "label": "Expense & Revenue Summary — April 2026", "filename": "Expense & Revenue Summary April 2026.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBgzGLuvxbdRb9XloEwchaZAasA9B2Uqr-e-dtBJTfe9v8?e=nYSMFP", "date": "2026-05-12" },
-        { "label": "NEMSD Report — April 2026", "filename": "NEMSD April 2026 Report.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCt5m5vb_6US4h1s8JBvIgIAa1BnRV5WL5rNoULTOeky_M?e=GNzw90", "date": "2026-05-12" },
-        { "label": "Ordinance 2026-02 — Records Custodian Designation", "filename": "Ordinance_2026_02_Records_Custodian_Designation.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCt5m5vb_6US4h1s8JBvIgIAa1BnRV5WL5rNoULTOeky_M?e=GNzw90", "date": "2026-05-12" },
-        { "label": "Ordinance 2026-03 — Public Records Request Procedure", "filename": "Ordinance_2026_03_Public_Records_Request_Procedure.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCt5m5vb_6US4h1s8JBvIgIAa1BnRV5WL5rNoULTOeky_M?e=GNzw90", "date": "2026-05-12" },
-        { "label": "P&L Budget vs Actual YTD — April 2026", "filename": "Profit & Loss Budget vs Actual YTD 4.30.26.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCt5m5vb_6US4h1s8JBvIgIAa1BnRV5WL5rNoULTOeky_M?e=GNzw90", "date": "2026-05-12" },
-        { "label": "Public Records Access Notice", "filename": "Public_Records_Access_Notice.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCt5m5vb_6US4h1s8JBvIgIAa1BnRV5WL5rNoULTOeky_M?e=GNzw90", "date": "2026-05-12" },
-        { "label": "Resolution 2026-01 — Posting Locations", "filename": "Resolution_2026_01_Posting_Locations.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCt5m5vb_6US4h1s8JBvIgIAa1BnRV5WL5rNoULTOeky_M?e=GNzw90", "date": "2026-05-12" }
-      ]
-    }
-  ]
-}
+        { "label": "Resignation — J. Discianno", "filename": "J-Discianno_Resignation_20260527.pdf", "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA4-dPLdy88T
