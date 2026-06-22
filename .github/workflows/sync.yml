@@ -1,0 +1,71 @@
+name: Sync SharePoint to data.json
+
+on:
+  schedule:
+    # Runs every night at 2:00 AM Central (7:00 AM UTC)
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run SharePoint sync
+        id: sync
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          MS_REFRESH_TOKEN:    ${{ secrets.MS_REFRESH_TOKEN }}
+          GH_PAT:              ${{ secrets.GH_PAT }}
+        run: |
+          python sync.py | tee sync_output.txt
+          # Capture new refresh token if rotated
+          NEW_TOKEN=$(grep "^NEW_REFRESH_TOKEN=" sync_output.txt | cut -d= -f2-)
+          echo "new_refresh_token=$NEW_TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Update MS_REFRESH_TOKEN secret if rotated
+        if: steps.sync.outputs.new_refresh_token != ''
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          NEW_TOKEN="${{ steps.sync.outputs.new_refresh_token }}"
+          # Get public key for secret encryption
+          KEY_DATA=$(curl -s -H "Authorization: Bearer $GH_PAT" \
+            "https://api.github.com/repos/winclerk/winclerk.github.io/actions/secrets/public-key")
+          KEY_ID=$(echo $KEY_DATA | python3 -c "import sys,json; print(json.load(sys.stdin)['key_id'])")
+          PUB_KEY=$(echo $KEY_DATA | python3 -c "import sys,json; print(json.load(sys.stdin)['key'])")
+          # Encrypt and upload
+          ENCRYPTED=$(python3 - <<EOF
+          import base64, sys
+          from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PublicKey
+          from cryptography.hazmat.primitives import serialization
+          from cryptography.hazmat.backends import default_backend
+          import nacl.public, nacl.encoding
+          pub_key = nacl.public.PublicKey(base64.b64decode("$PUB_KEY"))
+          sealed = nacl.public.SealedBox(pub_key)
+          encrypted = sealed.encrypt("$NEW_TOKEN".encode())
+          print(base64.b64encode(encrypted).decode())
+          EOF
+          )
+          curl -s -X PUT \
+            -H "Authorization: Bearer $GH_PAT" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/winclerk/winclerk.github.io/actions/secrets/MS_REFRESH_TOKEN" \
+            -d "{\"encrypted_value\":\"$ENCRYPTED\",\"key_id\":\"$KEY_ID\"}"
+          echo "Refresh token rotated successfully."
