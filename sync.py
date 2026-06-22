@@ -33,14 +33,15 @@ def get_token():
         "client_id":     CLIENT_ID,
         "grant_type":    "refresh_token",
         "refresh_token": REFRESH_TOKEN,
-        "scope":         "https://graph.microsoft.com/.default offline_access",
+        "scope":         "https://graph.microsoft.com/Sites.Read.All https://graph.microsoft.com/Files.ReadWrite.All offline_access",
     }
     r = requests.post(url, data=data)
+    if not r.ok:
+        print(f"Token error response: {r.text}")
     r.raise_for_status()
     tokens = r.json()
     new_refresh = tokens.get("refresh_token", "")
     if new_refresh and new_refresh != REFRESH_TOKEN:
-        # Print for GitHub Actions to capture and update the secret
         print(f"NEW_REFRESH_TOKEN={new_refresh}")
     return tokens["access_token"], new_refresh
 
