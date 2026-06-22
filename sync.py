@@ -31,7 +31,6 @@ def get_token():
     url = f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token"
     data = {
         "client_id":     CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
         "grant_type":    "refresh_token",
         "refresh_token": REFRESH_TOKEN,
         "scope":         "https://graph.microsoft.com/.default offline_access",
