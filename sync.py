@@ -3,8 +3,9 @@ import json
 import base64
 import requests
 from datetime import datetime
+import re
 
-# ── Config ────────────────────────────────────────────────────────────────────
+
 TENANT_ID     = os.environ["AZURE_TENANT_ID"]
 CLIENT_ID     = os.environ["AZURE_CLIENT_ID"]
 CLIENT_SECRET = os.environ["AZURE_CLIENT_SECRET"]
@@ -78,37 +79,126 @@ def make_link(token, drive_id, item_id):
     return r.json()["link"]["webUrl"]
 
 
+def fmt_full(date_str):
+    return datetime.strptime(date_str, "%Y%m%d").strftime("%B %-d, %Y")
+
+
+def fmt_month(date_str):
+    return datetime.strptime(date_str + "01", "%Y%m%d").strftime("%B %Y")
+
+
+def fmt_month_from8(date_str):
+    return datetime.strptime(date_str, "%Y%m%d").strftime("%B %Y")
+
+
+def clean_name(s):
+    s = re.sub(r"_\d{8}$", "", s)
+    s = re.sub(r"_\d{6}$", "", s)
+    s = s.replace("-", " ").replace("_", " ").strip()
+    s = re.sub(r"(\d{4}) (\d{2})\b", r"\1-\2", s)
+    return s
+
+
 def infer_label(filename):
-    import re
     name = filename
     for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
         if name.lower().endswith(ext):
             name = name[:-len(ext)]
             break
-    prefixes = {
-        "Agenda_RTBM_": "Agenda", "Agenda_STBM_": "Agenda",
-        "Agenda_TBSM_": "Agenda", "Agenda_BOR_": "Agenda (Board of Review)",
-        "Agenda_": "Agenda", "Minutes_RTBM_": "Minutes",
-        "Minutes_STBM_": "Minutes", "Minutes_TBSM_": "Minutes",
-        "Minutes_": "Minutes", "Resolution_": "Resolution",
-        "Ordinance_": "Ordinance", "Policy_": "Policy",
-        "Procedure_": "Procedure", "Permit_": "Permit",
-        "Report_Clerk_": "Clerk Report", "Report_Treasurer_": "Treasurer Report",
-        "Report_NEMSD_": "NEMSD Report", "Report_Pedalers_": "Pedalers Report",
-        "Report_": "Report", "Form_": "Form", "Handbook_": "Handbook",
-    }
-    for prefix, label in prefixes.items():
-        if name.startswith(prefix):
-            r = name[len(prefix):]
-            r = re.sub(r"_?\d{8}$", "", r)
-            r = re.sub(r"_?DRAFT$", " (Draft)", r)
-            r = r.replace("_", " ").replace("-", " - ").strip()
-            return f"{label} - {r}" if r and r != "Draft" else label
+
+    # Special one-offs
+    if re.search(r"NEMSD.{0,5}[Ii]ntermunicipal", name):
+        return "NEMSD Intermunicipal Agreement - Current Signed Agreement"
+
+    # Agendas
+    m = re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_(\d{8})", name)
+    if m:
+        type_map = {"RTBM": "Regular Meeting", "STBM": "Special Meeting",
+                    "TBSM": "Special Meeting", "BOR": "Board of Review"}
+        return f"{fmt_full(m.group(2))} {type_map[m.group(1)]} Agenda"
+
+    m = re.match(r"Agenda_(\d{8})", name)
+    if m:
+        return f"{fmt_full(m.group(1))} Agenda"
+
+    # Minutes
+    m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)?(\d{8})(_DRAFT)?", name)
+    if m:
+        label = f"{fmt_full(m.group(1))} Minutes"
+        return label + " (Draft)" if m.group(2) else label
+
+    # Clerk's Report (full date)
+    m = re.match(r"Report_Clerk_(\d{8})", name)
+    if m:
+        return f"{fmt_month_from8(m.group(1))} Clerk's Report"
+
+    m = re.match(r"Clerks?_Report_(\d{8})", name, re.IGNORECASE)
+    if m:
+        return f"{fmt_month_from8(m.group(1))} Clerk's Report"
+
+    # Month-only reports
+    m = re.match(r"Report_Treasurer_(\d{6})", name)
+    if m:
+        return f"{fmt_month(m.group(1))} Treasurer's Report"
+
+    m = re.match(r"Report_NEMSD_(\d{6})", name)
+    if m:
+        return f"{fmt_month(m.group(1))} NEMSD Report"
+
+    m = re.match(r"Report_Pedalers_(\d{6})", name)
+    if m:
+        return f"{fmt_month(m.group(1))} Pedalers Report"
+
+    m = re.match(r"Report_(.+?)_(\d{6})$", name)
+    if m:
+        who = m.group(1).replace("-", " ").replace("_", " ")
+        return f"{fmt_month(m.group(2))} {who} Report"
+
+    m = re.match(r"Report_(.+?)_(\d{8})$", name)
+    if m:
+        who = m.group(1).replace("-", " ").replace("_", " ")
+        return f"{fmt_month_from8(m.group(2))} {who} Report"
+
+    # Policies
+    m = re.match(r"Policy_(\d{4}-\d{2})_(.+)", name)
+    if m:
+        return f"{m.group(1)} {clean_name(m.group(2))} Policy"
+
+    # Resolutions
+    m = re.match(r"Resolution_(\d{4}-\d{2})_(.+)", name)
+    if m:
+        return f"{m.group(1)} {clean_name(m.group(2))} Resolution"
+
+    # Ordinances
+    m = re.match(r"Ordinance_(\d{4}-\d{2})_(.+)", name)
+    if m:
+        return f"{m.group(1)} {clean_name(m.group(2))} Ordinance"
+
+    # Permits
+    m = re.match(r"Permit_(.+?)(?:_\d{8})?$", name)
+    if m:
+        return f"{m.group(1).replace('-', ' ').replace('_', ' ').strip()} Permit"
+
+    # Forms
+    m = re.match(r"Form_([A-Z0-9\-]+)_(.+?)(?:_\d{8})?$", name)
+    if m:
+        num = m.group(1).replace("-", " ")
+        desc = m.group(2).replace("-", " ").replace("_", " ").strip()
+        return f"{desc} Form {num}"
+
+    # Handbooks
+    m = re.match(r"Handbook_(.+?)(?:_\d{8})?$", name)
+    if m:
+        rest = re.sub(r"^TOW-?", "", m.group(1))
+        rest = rest.replace("-", " ").replace("_", " ").strip()
+        has_date = bool(re.search(r"_\d{8}$", name))
+        return f"{rest} Handbook" + (" (revised)" if has_date else "")
+
+    # Fallback
     return name.replace("_", " ").replace("-", " ").strip()
 
 
 def parse_date(filename):
-    import re
     m = re.search(r"(\d{8})", filename)
     if m:
         d = m.group(1)
@@ -137,17 +227,18 @@ def scan_folder(token, drive_id, folder_path):
         if "DRAFT" in name.upper():
             doc["draft"] = True
         docs.append(doc)
+
     def key(d):
         l = d["label"].lower()
         if l.startswith("agenda"): return (0, l)
-        if l.startswith("minutes"): return (1, l)
-        return (2, l)
+        if "agenda" in l: return (1, l)
+        if l.startswith("minutes") or "minutes" in l: return (2, l)
+        return (3, l)
     docs.sort(key=key)
     return docs
 
 
 def parse_folder_name(name, mtype):
-    import re
     m = re.search(r"(\d{8})$", name)
     if not m:
         return None
@@ -155,13 +246,16 @@ def parse_folder_name(name, mtype):
     date_str = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
     dt = datetime.strptime(date_str, "%Y-%m-%d")
     if mtype == "regular":
-        return {"id": f"regular-{date_str}", "title": f"Regular Town Board Meeting - {dt.strftime('%B %Y')}", "date": date_str}
+        return {"id": f"regular-{date_str}",
+                "title": f"Regular Town Board Meeting - {dt.strftime('%B %Y')}",
+                "date": date_str}
     else:
-        return {"id": f"special-{date_str}", "title": f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}", "date": date_str}
+        return {"id": f"special-{date_str}",
+                "title": f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}",
+                "date": date_str}
 
 
 def build_data(token, drive_id):
-    import re
     meetings = []
 
     print("Scanning Next Meeting...")
@@ -240,7 +334,10 @@ def write_github(data):
     r = requests.get(url, headers=headers)
     sha = r.json().get("sha") if r.status_code == 200 else None
     content = base64.b64encode(json.dumps(data, indent=2, ensure_ascii=False).encode()).decode()
-    payload = {"message": f"Auto-sync from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]", "content": content}
+    payload = {
+        "message": f"Auto-sync from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
+        "content": content
+    }
     if sha:
         payload["sha"] = sha
     r = requests.put(url, headers=headers, json=payload)
