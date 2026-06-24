@@ -1,50 +1,19 @@
 {
   "meetings": [
     {
-      "id": "special-2026-06-22",
-      "title": "Special Town Board Meeting - June 22, 2026",
-      "type": "special",
+      "id": "regular-2026-07-13",
+      "title": "Regular Town Board Meeting - July 2026",
+      "type": "regular",
       "status": "upcoming",
-      "date": "2026-06-22",
+      "date": "2026-07-13",
       "time": "6:05 PM",
       "location": "Winchester Town Hall",
       "documents": [
         {
-          "label": "Special Meeting Agenda",
-          "filename": "Agenda_STBM_20260622.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB5YB5a_DK7T6ph6GDg6RiUAY22_UNaYLBxxShTaiGUgWI",
-          "date": "2026-06-22"
-        },
-        {
-          "label": "Minutes (Draft)",
-          "filename": "Minutes_STBM_20260622_DRAFT.docx",
-          "url": "https://townofwinchester54557.sharepoint.com/:w:/s/TownBoard/IQBvwVeoxXhGSLNqRZw4B6reAWptTaFq0pnjrkVpvOkZ-AA",
-          "date": "2026-06-22",
-          "draft": true
-        },
-        {
-          "label": "2026-01 Town Facility Use Policy",
-          "filename": "Policy_2026-01_Town-Facility-Use_20260619.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCv5SbY6O1VQZ1lhudaqV_ZAdKpZwXe7RsuqO104j5DZWA",
-          "date": "2026-06-19"
-        },
-        {
-          "label": "2026-02 Facility Reservations Key Access Code Management Policy",
-          "filename": "Policy_2026-02_Facility-Reservations-Key-Access-Code-Management_20260617.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA1yy8QWifoQbqudpKSkfcKAWc8lbqatDBM7qK-GSJrVGQ",
-          "date": "2026-06-17"
-        },
-        {
-          "label": "2026-03 Check Expiration Policy",
-          "filename": "Policy_2026-03_Check-Expiration_20260617.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDQkoGR056xSKXDuarYgeRDAcvlB9LE7sm7d46IbEhwfCE",
-          "date": "2026-06-17"
-        },
-        {
-          "label": "Employee Handbook (revised)",
-          "filename": "Handbook_TOW-Employee_20260619.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCsEJW5moDhQLsZ6eqCWhdSAcKpMEzpJKcfOEnH5FHesh8",
-          "date": "2026-06-19"
+          "label": "Regular Meeting Agenda",
+          "filename": "Agenda_RTBM_20260713.docx",
+          "url": "https://townofwinchester54557.sharepoint.com/:w:/s/TownBoard/IQCqHedDOmUGQ78cvWviV_wsAd4DrF2P8_RdUppJ481Azdk",
+          "date": "2026-07-13"
         }
       ]
     },
@@ -281,6 +250,45 @@
           "filename": "Resolution_2026_01_Posting_Locations.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCzegVy8onqS7-KyEoTboSSAW7Hq3nAycQ_O4dD02pgY6Q",
           "date": "2026-06-04"
+        }
+      ]
+    },
+    {
+      "id": "special-2026-06-22",
+      "title": "Special Town Board Meeting - June 22, 2026",
+      "type": "special",
+      "status": "complete",
+      "date": "2026-06-22",
+      "documents": [
+        {
+          "label": "Special Meeting Agenda",
+          "filename": "Agenda_STBM_20260622.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB5YB5a_DK7T6ph6GDg6RiUAY22_UNaYLBxxShTaiGUgWI",
+          "date": "2026-06-22"
+        },
+        {
+          "label": "2026-01 Town Facility Use Policy",
+          "filename": "Policy_2026-01_Town-Facility-Use_20260619.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCv5SbY6O1VQZ1lhudaqV_ZAdKpZwXe7RsuqO104j5DZWA",
+          "date": "2026-06-19"
+        },
+        {
+          "label": "2026-02 Facility Reservations Key Access Code Management Policy",
+          "filename": "Policy_2026-02_Facility-Reservations-Key-Access-Code-Management_20260617.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA1yy8QWifoQbqudpKSkfcKAWc8lbqatDBM7qK-GSJrVGQ",
+          "date": "2026-06-17"
+        },
+        {
+          "label": "2026-03 Check Expiration Policy",
+          "filename": "Policy_2026-03_Check-Expiration_20260617.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDQkoGR056xSKXDuarYgeRDAcvlB9LE7sm7d46IbEhwfCE",
+          "date": "2026-06-17"
+        },
+        {
+          "label": "Employee Handbook (revised)",
+          "filename": "Handbook_TOW-Employee_20260619.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCsEJW5moDhQLsZ6eqCWhdSAcKpMEzpJKcfOEnH5FHesh8",
+          "date": "2026-06-19"
         }
       ]
     },
