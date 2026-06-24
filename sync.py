@@ -2,7 +2,7 @@ import os
 import json
 import base64
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 
 
@@ -23,6 +23,9 @@ PREV_REGULAR_PATH = "All Town Board Files/Previous Regular Meetings"
 PREV_SPECIAL_PATH = "All Town Board Files/Previous Special Meetings"
 
 SKIP_FOLDER_NAME = "Internal Only"
+
+ICAL_URL = "https://winchesterwi.com/events/category/meetings/?ical=1"
+MEETING_KEYWORDS = ["regular town board meeting", "special town board meeting"]
 
 
 def get_token():
@@ -79,6 +82,90 @@ def make_link(token, drive_id, item_id):
     return r.json()["link"]["webUrl"]
 
 
+# ── iCal parsing ──────────────────────────────────────────────────────────────
+def get_next_meeting_from_ical():
+    """Fetch the Meetings iCal feed and return the next town board meeting."""
+    try:
+        r = requests.get(ICAL_URL, timeout=10,
+            headers={"User-Agent": "Winchester-Sync/1.0"})
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  Warning: could not fetch iCal feed: {e}")
+        return None
+
+    now = datetime.now(timezone.utc)
+    events = []
+
+    # Parse iCal manually — no external libraries needed
+    current = {}
+    in_event = False
+    for line in r.text.splitlines():
+        line = line.strip()
+        if line == "BEGIN:VEVENT":
+            in_event = True
+            current = {}
+        elif line == "END:VEVENT":
+            if current:
+                events.append(current)
+            in_event = False
+            current = {}
+        elif in_event:
+            if line.startswith("SUMMARY:"):
+                current["summary"] = line[8:].strip()
+            elif line.startswith("DTSTART"):
+                val = line.split(":", 1)[-1].strip()
+                current["dtstart_raw"] = val
+            elif line.startswith("LOCATION:"):
+                current["location"] = line[9:].strip()
+
+    # Find next upcoming town board meeting
+    candidates = []
+    for ev in events:
+        summary = ev.get("summary", "")
+        if not any(kw in summary.lower() for kw in MEETING_KEYWORDS):
+            continue
+        raw = ev.get("dtstart_raw", "")
+        try:
+            if "T" in raw:
+                # Has time component
+                raw_clean = raw.replace("Z", "").replace("-", "").replace(":", "")
+                dt = datetime.strptime(raw_clean[:15], "%Y%m%dT%H%M%S")
+                dt = dt.replace(tzinfo=timezone.utc)
+            else:
+                dt = datetime.strptime(raw[:8], "%Y%m%d")
+                dt = dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            continue
+        if dt >= now:
+            candidates.append((dt, ev))
+
+    if not candidates:
+        print("  Warning: no upcoming town board meetings found in iCal feed.")
+        return None
+
+    candidates.sort(key=lambda x: x[0])
+    dt, ev = candidates[0]
+
+    summary = ev.get("summary", "")
+    location = ev.get("location", "Winchester Town Hall") or "Winchester Town Hall"
+
+    # Format time as "6:05 PM"
+    if dt.hour or dt.minute:
+        time_str = dt.strftime("%-I:%M %p").lstrip("0")
+    else:
+        time_str = "6:05 PM"  # fallback if no time in event
+
+    date_str = dt.strftime("%Y-%m-%d")
+
+    return {
+        "title": summary,
+        "date": date_str,
+        "time": time_str,
+        "location": location,
+    }
+
+
+# ── Label inference ───────────────────────────────────────────────────────────
 def clean_name(s):
     s = re.sub(r"_\d{8}$", "", s)
     s = re.sub(r"_\d{6}$", "", s)
@@ -94,11 +181,9 @@ def infer_label(filename):
             name = name[:-len(ext)]
             break
 
-    # Special one-offs
     if re.search(r"NEMSD.{0,5}[Ii]ntermunicipal", name):
         return "NEMSD Intermunicipal Agreement - Current Signed Agreement"
 
-    # Agendas
     m = re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_\d{8}", name)
     if m:
         type_map = {"RTBM": "Regular Meeting Agenda", "STBM": "Special Meeting Agenda",
@@ -109,12 +194,10 @@ def infer_label(filename):
     if m:
         return "Agenda"
 
-    # Minutes
     m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)?\d{8}(_DRAFT)?", name)
     if m:
         return "Minutes (Draft)" if m.group(1) else "Minutes"
 
-    # Clerk's Report
     m = re.match(r"Report_Clerk_\d{8}", name)
     if m:
         return "Clerk's Report"
@@ -123,7 +206,6 @@ def infer_label(filename):
     if m:
         return "Clerk's Report"
 
-    # Month-only reports
     m = re.match(r"Report_Treasurer_\d{6}", name)
     if m:
         return "Treasurer's Report"
@@ -144,34 +226,28 @@ def infer_label(filename):
     if m:
         return f"{m.group(1).replace('-', ' ').replace('_', ' ')} Report"
 
-    # Policies
     m = re.match(r"Policy_(\d{4}-\d{2})_(.+)", name)
     if m:
         return f"{m.group(1)} {clean_name(m.group(2))} Policy"
 
-    # Resolutions
     m = re.match(r"Resolution_(\d{4}-\d{2})_(.+)", name)
     if m:
         return f"{m.group(1)} {clean_name(m.group(2))} Resolution"
 
-    # Ordinances
     m = re.match(r"Ordinance_(\d{4}-\d{2})_(.+)", name)
     if m:
         return f"{m.group(1)} {clean_name(m.group(2))} Ordinance"
 
-    # Permits
     m = re.match(r"Permit_(.+?)(?:_\d{8})?$", name)
     if m:
         return f"{m.group(1).replace('-', ' ').replace('_', ' ').strip()} Permit"
 
-    # Forms
     m = re.match(r"Form_([A-Z0-9\-]+)_(.+?)(?:_\d{8})?$", name)
     if m:
         num = m.group(1).replace("-", " ")
         desc = m.group(2).replace("-", " ").replace("_", " ").strip()
         return f"{desc} Form {num}"
 
-    # Handbooks
     m = re.match(r"Handbook_(.+?)(?:_\d{8})?$", name)
     if m:
         rest = re.sub(r"^TOW-?", "", m.group(1))
@@ -179,7 +255,6 @@ def infer_label(filename):
         has_date = bool(re.search(r"_\d{8}$", name))
         return f"{rest} Handbook" + (" (revised)" if has_date else "")
 
-    # Fallback
     return name.replace("_", " ").replace("-", " ").strip()
 
 
@@ -242,11 +317,20 @@ def parse_folder_name(name, mtype):
 def build_data(token, drive_id):
     meetings = []
 
+    # Get next meeting info from iCal
+    print("Fetching next meeting from Events Calendar...")
+    ical_event = get_next_meeting_from_ical()
+
     print("Scanning Next Meeting...")
     next_docs = scan_folder(token, drive_id, NEXT_MEETING_PATH)
+
+    # Determine meeting type and date from SharePoint folder
     next_date = None
     next_type = "regular"
     next_title = "Upcoming Town Board Meeting"
+    next_time = "6:05 PM"
+    next_location = "Winchester Town Hall"
+
     for doc in next_docs:
         m = re.search(r"(\d{8})", doc["filename"])
         if m:
@@ -260,12 +344,20 @@ def build_data(token, drive_id):
                 next_type = "regular"
                 next_title = f"Regular Town Board Meeting - {dt.strftime('%B %Y')}"
             break
+
+    # Override with iCal data if available
+    if ical_event:
+        next_time = ical_event["time"]
+        next_location = ical_event["location"]
+        print(f"  Next meeting: {ical_event['title']} on {ical_event['date']} at {ical_event['time']} @ {ical_event['location']}")
+
     if not next_date:
         next_date = datetime.today().strftime("%Y-%m-%d")
+
     meetings.append({
         "id": f"{next_type}-{next_date}", "title": next_title,
         "type": next_type, "status": "upcoming", "date": next_date,
-        "time": "6:05 PM", "location": "Winchester Town Hall",
+        "time": next_time, "location": next_location,
         "documents": next_docs,
     })
 
