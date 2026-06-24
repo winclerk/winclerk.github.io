@@ -15,7 +15,7 @@ GITHUB_FILE = "data.json"
 
 SITE_HOSTNAME = "townofwinchester54557.sharepoint.com"
 SITE_PATH     = "/sites/TownBoard"
-LIBRARY_NAME  = "Shared Documents"
+LIBRARY_NAME  = "Documents"
 
 NEXT_MEETING_PATH = "All Town Board Files/Next Meeting"
 PREV_REGULAR_PATH = "All Town Board Files/Previous Regular Meetings"
