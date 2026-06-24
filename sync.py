@@ -79,18 +79,6 @@ def make_link(token, drive_id, item_id):
     return r.json()["link"]["webUrl"]
 
 
-def fmt_full(date_str):
-    return datetime.strptime(date_str, "%Y%m%d").strftime("%B %-d, %Y")
-
-
-def fmt_month(date_str):
-    return datetime.strptime(date_str + "01", "%Y%m%d").strftime("%B %Y")
-
-
-def fmt_month_from8(date_str):
-    return datetime.strptime(date_str, "%Y%m%d").strftime("%B %Y")
-
-
 def clean_name(s):
     s = re.sub(r"_\d{8}$", "", s)
     s = re.sub(r"_\d{6}$", "", s)
@@ -111,53 +99,50 @@ def infer_label(filename):
         return "NEMSD Intermunicipal Agreement - Current Signed Agreement"
 
     # Agendas
-    m = re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_(\d{8})", name)
+    m = re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_\d{8}", name)
     if m:
-        type_map = {"RTBM": "Regular Meeting", "STBM": "Special Meeting",
-                    "TBSM": "Special Meeting", "BOR": "Board of Review"}
-        return f"{fmt_full(m.group(2))} {type_map[m.group(1)]} Agenda"
+        type_map = {"RTBM": "Regular Meeting Agenda", "STBM": "Special Meeting Agenda",
+                    "TBSM": "Special Meeting Agenda", "BOR": "Board of Review Agenda"}
+        return type_map[m.group(1)]
 
-    m = re.match(r"Agenda_(\d{8})", name)
+    m = re.match(r"Agenda_\d{8}", name)
     if m:
-        return f"{fmt_full(m.group(1))} Agenda"
+        return "Agenda"
 
     # Minutes
-    m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)?(\d{8})(_DRAFT)?", name)
+    m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)?\d{8}(_DRAFT)?", name)
     if m:
-        label = f"{fmt_full(m.group(1))} Minutes"
-        return label + " (Draft)" if m.group(2) else label
+        return "Minutes (Draft)" if m.group(1) else "Minutes"
 
-    # Clerk's Report (full date)
-    m = re.match(r"Report_Clerk_(\d{8})", name)
+    # Clerk's Report
+    m = re.match(r"Report_Clerk_\d{8}", name)
     if m:
-        return f"{fmt_month_from8(m.group(1))} Clerk's Report"
+        return "Clerk's Report"
 
-    m = re.match(r"Clerks?_Report_(\d{8})", name, re.IGNORECASE)
+    m = re.match(r"Clerks?_Report_\d{8}", name, re.IGNORECASE)
     if m:
-        return f"{fmt_month_from8(m.group(1))} Clerk's Report"
+        return "Clerk's Report"
 
     # Month-only reports
-    m = re.match(r"Report_Treasurer_(\d{6})", name)
+    m = re.match(r"Report_Treasurer_\d{6}", name)
     if m:
-        return f"{fmt_month(m.group(1))} Treasurer's Report"
+        return "Treasurer's Report"
 
-    m = re.match(r"Report_NEMSD_(\d{6})", name)
+    m = re.match(r"Report_NEMSD_\d{6}", name)
     if m:
-        return f"{fmt_month(m.group(1))} NEMSD Report"
+        return "NEMSD Report"
 
-    m = re.match(r"Report_Pedalers_(\d{6})", name)
+    m = re.match(r"Report_Pedalers_\d{6}", name)
     if m:
-        return f"{fmt_month(m.group(1))} Pedalers Report"
+        return "Pedalers Report"
 
-    m = re.match(r"Report_(.+?)_(\d{6})$", name)
+    m = re.match(r"Report_(.+?)_\d{6}$", name)
     if m:
-        who = m.group(1).replace("-", " ").replace("_", " ")
-        return f"{fmt_month(m.group(2))} {who} Report"
+        return f"{m.group(1).replace('-', ' ').replace('_', ' ')} Report"
 
-    m = re.match(r"Report_(.+?)_(\d{8})$", name)
+    m = re.match(r"Report_(.+?)_\d{8}$", name)
     if m:
-        who = m.group(1).replace("-", " ").replace("_", " ")
-        return f"{fmt_month_from8(m.group(2))} {who} Report"
+        return f"{m.group(1).replace('-', ' ').replace('_', ' ')} Report"
 
     # Policies
     m = re.match(r"Policy_(\d{4}-\d{2})_(.+)", name)
@@ -230,10 +215,9 @@ def scan_folder(token, drive_id, folder_path):
 
     def key(d):
         l = d["label"].lower()
-        if l.startswith("agenda"): return (0, l)
-        if "agenda" in l: return (1, l)
-        if l.startswith("minutes") or "minutes" in l: return (2, l)
-        return (3, l)
+        if "agenda" in l: return (0, l)
+        if "minutes" in l: return (1, l)
+        return (2, l)
     docs.sort(key=key)
     return docs
 
