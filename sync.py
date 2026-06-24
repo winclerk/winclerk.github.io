@@ -24,7 +24,7 @@ PREV_SPECIAL_PATH = "All Town Board Files/Previous Special Meetings"
 
 SKIP_FOLDER_NAME = "Internal Only"
 
-ICAL_URL = "https://winchesterwi.com/events/category/meetings/?ical=1"
+ICAL_URL = "https://winchesterwi.com/?post_type=tribe_events&ical=1&eventDisplay=list"
 MEETING_KEYWORDS = ["regular town board meeting", "special town board meeting"]
 
 
