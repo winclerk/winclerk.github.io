@@ -132,13 +132,16 @@ async function init() {
 
     const totalDocs = allMeetings.reduce((s, m) => s + (m.documents || []).reduce((ds, d) => ds + (d.documentCount || 1), 0), 0);
     const nextDate = upcoming ? formatDate(upcoming.date) : 'TBD';
-    const nextSub = upcoming ? [upcoming.time, upcoming.location].filter(Boolean).join(' &middot; ') : '';
+    const nextTime = upcoming ? upcoming.time : '';
+    const nextLocation = upcoming ? upcoming.location : '';
+
     document.getElementById('stat-tiles-container').innerHTML = `
       <div class="stat-tiles">
         <div class="stat-tile stat-tile-accent">
           <div class="stat-label">Next meeting</div>
           <div class="stat-value">${nextDate}</div>
-          ${nextSub ? `<div class="stat-sub">${nextSub}</div>` : ''}
+          ${nextTime ? `<div class="stat-sub">${nextTime}</div>` : ''}
+          ${nextLocation ? `<div class="stat-sub">${nextLocation}</div>` : ''}
         </div>
         <div class="stat-tile">
           <div class="stat-label">Total meetings</div>
