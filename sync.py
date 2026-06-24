@@ -8,7 +8,6 @@ from datetime import datetime
 TENANT_ID       = os.environ["AZURE_TENANT_ID"]
 CLIENT_ID       = os.environ["AZURE_CLIENT_ID"]
 CLIENT_SECRET   = os.environ["AZURE_CLIENT_SECRET"]
-REFRESH_TOKEN   = os.environ.get("MS_REFRESH_TOKEN", "")
 GH_PAT          = os.environ["GH_PAT"]
 
 GITHUB_REPO     = "winclerk/winclerk.github.io"
@@ -18,32 +17,26 @@ SITE_HOSTNAME   = "townofwinchester54557.sharepoint.com"
 SITE_PATH       = "/sites/TownBoard"
 LIBRARY_NAME    = "Shared Documents"
 
-# Folder paths inside the library
-NEXT_MEETING_PATH      = "All Town Board Files/Next Meeting"
-PREV_REGULAR_PATH      = "All Town Board Files/Previous Regular Meetings"
-PREV_SPECIAL_PATH      = "All Town Board Files/Previous Special Meetings"
+NEXT_MEETING_PATH  = "All Town Board Files/Next Meeting"
+PREV_REGULAR_PATH  = "All Town Board Files/Previous Regular Meetings"
+PREV_SPECIAL_PATH  = "All Town Board Files/Previous Special Meetings"
 
 SKIP_FOLDER_NAME = "Internal Only"
 
-# ── Auth ──────────────────────────────────────────────────────────────────────
+# ── Auth (client credentials — no user login needed) ─────────────────────────
 def get_token():
-    """Exchange refresh token for access token, print new refresh token for secret rotation."""
     url = f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token"
     data = {
         "client_id":     CLIENT_ID,
-        "grant_type":    "refresh_token",
-        "refresh_token": REFRESH_TOKEN,
-        "scope":         "https://graph.microsoft.com/Sites.Read.All https://graph.microsoft.com/Files.ReadWrite.All offline_access",
+        "client_secret": CLIENT_SECRET,
+        "grant_type":    "client_credentials",
+        "scope":         "https://graph.microsoft.com/.default",
     }
     r = requests.post(url, data=data)
     if not r.ok:
-        print(f"Token error response: {r.text}")
+        print(f"Token error: {r.text}")
     r.raise_for_status()
-    tokens = r.json()
-    new_refresh = tokens.get("refresh_token", "")
-    if new_refresh and new_refresh != REFRESH_TOKEN:
-        print(f"NEW_REFRESH_TOKEN={new_refresh}")
-    return tokens["access_token"], new_refresh
+    return r.json()["access_token"]
 
 # ── Graph helpers ─────────────────────────────────────────────────────────────
 def graph_get(access_token, url):
@@ -74,7 +67,7 @@ def list_folder_children(access_token, drive_id, folder_path):
         url = data.get("@odata.nextLink")
     return items
 
-def create_sharing_link(access_token, drive_id, item_id, is_folder=False):
+def create_sharing_link(access_token, drive_id, item_id):
     url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/createLink"
     body = {"type": "view", "scope": "anonymous"}
     headers = {
@@ -87,55 +80,49 @@ def create_sharing_link(access_token, drive_id, item_id, is_folder=False):
 
 # ── Label inference ───────────────────────────────────────────────────────────
 def infer_label(filename):
-    """Turn a raw filename into a human-readable label."""
+    import re
     name = filename
-    # Strip extension
     for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
         if name.lower().endswith(ext):
-            name = name[: -len(ext)]
+            name = name[:-len(ext)]
             break
 
-    # Known prefix mappings
     prefixes = {
-        "Agenda_RTBM_": "Agenda",
-        "Agenda_STBM_": "Agenda",
-        "Agenda_TBSM_": "Agenda",
-        "Agenda_BOR_":  "Agenda (Board of Review)",
-        "Agenda_":      "Agenda",
-        "Minutes_RTBM_": "Minutes",
-        "Minutes_STBM_": "Minutes",
-        "Minutes_TBSM_": "Minutes",
-        "Minutes_":      "Minutes",
-        "Resolution_":   "Resolution",
-        "Ordinance_":    "Ordinance",
-        "Policy_":       "Policy",
-        "Procedure_":    "Procedure",
-        "Permit_":       "Permit",
-        "Report_Clerk_": "Clerk Report",
+        "Agenda_RTBM_":      "Agenda",
+        "Agenda_STBM_":      "Agenda",
+        "Agenda_TBSM_":      "Agenda",
+        "Agenda_BOR_":       "Agenda (Board of Review)",
+        "Agenda_":           "Agenda",
+        "Minutes_RTBM_":     "Minutes",
+        "Minutes_STBM_":     "Minutes",
+        "Minutes_TBSM_":     "Minutes",
+        "Minutes_":          "Minutes",
+        "Resolution_":       "Resolution",
+        "Ordinance_":        "Ordinance",
+        "Policy_":           "Policy",
+        "Procedure_":        "Procedure",
+        "Permit_":           "Permit",
+        "Report_Clerk_":     "Clerk Report",
         "Report_Treasurer_": "Treasurer Report",
-        "Report_NEMSD_": "NEMSD Report",
-        "Report_Pedalers_": "Pedalers Report",
-        "Report_":       "Report",
-        "Form_":         "Form",
-        "Handbook_":     "Handbook",
+        "Report_NEMSD_":     "NEMSD Report",
+        "Report_Pedalers_":  "Pedalers Report",
+        "Report_":           "Report",
+        "Form_":             "Form",
+        "Handbook_":         "Handbook",
     }
     for prefix, label in prefixes.items():
         if name.startswith(prefix):
             remainder = name[len(prefix):]
-            # Try to extract a date suffix like _20260608 and drop it
-            import re
             remainder = re.sub(r"_?\d{8}$", "", remainder)
             remainder = re.sub(r"_?DRAFT$", " (Draft)", remainder)
             remainder = remainder.replace("_", " ").replace("-", " — ").strip()
             if remainder and remainder not in ("Draft",):
-                return f"{label} — {remainder}" if remainder else label
+                return f"{label} — {remainder}"
             return label
 
-    # Fallback: clean up underscores/dashes
     return name.replace("_", " ").replace("-", " ").strip()
 
 def parse_date_from_filename(filename):
-    """Extract YYYYMMDD from filename if present, return as YYYY-MM-DD."""
     import re
     m = re.search(r"(\d{8})", filename)
     if m:
@@ -145,7 +132,6 @@ def parse_date_from_filename(filename):
 
 # ── Folder scanning ───────────────────────────────────────────────────────────
 def scan_folder_for_docs(access_token, drive_id, folder_path):
-    """Return list of document dicts for all non-internal files in a flat folder."""
     try:
         children = list_folder_children(access_token, drive_id, folder_path)
     except Exception as e:
@@ -157,10 +143,8 @@ def scan_folder_for_docs(access_token, drive_id, folder_path):
         name = item["name"]
         is_folder = "folder" in item
 
-        # Skip Internal Only folder entirely
         if is_folder and name == SKIP_FOLDER_NAME:
             continue
-        # Skip other subfolders (not expected at this level, but be safe)
         if is_folder:
             continue
 
@@ -175,27 +159,20 @@ def scan_folder_for_docs(access_token, drive_id, folder_path):
         label = infer_label(name)
         is_draft = "DRAFT" in name.upper()
 
-        doc = {
-            "label":    label,
-            "filename": name,
-            "url":      link,
-            "date":     date,
-        }
+        doc = {"label": label, "filename": name, "url": link, "date": date}
         if is_draft:
             doc["draft"] = True
         docs.append(doc)
 
-    # Sort: agendas first, then minutes, then rest alphabetically
     def sort_key(d):
         l = d["label"].lower()
-        if l.startswith("agenda"):   return (0, l)
-        if l.startswith("minutes"):  return (1, l)
+        if l.startswith("agenda"):  return (0, l)
+        if l.startswith("minutes"): return (1, l)
         return (2, l)
     docs.sort(key=sort_key)
     return docs
 
 def parse_meeting_folder_name(name, meeting_type):
-    """Parse RTBM_YYYYMMDD or STBM_YYYYMMDD into id, title, date."""
     import re
     m = re.search(r"(\d{8})$", name)
     if not m:
@@ -203,11 +180,10 @@ def parse_meeting_folder_name(name, meeting_type):
     raw = m.group(1)
     date_str = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
     dt = datetime.strptime(date_str, "%Y-%m-%d")
-    month_year = dt.strftime("%B %Y")
 
     if meeting_type == "regular":
         meeting_id = f"regular-{date_str}"
-        title = f"Regular Town Board Meeting — {month_year}"
+        title = f"Regular Town Board Meeting — {dt.strftime('%B %Y')}"
     else:
         meeting_id = f"special-{date_str}"
         title = f"Special Town Board Meeting — {dt.strftime('%B %-d, %Y')}"
@@ -216,23 +192,22 @@ def parse_meeting_folder_name(name, meeting_type):
 
 # ── Main build ────────────────────────────────────────────────────────────────
 def build_data_json(access_token, drive_id):
+    import re
     meetings = []
 
-    # ── 1. Next Meeting (upcoming) ────────────────────────────────────────────
+    # 1. Next Meeting
     print("Scanning Next Meeting...")
     next_docs = scan_folder_for_docs(access_token, drive_id, NEXT_MEETING_PATH)
 
-    # Infer the next meeting date from the agenda filename if possible
-    import re
     next_date = None
     next_title = "Upcoming Town Board Meeting"
+    next_type = "regular"
     for doc in next_docs:
         m = re.search(r"(\d{8})", doc["filename"])
         if m:
             raw = m.group(1)
             next_date = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
             dt = datetime.strptime(next_date, "%Y-%m-%d")
-            # Detect if special from filename
             if "STBM" in doc["filename"] or "TBSM" in doc["filename"]:
                 next_title = f"Special Town Board Meeting — {dt.strftime('%B %-d, %Y')}"
                 next_type = "special"
@@ -243,7 +218,6 @@ def build_data_json(access_token, drive_id):
 
     if not next_date:
         next_date = datetime.today().strftime("%Y-%m-%d")
-        next_type = "regular"
 
     meetings.append({
         "id":        f"{next_type}-{next_date}",
@@ -256,7 +230,7 @@ def build_data_json(access_token, drive_id):
         "documents": next_docs,
     })
 
-    # ── 2. Previous Regular Meetings ──────────────────────────────────────────
+    # 2. Previous Regular Meetings
     print("Scanning Previous Regular Meetings...")
     try:
         reg_folders = list_folder_children(access_token, drive_id, PREV_REGULAR_PATH)
@@ -272,9 +246,8 @@ def build_data_json(access_token, drive_id):
         parsed = parse_meeting_folder_name(name, "regular")
         if not parsed:
             continue
-        folder_path = f"{PREV_REGULAR_PATH}/{name}"
         print(f"  Scanning {name}...")
-        docs = scan_folder_for_docs(access_token, drive_id, folder_path)
+        docs = scan_folder_for_docs(access_token, drive_id, f"{PREV_REGULAR_PATH}/{name}")
         reg_meetings.append({
             "id":        parsed["id"],
             "title":     parsed["title"],
@@ -287,7 +260,7 @@ def build_data_json(access_token, drive_id):
     reg_meetings.sort(key=lambda m: m["date"], reverse=True)
     meetings.extend(reg_meetings)
 
-    # ── 3. Previous Special Meetings ──────────────────────────────────────────
+    # 3. Previous Special Meetings
     print("Scanning Previous Special Meetings...")
     try:
         spec_folders = list_folder_children(access_token, drive_id, PREV_SPECIAL_PATH)
@@ -303,9 +276,8 @@ def build_data_json(access_token, drive_id):
         parsed = parse_meeting_folder_name(name, "special")
         if not parsed:
             continue
-        folder_path = f"{PREV_SPECIAL_PATH}/{name}"
         print(f"  Scanning {name}...")
-        docs = scan_folder_for_docs(access_token, drive_id, folder_path)
+        docs = scan_folder_for_docs(access_token, drive_id, f"{PREV_SPECIAL_PATH}/{name}")
         spec_meetings.append({
             "id":        parsed["id"],
             "title":     parsed["title"],
@@ -328,7 +300,6 @@ def write_to_github(data):
     }
     api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE}"
 
-    # Get current SHA (needed to update existing file)
     r = requests.get(api_url, headers=headers)
     sha = r.json().get("sha") if r.status_code == 200 else None
 
@@ -344,12 +315,12 @@ def write_to_github(data):
 
     r = requests.put(api_url, headers=headers, json=payload)
     r.raise_for_status()
-    print(f"data.json updated successfully.")
+    print("data.json updated successfully.")
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 def main():
     print("Authenticating with Microsoft Graph...")
-    access_token, new_refresh = get_token()
+    access_token = get_token()
 
     print("Locating SharePoint site and drive...")
     site_id  = get_site_id(access_token)
