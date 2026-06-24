@@ -1,8 +1,9 @@
+# Sync SharePoint documents to data.json every 20 minutes
 name: Sync SharePoint to data.json
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/20 * * * *'
   workflow_dispatch:
 
 jobs:
