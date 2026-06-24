@@ -254,6 +254,70 @@
       ]
     },
     {
+      "id": "regular-2026-04-13",
+      "title": "Regular Town Board Meeting - April 2026",
+      "type": "regular",
+      "status": "complete",
+      "date": "2026-04-13",
+      "documents": [
+        {
+          "label": "Regular Meeting Agenda",
+          "filename": "Agenda_RTBM_20260413.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDRyamBnigpRZfiXsAtUN02Acj7m2csjfMUMthzTtwgDi8",
+          "date": "2026-04-13"
+        },
+        {
+          "label": "Minutes (Draft)",
+          "filename": "Minutes_RTBM_20260413_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCXznzAOTJyQLswd_RPEzKoAXPDRDhkay8OMSkQtQW0Nqw",
+          "date": "2026-04-13",
+          "draft": true
+        },
+        {
+          "label": "Disbursements Report",
+          "filename": "Report_Disbursements_202603.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB2cDu7k05DTaO4Ils622WWAQ4KLuZ_zrzeQdIvLbFtks4",
+          "date": "2026-06-24"
+        },
+        {
+          "label": "Expense Revenue Summary Report",
+          "filename": "Report_Expense-Revenue-Summary_202603.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBzbYQTirxaR5_DBwKHHhOrAfDIr1Io1tYP6jEJ_pt-0Mw",
+          "date": "2026-06-24"
+        },
+        {
+          "label": "Reconciliation AB Checking Report",
+          "filename": "Report_Reconciliation-AB-Checking_202603.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA0pjww7a0uRobKRGGEQnawAYkPo1W03ZJweszQCPjX5-Y",
+          "date": "2026-06-24"
+        },
+        {
+          "label": "Reconciliation AB Checking Report",
+          "filename": "Report_Reconciliation-AB-Checking_202603.xlsx",
+          "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQD-xj0U7HWKQonRtLWr7p3nAXxcgPwlVniCBYdiXyZIbho",
+          "date": "2026-06-24"
+        },
+        {
+          "label": "Reconciliation AB MM Report",
+          "filename": "Report_Reconciliation-AB-MM_202604.xlsx",
+          "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQD8DxDg-MRCT74XM9ZerhR2AUdZYquO9y1xmAZG5X_MJtA",
+          "date": "2026-06-24"
+        },
+        {
+          "label": "Statement AB Checking MM 20260331",
+          "filename": "Statement_AB-Checking-MM_20260331.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQClEnpJen8-QYJ-A4BecZ50AZR2-3n6IrqE_jyupaPdf-U",
+          "date": "2026-03-31"
+        },
+        {
+          "label": "YTD vs Actual Report",
+          "filename": "Report_YTD-vs-Actual_202603.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD5cP7Ye7ZKSqJvt0wj-BRgAazD4RxhuXgBVnnJFeozI5w",
+          "date": "2026-06-24"
+        }
+      ]
+    },
+    {
       "id": "special-2026-06-22",
       "title": "Special Town Board Meeting - June 22, 2026",
       "type": "special",
