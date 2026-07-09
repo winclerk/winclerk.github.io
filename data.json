@@ -1,19 +1,27 @@
 {
   "meetings": [
     {
-      "id": "special-2026-07-02",
-      "title": "Special Town Board Meeting - July 2, 2026",
+      "id": "special-2026-06-22",
+      "title": "Special Town Board Meeting - June 22, 2026",
       "type": "special",
       "status": "upcoming",
-      "date": "2026-07-02",
+      "date": "2026-06-22",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
       "documents": [
         {
-          "label": "Special Meeting Agenda",
-          "filename": "Agenda_STBM_20260702.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB0SL7vjhLJSpygv-K54gjsARwGf_wkAiY0Fs7bCdzm27s",
-          "date": "2026-07-02"
+          "label": "Minutes (Draft)",
+          "filename": "Minutes_STBM_20260622_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDrOo5ilCxnR7CT6dKNovAlAVvndO94rp3L9f2cOw6fARI",
+          "date": "2026-06-22",
+          "draft": true
+        },
+        {
+          "label": "Minutes (Draft)",
+          "filename": "Minutes_STBM_20260702_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAhetxOk0DcTb4pCzC2AFDrAbs9NMWZHRecBfiXJKBm0FI",
+          "date": "2026-07-02",
+          "draft": true
         }
       ]
     },
@@ -314,6 +322,21 @@
           "filename": "Report_YTD-vs-Actual_202603.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD5cP7Ye7ZKSqJvt0wj-BRgAazD4RxhuXgBVnnJFeozI5w",
           "date": "2026-06-24"
+        }
+      ]
+    },
+    {
+      "id": "special-2026-07-02",
+      "title": "Special Town Board Meeting - July 2, 2026",
+      "type": "special",
+      "status": "complete",
+      "date": "2026-07-02",
+      "documents": [
+        {
+          "label": "Special Meeting Agenda",
+          "filename": "Agenda_STBM_20260702.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB0SL7vjhLJSpygv-K54gjsARwGf_wkAiY0Fs7bCdzm27s",
+          "date": "2026-07-02"
         }
       ]
     },
