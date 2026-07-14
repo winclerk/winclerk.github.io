@@ -1,14 +1,20 @@
 {
   "meetings": [
     {
-      "id": "special-2026-06-22",
-      "title": "Special Town Board Meeting - June 22, 2026",
-      "type": "special",
+      "id": "regular-2026-07-15",
+      "title": "Regular Town Board Meeting - July 2026",
+      "type": "regular",
       "status": "upcoming",
-      "date": "2026-06-22",
+      "date": "2026-07-15",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
       "documents": [
+        {
+          "label": "Regular Meeting Agenda",
+          "filename": "Agenda_RTBM_20260715.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD8PyESJmQcT6jHih7jYMdhAdHrJmR597iEY-Ey_ZC28vA",
+          "date": "2026-07-15"
+        },
         {
           "label": "Minutes (Draft)",
           "filename": "Minutes_STBM_20260622_DRAFT.pdf",
