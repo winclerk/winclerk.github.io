@@ -17,6 +17,13 @@
         },
         {
           "label": "Minutes (Draft)",
+          "filename": "Minutes_RTBM_20260608_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA8pvBezPfWTqKuS1DIIjD-AUyDbwv_DtFnCIHCIxAlETk",
+          "date": "2026-06-08",
+          "draft": true
+        },
+        {
+          "label": "Minutes (Draft)",
           "filename": "Minutes_STBM_20260622_DRAFT.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDrOo5ilCxnR7CT6dKNovAlAVvndO94rp3L9f2cOw6fARI",
           "date": "2026-06-22",
@@ -28,6 +35,48 @@
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAhetxOk0DcTb4pCzC2AFDrAbs9NMWZHRecBfiXJKBm0FI",
           "date": "2026-07-02",
           "draft": true
+        },
+        {
+          "label": "2026-03 Fee Schedule Adoption Resolution",
+          "filename": "Resolution_2026-03_Fee-Schedule-Adoption_20260630.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCAXLJybrnLSYHp7R4-8tx5Afoly7ge7ReCWiNvqSKVogM",
+          "date": "2026-06-30"
+        },
+        {
+          "label": "2026-04 Fire Numbers Policy",
+          "filename": "Policy_2026-04_Fire-Numbers_20260630.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB9e6CzQdAvSZNIBiIR5b5kAVg-RzPExzduFUu5axNE0sA",
+          "date": "2026-06-30"
+        },
+        {
+          "label": "2026-05 Clerk's Office Copy Fee Schedule Policy",
+          "filename": "Policy_2026-05_Clerk's-Office-Copy-Fee-Schedule_20260630.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCUh4UVqHaQQJxg4bFidtEUAVBXhWLv6gR5O-1ucrr83E4",
+          "date": "2026-06-30"
+        },
+        {
+          "label": "2026-05 Electronic Claims Approval Ordinance",
+          "filename": "Ordinance_2026-05_Electronic-Claims-Approval_20260709.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQApR3Fwvj-CQ5gKmP78lZ9NAcBYgH3wa3KIrGS8eDOTdeM",
+          "date": "2026-07-09"
+        },
+        {
+          "label": "2026-06 Facility Use Refund Requests Policy",
+          "filename": "Policy_2026-06_Facility-Use-Refund-Requests_20260630.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBqSoxBUtzwSLYRVjzw_qEGAXXgV-hDa_0RKr8JnzziWqE",
+          "date": "2026-06-30"
+        },
+        {
+          "label": "Clerk's Report",
+          "filename": "Report_Clerk_20260715.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQC4vNJF7y0rRLDcbc1uS44XAS6XdheTnzT0e2ynfnnw74M",
+          "date": "2026-07-15"
+        },
+        {
+          "label": "Treasurer's Report",
+          "filename": "Report_Treasurer_20260715.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBmYlNAkQgOQoz2o7fc71HTAd7YBlvVqX4W79KVMWLVXgg",
+          "date": "2026-07-15"
         }
       ]
     },
