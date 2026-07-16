@@ -16,25 +16,22 @@
           "date": "2026-07-15"
         },
         {
-          "label": "Minutes (Draft)",
-          "filename": "Minutes_RTBM_20260608_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA8pvBezPfWTqKuS1DIIjD-AUyDbwv_DtFnCIHCIxAlETk",
-          "date": "2026-06-08",
-          "draft": true
+          "label": "Minutes",
+          "filename": "Minutes_RTBM_20260608.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBuv5xBLb4RRLzJAeZG259SAakoeQK2MdfZc1ydqhCYk30",
+          "date": "2026-06-08"
         },
         {
-          "label": "Minutes (Draft)",
-          "filename": "Minutes_STBM_20260622_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDrOo5ilCxnR7CT6dKNovAlAVvndO94rp3L9f2cOw6fARI",
-          "date": "2026-06-22",
-          "draft": true
+          "label": "Minutes",
+          "filename": "Minutes_STBM_20260622.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAqnPQdDojsQb3G2lk47UOQAYIq-rniDEYzZCGNgmu8yLQ",
+          "date": "2026-06-22"
         },
         {
-          "label": "Minutes (Draft)",
-          "filename": "Minutes_STBM_20260702_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAhetxOk0DcTb4pCzC2AFDrAbs9NMWZHRecBfiXJKBm0FI",
-          "date": "2026-07-02",
-          "draft": true
+          "label": "Minutes",
+          "filename": "Minutes_STBM_20260702.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAZE05rtfvPS4xzxaqF_9qSAQ42ekU18c4F8dUHcfYs5TM",
+          "date": "2026-07-02"
         },
         {
           "label": "2026-03 Fee Schedule Adoption Resolution",
@@ -75,7 +72,7 @@
         {
           "label": "Fee Schedule 20260630",
           "filename": "Fee-Schedule_20260630.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD5VfkzWD_KRoAFOy6f3gGKAZygrDu28_IjT94Zx8EL63Y",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDE4Y_GbJbyRo55vqaqr6lTAQ7H_7wCy1HbhP1ddjrOjY8",
           "date": "2026-06-30"
         },
         {
@@ -113,6 +110,12 @@
         },
         {
           "label": "Minutes",
+          "filename": "Minutes_RTBM_20260608.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCNOxFEerPHRaOikj2zm3lKAW6MZP7Sl4m6PTmgw7x6v2w",
+          "date": "2026-06-08"
+        },
+        {
+          "label": "Minutes",
           "filename": "Minutes_STBM_20260602.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDlo0lqElfNRolcbia0bl1BAfAtwE1xGMgI5cxbVMP1yCU",
           "date": "2026-06-02"
@@ -122,13 +125,6 @@
           "filename": "Minutes_TBSM_20260521.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDK47jzvGKmTLWsQ7ymElF-AYj3mCZTNz-q9nu0YtTCVl4",
           "date": "2026-05-21"
-        },
-        {
-          "label": "Minutes (Draft)",
-          "filename": "Minutes_RTBM_20260608_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBRCKvxt9aaTolGZnZ61vR2AUigbOpsGTwCIhfk2e35IyM",
-          "date": "2026-06-08",
-          "draft": true
         },
         {
           "label": "Minutes BOR 20260608 DRAFT",
@@ -398,6 +394,12 @@
           "filename": "Agenda_STBM_20260702.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB0SL7vjhLJSpygv-K54gjsARwGf_wkAiY0Fs7bCdzm27s",
           "date": "2026-07-02"
+        },
+        {
+          "label": "Minutes",
+          "filename": "Minutes_STBM_20260702.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDgOfuKv3ZxSKnR236h3g-jAdK81hlrBOGoJTw_Ip0VZ5k",
+          "date": "2026-07-02"
         }
       ]
     },
@@ -412,6 +414,12 @@
           "label": "Special Meeting Agenda",
           "filename": "Agenda_STBM_20260622.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB5YB5a_DK7T6ph6GDg6RiUAY22_UNaYLBxxShTaiGUgWI",
+          "date": "2026-06-22"
+        },
+        {
+          "label": "Minutes",
+          "filename": "Minutes_STBM_20260622.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDBf2B_jajlQ7MgP_02WcJeAdvcKbZlyXhjjOOrI5uc0n0",
           "date": "2026-06-22"
         },
         {
