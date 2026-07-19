@@ -3,8 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Town Board Meetings — Town of Winchester, WI</title>
+  <title>Winchester Public Records Portal</title>
   <link rel="stylesheet" href="shared.css">
+  <style>
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .portal-tile {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+    }
+    a.portal-tile { transition: border-color 0.15s, transform 0.15s; }
+    a.portal-tile:hover { border-color: var(--tm); transform: translateY(-2px); }
+    .portal-tile-head {
+      padding: 16px;
+      height: 78px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .portal-tile-badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .portal-tile-title {
+      font-family: 'Electrolize', monospace;
+      font-size: 15px;
+    }
+    .portal-tile-body {
+      padding: 12px 16px;
+      height: 52px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+    }
+    .portal-tile-desc { font-size: 12px; color: var(--text-muted); }
+
+    .tile-town-board .portal-tile-head { background: var(--td); }
+    .tile-town-board .portal-tile-badge { color: var(--gold); }
+    .tile-town-board .portal-tile-title { color: #fff; }
+
+    .tile-boards-commissions .portal-tile-head { background: var(--tl); }
+    .tile-boards-commissions .portal-tile-badge { color: var(--tm); }
+    .tile-boards-commissions .portal-tile-title { color: var(--td); }
+
+    .tile-governance .portal-tile-head { background: var(--tm); }
+    .tile-governance .portal-tile-badge { color: var(--tl); }
+    .tile-governance .portal-tile-title { color: #fff; }
+
+    .tile-elections .portal-tile-head { background: var(--gold); }
+    .tile-elections .portal-tile-badge { color: #4A3F28; }
+    .tile-elections .portal-tile-title { color: var(--td); }
+
+    .tile-records-archive { opacity: 0.6; }
+    .tile-records-archive .portal-tile-head { background: #888780; }
+    .tile-records-archive .portal-tile-badge { color: #f1efe8; }
+    .tile-records-archive .portal-tile-title { color: #fff; }
+
+    .tile-exit {
+      border: 1px solid var(--gold);
+    }
+    .tile-exit .portal-tile-head {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tile-exit .portal-tile-badge { color: var(--tm); margin-bottom: 4px; }
+    .tile-exit .portal-tile-title { color: var(--td); display: flex; align-items: center; gap: 6px; font-size: 14px; }
+    .tile-exit img { height: 34px; width: auto; flex-shrink: 0; }
+
+    @media (max-width: 700px) {
+      .portal-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
@@ -18,34 +101,80 @@
 
 <div class="hero">
   <div class="hero-label">Public records</div>
-  <h1>Town Board Meetings</h1>
-  <p>Agendas, minutes, and all supporting documents for regular and special town board meetings. No sign-in required.</p>
-</div>
-
-<div class="next-bar" id="next-bar" style="display:none;">
-  <div class="next-dot"></div>
-  <div class="next-text" id="next-text"></div>
+  <h1>Winchester Public Records Portal</h1>
+  <p>Meetings, ordinances, elections, and public documents for the Town of Winchester. No sign-in required.</p>
 </div>
 
 <main>
-  <div id="stat-tiles-container"></div>
-
   <div class="page-body">
-    <div class="section-label">Browse by folder</div>
-    <div class="folder-grid" id="folder-grid">
-      <div class="no-docs">Loading&hellip;</div>
-    </div>
+    <div class="portal-grid">
 
-    <div class="quick-section">
-      <div class="section-label">Quick view &mdash; agendas &amp; minutes</div>
-      <div class="filter-bar">
-        <button class="filter-btn active" onclick="filterQuick('all', this)">All meetings</button>
-        <button class="filter-btn" onclick="filterQuick('regular', this)">Regular</button>
-        <button class="filter-btn" onclick="filterQuick('special', this)">Special</button>
+      <a class="portal-tile tile-town-board" href="town-board.html">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Flagship</div>
+          <div class="portal-tile-title">Town Board</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Agendas, minutes &amp; meeting records</div>
+        </div>
+      </a>
+
+      <div class="portal-tile tile-boards-commissions">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-title">Boards &amp; Commissions</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Planning, intermunicipal &amp; shared services</div>
+        </div>
       </div>
-      <div id="quick-list">
-        <div class="no-docs">Loading&hellip;</div>
+
+      <a class="portal-tile tile-governance" href="governance.html">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Live</div>
+          <div class="portal-tile-title">Governance</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Ordinances, resolutions, policies &amp; fees</div>
+        </div>
+      </a>
+
+      <div class="portal-tile tile-elections">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-title">Elections</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Notices, poll worker info &amp; results</div>
+        </div>
       </div>
+
+      <div class="portal-tile tile-records-archive">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-title">Records Archive</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Ordinance &amp; resolution history</div>
+        </div>
+      </div>
+
+      <a class="portal-tile tile-exit" href="https://winchesterwi.com">
+        <div class="portal-tile-head">
+          <div>
+            <div class="portal-tile-badge">Exit portal</div>
+            <div class="portal-tile-title">
+              winchesterwi.com
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            </div>
+          </div>
+          <img src="winchester-logo.png" alt="Town of Winchester seal">
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Back to the main town website</div>
+        </div>
+      </a>
+
     </div>
   </div>
 </main>
@@ -55,125 +184,5 @@
   <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
 </footer>
 
-<script src="shared.js"></script>
-<script>
-let allMeetings = [];
-
-function filterQuick(type, el) {
-  document.querySelectorAll('.filter-bar .filter-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  renderQuickList(type);
-}
-
-function renderQuickList(filter) {
-  const list = document.getElementById('quick-list');
-  const meetings = filter === 'all' ? allMeetings : allMeetings.filter(m => m.type === filter);
-  const agendaMinutes = meetings.map(m => ({
-    ...m,
-    documents: (m.documents || []).filter(d => getDocTag(d.filename) !== 'other')
-  })).filter(m => m.documents.length > 0);
-
-  if (!agendaMinutes.length) {
-    list.innerHTML = '<div class="no-docs">No documents found.</div>';
-    return;
-  }
-
-  list.innerHTML = agendaMinutes.map(m => {
-    const isUpcoming = m.status === 'upcoming';
-    const isSpecial = m.type === 'special';
-    let badgeClass = 'badge-complete', badgeLabel = 'Complete';
-    if (isUpcoming) { badgeClass = 'badge-upcoming'; badgeLabel = 'Upcoming'; }
-    else if (isSpecial) { badgeClass = 'badge-special'; badgeLabel = 'Special Meeting'; }
-
-    const rows = m.documents.map(doc => {
-      const tag = getDocTag(doc.filename);
-      const draft = isDraft(doc.filename);
-      const dateStr = doc.updated ? `Updated ${formatDateShort(doc.updated)}` : (doc.date ? formatDateShort(doc.date) : '');
-      const tagHtml = `<span class="file-tag tag-${tag}">${tag}</span>`;
-      const draftHtml = draft ? `<span class="file-tag tag-draft">Draft</span>` : '';
-      const [iconClass, iconLabel] = getIconClass(doc.filename);
-      return `
-        <div class="quick-row">
-          <div class="quick-left">
-            <div class="file-icon ${iconClass}">${iconLabel}</div>
-            <div>
-              <div class="quick-name">${doc.label || doc.filename} ${tagHtml}${draftHtml}</div>
-              ${dateStr ? `<div class="quick-meta">${dateStr}</div>` : ''}
-            </div>
-          </div>
-          <a class="quick-view" href="${doc.url}">View &rarr;</a>
-        </div>`;
-    }).join('');
-
-    return `
-      <div class="quick-card" data-type="${m.type}">
-        <div class="quick-head">
-          <div class="quick-head-title">${m.title}</div>
-          <span class="meeting-badge ${badgeClass}">${badgeLabel}</span>
-        </div>
-        ${rows}
-      </div>`;
-  }).join('');
-}
-
-async function init() {
-  try {
-    const data = await loadData();
-    allMeetings = data.meetings || [];
-
-    const upcoming = allMeetings.find(m => m.status === 'upcoming');
-    if (upcoming) {
-      const nextBar = document.getElementById('next-bar');
-      const nextText = document.getElementById('next-text');
-      const parts = [upcoming.time, upcoming.location].filter(Boolean).join(' &middot; ');
-      nextText.innerHTML = `Next meeting &mdash; <strong>${formatDate(upcoming.date)}</strong>${parts ? ' &middot; ' + parts : ''}`;
-      nextBar.style.display = 'flex';
-    }
-
-    const totalDocs = allMeetings.reduce((s, m) => s + (m.documents || []).reduce((ds, d) => ds + (d.documentCount || 1), 0), 0);
-    const nextDate = upcoming ? formatDate(upcoming.date) : 'TBD';
-    const nextTime = upcoming ? upcoming.time : '';
-    const nextLocation = upcoming ? upcoming.location : '';
-
-    document.getElementById('stat-tiles-container').innerHTML = `
-      <div class="stat-tiles">
-        <div class="stat-tile stat-tile-accent">
-          <div class="stat-label">Next meeting</div>
-          <div class="stat-value">${nextDate}</div>
-          ${nextTime ? `<div class="stat-sub">${nextTime}</div>` : ''}
-          ${nextLocation ? `<div class="stat-sub">${nextLocation}</div>` : ''}
-        </div>
-        <div class="stat-tile">
-          <div class="stat-label">Total meetings</div>
-          <div class="stat-value">${allMeetings.length}</div>
-          <div class="stat-sub">on this site. More coming soon!</div>
-        </div>
-        <div class="stat-tile">
-          <div class="stat-label">Total documents</div>
-          <div class="stat-value">${totalDocs}</div>
-          <div class="stat-sub">publicly available online. More coming soon!</div>
-        </div>
-      </div>`;
-
-    const nextMtgDocs = upcoming ? (upcoming.documents || []).length : 0;
-    const regMeetings = allMeetings.filter(m => m.type === 'regular' && m.status === 'complete');
-    const spMeetings = allMeetings.filter(m => m.type === 'special');
-    const regDocs = regMeetings.reduce((s, m) => s + (m.documents || []).length, 0);
-    const spDocs = spMeetings.reduce((s, m) => s + (m.documents || []).length, 0);
-
-    document.getElementById('folder-grid').innerHTML = `
-      ${renderFolderCard('Next Meeting', upcoming ? formatDate(upcoming.date) : 'Upcoming meeting', `${nextMtgDocs} document${nextMtgDocs !== 1 ? 's' : ''}`, 'next-meeting.html')}
-      ${renderFolderCard('Previous Regular Meetings', 'Organized by month', `${regMeetings.length} folder${regMeetings.length !== 1 ? 's' : ''} &middot; ${regDocs} documents`, 'previous-regular.html')}
-      ${renderFolderCard('Previous Special Meetings', 'By meeting date', `${spMeetings.length} folder${spMeetings.length !== 1 ? 's' : ''} &middot; ${spDocs} documents`, 'previous-special.html')}`;
-
-    renderQuickList('all');
-  } catch (e) {
-    document.getElementById('quick-list').innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';
-    document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load folders.</div>';
-  }
-}
-
-init();
-</script>
 </body>
 </html>
