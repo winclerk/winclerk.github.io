@@ -97,18 +97,18 @@
       background: var(--white);
       border-bottom: 1px solid var(--border);
       flex-direction: row;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
     }
     .tile-exit .portal-tile-badge { color: var(--tm); margin-bottom: 4px; }
     .tile-exit .portal-tile-title { color: var(--td); display: flex; align-items: center; gap: 6px; font-size: 14px; }
-    .tile-exit img { height: 34px; width: auto; flex-shrink: 0; }
+    .tile-exit img { height: 34px; width: auto; flex-shrink: 0; align-self: flex-start; }
 
     .tile-elections {
       flex-direction: row;
     }
     .tile-elections .portal-tile-main {
-      flex: 1;
+      flex: 2 1 0;
       display: flex;
       flex-direction: column;
       min-width: 0;
@@ -119,14 +119,14 @@
       flex-shrink: 0;
     }
     .tile-elections .portal-tile-next {
-      width: 96px;
-      flex-shrink: 0;
+      flex: 1 1 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 12px;
+      padding: 8px;
+      box-sizing: border-box;
       background: #f1efe8;
     }
     .tile-elections .portal-tile-next-label {
@@ -145,6 +145,24 @@
     @media (max-width: 700px) {
       .portal-grid { grid-template-columns: 1fr; }
     }
+
+    .file-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .file-folder-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 5px 14px;
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .file-folder-link:hover { border-color: var(--tm); color: var(--tm); }
   </style>
 </head>
 <body>
@@ -168,7 +186,7 @@
 
       <a class="portal-tile tile-town-board" href="town-board.html">
         <div class="portal-tile-head">
-          <div class="portal-tile-badge">Flagship</div>
+          <div class="portal-tile-badge">Live</div>
           <div class="portal-tile-title">Town Board</div>
         </div>
         <div class="portal-tile-body">
@@ -260,6 +278,9 @@
 function renderRecentRow(doc) {
   const [iconClass, iconLabel] = getIconClass(doc.filename);
   const dateStr = doc.date ? formatDateShort(doc.date) : '';
+  const folderBtn = doc.folderUrl
+    ? `<a class="file-folder-link" href="${doc.folderUrl}">Open folder</a>`
+    : '';
   return `
     <div class="file-row">
       <div class="file-left">
@@ -269,7 +290,10 @@ function renderRecentRow(doc) {
           <div class="file-date">${doc.site} &middot; ${doc.folder}${dateStr ? ' &middot; ' + dateStr : ''}</div>
         </div>
       </div>
-      <a class="file-view" href="${doc.url}">View &rarr;</a>
+      <div class="file-actions">
+        ${folderBtn}
+        <a class="file-view" href="${doc.url}">View &rarr;</a>
+      </div>
     </div>`;
 }
 

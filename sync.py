@@ -120,6 +120,30 @@ def list_children(token, drive_id, folder_path):
     return items
 
 
+def get_item(token, drive_id, item_path):
+    encoded = requests.utils.quote(item_path)
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{encoded}"
+    return graph_get(token, url)
+
+
+def get_root_item(token, drive_id):
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root"
+    return graph_get(token, url)
+
+
+def make_folder_link(token, drive_id, folder_path=None):
+    """Create (or fetch) a public view link for a folder itself, not a file
+    inside it. folder_path=None means the library root. Returns None on
+    failure (e.g. anonymous sharing blocked for this site) rather than
+    raising, so callers can degrade gracefully."""
+    try:
+        item = get_item(token, drive_id, folder_path) if folder_path else get_root_item(token, drive_id)
+        return make_link(token, drive_id, item["id"])
+    except Exception as e:
+        print(f"    Warning: could not create folder link for '{folder_path or '(root)'}': {e}")
+        return None
+
+
 def make_link(token, drive_id, item_id):
     url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/createLink"
     r = requests.post(url,
@@ -314,6 +338,8 @@ def scan_folder(token, drive_id, folder_path):
         print(f"  Warning: could not read {folder_path}: {e}")
         return []
     docs = []
+    folder_url = None
+    folder_url_fetched = False
     for item in children:
         name = item["name"]
         if "folder" in item:
@@ -323,10 +349,15 @@ def scan_folder(token, drive_id, folder_path):
         except Exception as e:
             print(f"  Warning: skipping {name}: {e}")
             continue
+        if not folder_url_fetched:
+            folder_url = make_folder_link(token, drive_id, folder_path)
+            folder_url_fetched = True
         date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
         doc = {"label": infer_label(name), "filename": name, "url": link, "date": date}
         if "DRAFT" in name.upper():
             doc["draft"] = True
+        if folder_url:
+            doc["folderUrl"] = folder_url
         docs.append(doc)
 
     def key(d):
@@ -341,7 +372,9 @@ def scan_folder(token, drive_id, folder_path):
 def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
     """Recursively scan a document library (not meeting-folder-shaped).
     Skips any folder named SKIP_FOLDER_NAME at any depth. Recurses into
-    other subfolders up to MAX_SCAN_DEPTH levels below the library root."""
+    other subfolders up to MAX_SCAN_DEPTH levels below the library root.
+    Each doc gets a folderUrl pointing at its own parent folder (fetched
+    once per folder, not once per file)."""
     try:
         items = list_children(token, drive_id, folder_path) if folder_path else list_root(token, drive_id)
     except Exception as e:
@@ -349,6 +382,9 @@ def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
         return []
 
     docs = []
+    folder_url = None
+    folder_url_fetched = False
+
     for item in items:
         name = item["name"]
 
@@ -366,11 +402,17 @@ def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
             print(f"    Warning: skipping {name}: {e}")
             continue
 
+        if not folder_url_fetched:
+            folder_url = make_folder_link(token, drive_id, folder_path)
+            folder_url_fetched = True
+
         base = re.sub(r"\.(pdf|docx?|xlsx?|pptx?)$", "", name, flags=re.IGNORECASE)
         date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
         doc = {"label": clean_name(base), "filename": name, "url": link, "date": date}
         if folder_label:
             doc["folder"] = folder_label
+        if folder_url:
+            doc["folderUrl"] = folder_url
         docs.append(doc)
 
     return docs
