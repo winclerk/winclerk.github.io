@@ -49,26 +49,46 @@
     }
     .portal-tile-desc { font-size: 12px; color: var(--text-muted); }
 
+    .tile-town-board {
+      border: 1px solid var(--gold);
+    }
     .tile-town-board .portal-tile-head { background: var(--td); }
     .tile-town-board .portal-tile-badge { color: var(--gold); }
     .tile-town-board .portal-tile-title { color: #fff; }
 
-    .tile-boards-commissions .portal-tile-head { background: var(--tl); }
-    .tile-boards-commissions .portal-tile-badge { color: var(--tm); }
-    .tile-boards-commissions .portal-tile-title { color: var(--td); }
-
+    .tile-governance {
+      border: 1px solid var(--gold);
+    }
     .tile-governance .portal-tile-head { background: var(--tm); }
     .tile-governance .portal-tile-badge { color: var(--tl); }
     .tile-governance .portal-tile-title { color: #fff; }
 
-    .tile-elections .portal-tile-head { background: var(--gold); }
-    .tile-elections .portal-tile-badge { color: #4A3F28; }
-    .tile-elections .portal-tile-title { color: var(--td); }
-
-    .tile-records-archive { opacity: 0.6; }
-    .tile-records-archive .portal-tile-head { background: #888780; }
-    .tile-records-archive .portal-tile-badge { color: #f1efe8; }
-    .tile-records-archive .portal-tile-title { color: #fff; }
+    .tile-boards-commissions,
+    .tile-elections,
+    .tile-records-archive {
+      /* Grayscale while pages are unbuilt. Reserved colors for when live:
+         Boards & Commissions -> light teal: head background var(--tl),
+           badge color var(--tm), title color var(--td)
+         Elections -> gold: head background var(--gold),
+           badge color #4A3F28, title color var(--td)
+         Records Archive -> not yet decided */
+      opacity: 0.6;
+    }
+    .tile-boards-commissions .portal-tile-head,
+    .tile-elections .portal-tile-head,
+    .tile-records-archive .portal-tile-head {
+      background: #888780;
+    }
+    .tile-boards-commissions .portal-tile-badge,
+    .tile-elections .portal-tile-badge,
+    .tile-records-archive .portal-tile-badge {
+      color: #f1efe8;
+    }
+    .tile-boards-commissions .portal-tile-title,
+    .tile-elections .portal-tile-title,
+    .tile-records-archive .portal-tile-title {
+      color: #fff;
+    }
 
     .tile-exit {
       border: 1px solid var(--gold);
@@ -77,7 +97,7 @@
       background: var(--white);
       border-bottom: 1px solid var(--border);
       flex-direction: row;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
     }
     .tile-exit .portal-tile-badge { color: var(--tm); margin-bottom: 4px; }
