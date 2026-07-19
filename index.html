@@ -227,7 +227,7 @@
         <div class="portal-tile-divider"></div>
         <div class="portal-tile-next">
           <div class="portal-tile-next-label">Next election</div>
-          <div class="portal-tile-next-date">TBD</div>
+          <div class="portal-tile-next-date" id="next-election-date">Loading&hellip;</div>
         </div>
       </div>
 
@@ -274,6 +274,60 @@
 </footer>
 
 <script src="shared.js"></script>
+<script>
+// Computes Wisconsin's regularly-scheduled statutory election dates.
+// Spring Election: first Tuesday in April, every year.
+// Partisan Primary: second Tuesday in August, even years.
+// General Election: Tuesday after the first Monday in November, even years.
+// This does NOT cover special elections, recalls, or referenda-only dates —
+// those still need to be entered manually if they come up.
+function nthWeekdayOfMonth(year, month, weekday, n) {
+  const d = new Date(year, month, 1);
+  let count = 0;
+  while (true) {
+    if (d.getDay() === weekday) {
+      count++;
+      if (count === n) return new Date(d);
+    }
+    d.setDate(d.getDate() + 1);
+  }
+}
+
+function getWisconsinElections(year) {
+  const elections = [
+    { name: 'Spring Election', date: nthWeekdayOfMonth(year, 3, 2, 1) }
+  ];
+  if (year % 2 === 0) {
+    elections.push({ name: 'Partisan Primary', date: nthWeekdayOfMonth(year, 7, 2, 2) });
+    const firstMonday = nthWeekdayOfMonth(year, 10, 1, 1);
+    const general = new Date(firstMonday);
+    general.setDate(general.getDate() + 1);
+    elections.push({ name: 'General Election', date: general });
+  }
+  return elections;
+}
+
+function getNextElection() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const candidates = [
+    ...getWisconsinElections(today.getFullYear()),
+    ...getWisconsinElections(today.getFullYear() + 1)
+  ];
+  const upcoming = candidates.filter(e => e.date >= today).sort((a, b) => a.date - b.date);
+  return upcoming[0] || null;
+}
+
+function renderNextElection() {
+  const el = document.getElementById('next-election-date');
+  if (!el) return;
+  const next = getNextElection();
+  el.textContent = next ? formatDateShort(next.date.toISOString().slice(0, 10)) : 'TBD';
+  el.title = next ? next.name : '';
+}
+
+renderNextElection();
+</script>
 <script>
 function renderRecentRow(doc) {
   const [iconClass, iconLabel] = getIconClass(doc.filename);
