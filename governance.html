@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Governance — Town of Winchester, WI</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .lib-section { scroll-margin-top: 24px; margin-bottom: 36px; }
+    .lib-section:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="https://winchesterwi.com">
+    <img src="winchester-logo.png" class="seal-logo" alt="Town of Winchester">
+    <span class="brand-name">TOWN OF WINCHESTER, WI</span>
+  </a>
+  <a class="back-link" href="https://winchesterwi.com">&#8592; Back to main site</a>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Public records</div>
+  <h1>Governance</h1>
+  <p>Ordinances, resolutions, notices, policies, and fee schedules for the Town of Winchester. No sign-in required.</p>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <span style="color:rgba(255,255,255,0.8);">Governance</span>
+  </nav>
+</div>
+
+<main>
+  <div id="stat-tiles-container"></div>
+
+  <div class="page-body">
+    <div class="section-label">Browse by category</div>
+    <div class="folder-grid" id="folder-grid">
+      <div class="no-docs">Loading&hellip;</div>
+    </div>
+
+    <div id="library-sections"></div>
+  </div>
+</main>
+
+<footer>
+  <span>Town of Winchester &middot; Winchester, WI 54557 &middot; (715) 686-2123</span>
+  <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+function slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function renderLibrarySection(lib) {
+  const id = 'lib-' + slugify(lib.name);
+  const docs = lib.documents || [];
+  const body = docs.length
+    ? docs.map(doc => renderFileRow(doc)).join('')
+    : '<div class="no-docs">No documents posted yet.</div>';
+
+  return `
+    <div class="lib-section" id="${id}">
+      <div class="section-label">${lib.name}</div>
+      <div class="file-list">${body}</div>
+    </div>`;
+}
+
+async function init() {
+  try {
+    const data = await loadData();
+    const libraries = (data.sites && data.sites.governance && data.sites.governance.libraries) || [];
+    const totalDocs = libraries.reduce((sum, l) => sum + (l.documents || []).length, 0);
+
+    document.getElementById('stat-tiles-container').innerHTML = `
+      <div class="stat-tiles">
+        <div class="stat-tile stat-tile-accent">
+          <div class="stat-label">Categories</div>
+          <div class="stat-value">${libraries.length}</div>
+          <div class="stat-sub">Ordinances, resolutions &amp; more</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Total documents</div>
+          <div class="stat-value">${totalDocs}</div>
+          <div class="stat-sub">publicly available online</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Public access</div>
+          <div class="stat-value">Open</div>
+          <div class="stat-sub">No sign-in required</div>
+        </div>
+      </div>`;
+
+    if (!libraries.length) {
+      document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load categories.</div>';
+      return;
+    }
+
+    document.getElementById('folder-grid').innerHTML = libraries.map(lib => {
+      const count = (lib.documents || []).length;
+      return renderFolderCard(
+        lib.name,
+        'Governance library',
+        `${count} document${count !== 1 ? 's' : ''}`,
+        '#lib-' + slugify(lib.name)
+      );
+    }).join('');
+
+    document.getElementById('library-sections').innerHTML =
+      libraries.map(lib => renderLibrarySection(lib)).join('');
+  } catch (e) {
+    document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
