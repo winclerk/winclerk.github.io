@@ -103,6 +103,9 @@ function renderGovernanceStatTiles(libraries) {
       <path d="M7 17L17 7M9 7h8v8"/>
     </svg>`;
 
+  const feeMostRecent = feeSchedule ? getMostRecentDoc([feeSchedule]) : null;
+  const feeSub = feeMostRecent ? `Last updated ${formatDateShort(feeMostRecent.date)}` : 'No date on file';
+
   return `
     <div class="stat-tiles">
       <div class="stat-tile stat-tile-accent">
@@ -119,7 +122,7 @@ function renderGovernanceStatTiles(libraries) {
         ${linkIcon}
         <div class="stat-label">Fee Schedule</div>
         <div class="stat-value">${feeCount ? 'View current fees' : 'Not posted yet'}</div>
-        <div class="stat-sub">${feeCount} document${feeCount !== 1 ? 's' : ''}</div>
+        <div class="stat-sub">${feeCount ? feeSub : 'No documents yet'}</div>
       </a>
     </div>`;
 }
