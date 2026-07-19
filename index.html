@@ -163,6 +163,11 @@
       text-decoration: none;
     }
     .file-folder-link:hover { border-color: var(--tm); color: var(--tm); }
+    .file-posted {
+      font-size: 11px;
+      color: var(--tm);
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -341,7 +346,8 @@ function renderRecentRow(doc) {
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="file-info">
           <div class="file-name">${doc.label || doc.filename}</div>
-          <div class="file-date">${doc.site} &middot; ${doc.folder}${dateStr ? ' &middot; ' + dateStr : ''}</div>
+          <div class="file-date">${doc.site} &middot; ${doc.folder}</div>
+          ${dateStr ? `<div class="file-posted">Posted ${dateStr}</div>` : ''}
         </div>
       </div>
       <div class="file-actions">
