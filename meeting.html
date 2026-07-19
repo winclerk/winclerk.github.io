@@ -48,13 +48,13 @@ async function init() {
   try {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
-    if (!id) { window.location.href = 'index.html'; return; }
+    if (!id) { window.location.href = 'town-board.html'; return; }
 
     const data = await loadData();
     const meetings = data.meetings || [];
     const meeting = meetings.find(m => m.id === id);
 
-    if (!meeting) { window.location.href = 'index.html'; return; }
+    if (!meeting) { window.location.href = 'town-board.html'; return; }
 
     document.title = meeting.title + ' — Town Board Meetings';
     document.getElementById('page-title').textContent = meeting.title;
@@ -65,6 +65,8 @@ async function init() {
 
     document.getElementById('breadcrumb').innerHTML = `
       <a href="index.html">Home</a>
+      <span>/</span>
+      <a href="town-board.html">Town Board</a>
       <span>/</span>
       <a href="${backHref}">${backLabel}</a>
       <span>/</span>
