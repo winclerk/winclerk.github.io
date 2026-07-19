@@ -1,106 +1,14 @@
 {
   "meetings": [
     {
-      "id": "regular-2026-07-15",
-      "title": "Regular Town Board Meeting - July 2026",
+      "id": "regular-2026-07-19",
+      "title": "Upcoming Town Board Meeting",
       "type": "regular",
       "status": "upcoming",
-      "date": "2026-07-15",
+      "date": "2026-07-19",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
-      "documents": [
-        {
-          "label": "Regular Meeting Agenda",
-          "filename": "Agenda_RTBM_20260715.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD8PyESJmQcT6jHih7jYMdhAdHrJmR597iEY-Ey_ZC28vA",
-          "date": "2026-07-15",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Minutes",
-          "filename": "Minutes_RTBM_20260608.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBuv5xBLb4RRLzJAeZG259SAakoeQK2MdfZc1ydqhCYk30",
-          "date": "2026-06-08",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Minutes",
-          "filename": "Minutes_STBM_20260622.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAqnPQdDojsQb3G2lk47UOQAYIq-rniDEYzZCGNgmu8yLQ",
-          "date": "2026-06-22",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Minutes",
-          "filename": "Minutes_STBM_20260702.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAZE05rtfvPS4xzxaqF_9qSAQ42ekU18c4F8dUHcfYs5TM",
-          "date": "2026-07-02",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "2026-03 Fee Schedule Adoption Resolution",
-          "filename": "Resolution_2026-03_Fee-Schedule-Adoption_20260630.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCAXLJybrnLSYHp7R4-8tx5Afoly7ge7ReCWiNvqSKVogM",
-          "date": "2026-06-30",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "2026-04 Fire Numbers Policy",
-          "filename": "Policy_2026-04_Fire-Numbers_20260630.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB9e6CzQdAvSZNIBiIR5b5kAVg-RzPExzduFUu5axNE0sA",
-          "date": "2026-06-30",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "2026-05 Clerk's Office Copy Fee Schedule Policy",
-          "filename": "Policy_2026-05_Clerk's-Office-Copy-Fee-Schedule_20260630.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCUh4UVqHaQQJxg4bFidtEUAVBXhWLv6gR5O-1ucrr83E4",
-          "date": "2026-06-30",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "2026-05 Electronic Claims Approval Ordinance",
-          "filename": "Ordinance_2026-05_Electronic-Claims-Approval_20260709.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBrQPopeELPRaxDFDgdnM1yAUC2ZvqY8oxzWJba2EJeuVs",
-          "date": "2026-07-09",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "2026-06 Facility Use Refund Requests Policy",
-          "filename": "Policy_2026-06_Facility-Use-Refund-Requests_20260630.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBqSoxBUtzwSLYRVjzw_qEGAXXgV-hDa_0RKr8JnzziWqE",
-          "date": "2026-06-30",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Clerk's Report",
-          "filename": "Report_Clerk_20260715.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA5g-P4GatPSooKzBcL0F6rAbiBlgvIaQAtNIDojiPJkck",
-          "date": "2026-07-15",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Fee Schedule 20260630",
-          "filename": "Fee-Schedule_20260630.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD_7XrYG7JoSZjFXmpNqJq7AStSK6QJM7Bgfy2j26UHkCo",
-          "date": "2026-06-30",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "NEMSD Report",
-          "filename": "Report_NEMSD_202606.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAu4alwU2KMTK1K2jR3Z9vOAZpQTIFClmM-X7weXl431jc",
-          "date": "2026-07-19",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Treasurer's Report",
-          "filename": "Report_Treasurer_20260715.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBmYlNAkQgOQoz2o7fc71HTAd7YBlvVqX4W79KVMWLVXgg",
-          "date": "2026-07-15",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        }
-      ]
+      "documents": []
     },
     {
       "id": "regular-2026-06-08",
