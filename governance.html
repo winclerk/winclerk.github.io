@@ -1,3 +1,6 @@
+
+
+Governance · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +11,7 @@
   <style>
     .lib-section { scroll-margin-top: 24px; margin-bottom: 36px; }
     .lib-section:last-child { margin-bottom: 0; }
-
+ 
     /* Governance uses the same palette as Town Board, but leads with the
        mid teal instead of the dark teal, so it reads as its own section
        rather than a copy of the Town Board page. shared.css is untouched. */
@@ -17,7 +20,7 @@
   </style>
 </head>
 <body>
-
+ 
 <div class="topbar">
   <a class="brand" href="https://winchesterwi.com">
     <img src="winchester-logo.png" class="seal-logo" alt="Town of Winchester">
@@ -25,7 +28,7 @@
   </a>
   <a class="back-link" href="https://winchesterwi.com">&#8592; Back to main site</a>
 </div>
-
+ 
 <div class="hero">
   <div class="hero-label">Public records</div>
   <h1>Governance</h1>
@@ -36,75 +39,104 @@
     <span style="color:rgba(255,255,255,0.8);">Governance</span>
   </nav>
 </div>
-
+ 
 <main>
   <div id="stat-tiles-container"></div>
-
+ 
   <div class="page-body">
     <div class="section-label">Browse by category</div>
     <div class="folder-grid" id="folder-grid">
       <div class="no-docs">Loading&hellip;</div>
     </div>
-
+ 
     <div id="library-sections"></div>
   </div>
 </main>
-
+ 
 <footer>
   <span>Town of Winchester &middot; Winchester, WI 54557 &middot; (715) 686-2123</span>
   <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
 </footer>
-
+ 
 <script src="shared.js"></script>
 <script>
+function getMostRecentDoc(libraries) {
+  let best = null;
+  libraries.forEach(lib => {
+    (lib.documents || []).forEach(doc => {
+      if (doc.date && (!best || doc.date > best.date)) {
+        best = { date: doc.date, library: lib.name, label: doc.label };
+      }
+    });
+  });
+  return best;
+}
+ 
+function getMostActiveLibrary(libraries) {
+  let best = null;
+  libraries.forEach(lib => {
+    const count = (lib.documents || []).length;
+    if (!best || count > best.count) best = { name: lib.name, count };
+  });
+  return best;
+}
+ 
+function renderGovernanceStatTiles(libraries) {
+  const mostRecent = getMostRecentDoc(libraries);
+  const feeSchedule = libraries.find(l => l.name === 'Fee Schedule');
+  const feeCount = feeSchedule ? feeSchedule.documents.length : 0;
+  const mostActive = getMostActiveLibrary(libraries);
+ 
+  return `
+    <div class="stat-tiles">
+      <div class="stat-tile stat-tile-accent">
+        <div class="stat-label">Most recent addition</div>
+        <div class="stat-value">${mostRecent ? formatDateShort(mostRecent.date) : 'None yet'}</div>
+        <div class="stat-sub">${mostRecent ? mostRecent.library : 'Check back soon'}</div>
+      </div>
+      <a class="stat-tile" style="display:block; text-decoration:none;" href="#lib-fee-schedule">
+        <div class="stat-label">Fee Schedule</div>
+        <div class="stat-value">${feeCount ? 'View current fees' : 'Not posted yet'}</div>
+        <div class="stat-sub">${feeCount} document${feeCount !== 1 ? 's' : ''}</div>
+      </a>
+      <div class="stat-tile">
+        <div class="stat-label">Most active category</div>
+        <div class="stat-value">${mostActive && mostActive.count ? mostActive.name : 'None yet'}</div>
+        <div class="stat-sub">${mostActive && mostActive.count ? mostActive.count + ' document' + (mostActive.count !== 1 ? 's' : '') + ' on file' : 'No documents posted yet'}</div>
+      </div>
+    </div>`;
+}
+ 
 function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
-
+ 
 function renderLibrarySection(lib) {
   const id = 'lib-' + slugify(lib.name);
   const docs = lib.documents || [];
   const body = docs.length
     ? docs.map(doc => renderFileRow(doc)).join('')
     : '<div class="no-docs">No documents posted yet.</div>';
-
+ 
   return `
     <div class="lib-section" id="${id}">
       <div class="section-label">${lib.name}</div>
       <div class="file-list">${body}</div>
     </div>`;
 }
-
+ 
 async function init() {
   try {
     const data = await loadData();
     const libraries = (data.sites && data.sites.governance && data.sites.governance.libraries) || [];
-    const totalDocs = libraries.reduce((sum, l) => sum + (l.documents || []).length, 0);
-
-    document.getElementById('stat-tiles-container').innerHTML = `
-      <div class="stat-tiles">
-        <div class="stat-tile stat-tile-accent">
-          <div class="stat-label">Categories</div>
-          <div class="stat-value">${libraries.length}</div>
-          <div class="stat-sub">Ordinances, resolutions &amp; more</div>
-        </div>
-        <div class="stat-tile">
-          <div class="stat-label">Total documents</div>
-          <div class="stat-value">${totalDocs}</div>
-          <div class="stat-sub">publicly available online</div>
-        </div>
-        <div class="stat-tile">
-          <div class="stat-label">Public access</div>
-          <div class="stat-value">Open</div>
-          <div class="stat-sub">No sign-in required</div>
-        </div>
-      </div>`;
-
+ 
+    document.getElementById('stat-tiles-container').innerHTML = renderGovernanceStatTiles(libraries);
+ 
     if (!libraries.length) {
       document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load categories.</div>';
       return;
     }
-
+ 
     document.getElementById('folder-grid').innerHTML = libraries.map(lib => {
       const count = (lib.documents || []).length;
       return renderFolderCard(
@@ -114,15 +146,16 @@ async function init() {
         '#lib-' + slugify(lib.name)
       );
     }).join('');
-
+ 
     document.getElementById('library-sections').innerHTML =
       libraries.map(lib => renderLibrarySection(lib)).join('');
   } catch (e) {
     document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';
   }
 }
-
+ 
 init();
 </script>
 </body>
 </html>
+ 
