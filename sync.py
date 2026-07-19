@@ -24,6 +24,43 @@ PREV_SPECIAL_PATH = "All Town Board Files/Previous Special Meetings"
 
 SKIP_FOLDER_NAME = "Internal Only"
 
+# Non-meeting sites: flat document libraries, not meeting folders.
+# Each library is scanned recursively up to MAX_SCAN_DEPTH subfolder levels.
+MAX_SCAN_DEPTH = 1
+
+FLAT_SITES = [
+    {
+        "key": "boardsCommissions",
+        "path": "/sites/BoardsCommitteesCommissions",
+        "libraries": [
+            "Planning Commission",
+            "Intermunicipal Committees",
+            "NEMSD Shared Services",
+        ],
+    },
+    {
+        "key": "governance",
+        "path": "/sites/Governance",
+        "libraries": [
+            "Ordinances",
+            "Resolutions",
+            "Notices",
+            "Policies",
+            "Fee Schedule",
+        ],
+    },
+    {
+        "key": "elections",
+        "path": "/sites/Elections",
+        "libraries": [
+            "Election Notices",
+            "Poll Worker Materials",
+            "Canvass Results & Certifications",
+            "Polling Place & District Info",
+        ],
+    },
+]
+
 ICAL_URL = "https://winchesterwi.com/?post_type=tribe_events&ical=1&eventDisplay=list"
 MEETING_KEYWORDS = ["regular town board meeting", "special town board meeting"]
 
@@ -49,17 +86,27 @@ def graph_get(token, url):
     return r.json()
 
 
-def get_site_id(token):
-    url = f"https://graph.microsoft.com/v1.0/sites/{SITE_HOSTNAME}:{SITE_PATH}"
+def get_site_id(token, site_path=SITE_PATH):
+    url = f"https://graph.microsoft.com/v1.0/sites/{SITE_HOSTNAME}:{site_path}"
     return graph_get(token, url)["id"]
 
 
-def get_drive_id(token, site_id):
+def get_drive_id(token, site_id, library_name=LIBRARY_NAME):
     url = f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives"
     for d in graph_get(token, url)["value"]:
-        if d["name"] == LIBRARY_NAME:
+        if d["name"] == library_name:
             return d["id"]
-    raise ValueError(f"Drive '{LIBRARY_NAME}' not found")
+    raise ValueError(f"Drive '{library_name}' not found")
+
+
+def list_root(token, drive_id):
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root/children"
+    items = []
+    while url:
+        data = graph_get(token, url)
+        items.extend(data.get("value", []))
+        url = data.get("@odata.nextLink")
+    return items
 
 
 def list_children(token, drive_id, folder_path):
@@ -291,6 +338,69 @@ def scan_folder(token, drive_id, folder_path):
     return docs
 
 
+def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
+    """Recursively scan a document library (not meeting-folder-shaped).
+    Skips any folder named SKIP_FOLDER_NAME at any depth. Recurses into
+    other subfolders up to MAX_SCAN_DEPTH levels below the library root."""
+    try:
+        items = list_children(token, drive_id, folder_path) if folder_path else list_root(token, drive_id)
+    except Exception as e:
+        print(f"  Warning: could not read {folder_path or '(root)'}: {e}")
+        return []
+
+    docs = []
+    for item in items:
+        name = item["name"]
+
+        if "folder" in item:
+            if name.strip().lower() == SKIP_FOLDER_NAME.lower():
+                continue
+            if depth < MAX_SCAN_DEPTH:
+                sub_path = f"{folder_path}/{name}" if folder_path else name
+                docs.extend(scan_library(token, drive_id, sub_path, name, depth + 1))
+            continue
+
+        try:
+            link = make_link(token, drive_id, item["id"])
+        except Exception as e:
+            print(f"    Warning: skipping {name}: {e}")
+            continue
+
+        base = re.sub(r"\.(pdf|docx?|xlsx?|pptx?)$", "", name, flags=re.IGNORECASE)
+        date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
+        doc = {"label": clean_name(base), "filename": name, "url": link, "date": date}
+        if folder_label:
+            doc["folder"] = folder_label
+        docs.append(doc)
+
+    return docs
+
+
+def build_flat_site_data(token, site_config):
+    print(f"Locating site: {site_config['key']} ({site_config['path']})...")
+    try:
+        site_id = get_site_id(token, site_config["path"])
+    except Exception as e:
+        print(f"  Warning: could not find site {site_config['path']}: {e}")
+        return {"libraries": [{"name": lib, "documents": []} for lib in site_config["libraries"]]}
+
+    libraries_out = []
+    for lib_name in site_config["libraries"]:
+        print(f"  Scanning library: {lib_name}...")
+        try:
+            drive_id = get_drive_id(token, site_id, lib_name)
+        except Exception as e:
+            print(f"    Warning: {e}")
+            libraries_out.append({"name": lib_name, "documents": []})
+            continue
+        docs = scan_library(token, drive_id)
+        docs.sort(key=lambda d: d["label"].lower())
+        print(f"    Found {len(docs)} document(s).")
+        libraries_out.append({"name": lib_name, "documents": docs})
+
+    return {"libraries": libraries_out}
+
+
 def parse_folder_name(name, mtype):
     m = re.search(r"(\d{8})$", name)
     if not m:
@@ -422,6 +532,19 @@ def main():
     data = build_data(token, drive_id)
     total = sum(len(m["documents"]) for m in data["meetings"])
     print(f"Found {len(data['meetings'])} meetings, {total} documents total.")
+
+    print("Scanning additional sites...")
+    sites_data = {}
+    for site_config in FLAT_SITES:
+        sites_data[site_config["key"]] = build_flat_site_data(token, site_config)
+    data["sites"] = sites_data
+    sites_total = sum(
+        len(lib["documents"])
+        for site in sites_data.values()
+        for lib in site["libraries"]
+    )
+    print(f"Found {sites_total} document(s) across {len(FLAT_SITES)} additional site(s).")
+
     print("Writing to GitHub...")
     write_github(data)
     print("Done.")
