@@ -104,6 +104,44 @@
     .tile-exit .portal-tile-title { color: var(--td); display: flex; align-items: center; gap: 6px; font-size: 14px; }
     .tile-exit img { height: 34px; width: auto; flex-shrink: 0; }
 
+    .tile-elections {
+      flex-direction: row;
+    }
+    .tile-elections .portal-tile-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .tile-elections .portal-tile-divider {
+      width: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .tile-elections .portal-tile-next {
+      width: 96px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px;
+      background: #f1efe8;
+    }
+    .tile-elections .portal-tile-next-label {
+      font-size: 9px;
+      color: #888780;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .tile-elections .portal-tile-next-date {
+      font-family: 'Electrolize', monospace;
+      font-size: 13px;
+      color: #444441;
+    }
+
     @media (max-width: 700px) {
       .portal-grid { grid-template-columns: 1fr; }
     }
@@ -116,7 +154,6 @@
     <img src="winchester-logo.png" class="seal-logo" alt="Town of Winchester">
     <span class="brand-name">TOWN OF WINCHESTER, WI</span>
   </a>
-  <a class="back-link" href="https://winchesterwi.com">&#8592; Back to main site</a>
 </div>
 
 <div class="hero">
@@ -160,12 +197,19 @@
       </a>
 
       <div class="portal-tile tile-elections">
-        <div class="portal-tile-head">
-          <div class="portal-tile-badge">Coming soon</div>
-          <div class="portal-tile-title">Elections</div>
+        <div class="portal-tile-main">
+          <div class="portal-tile-head">
+            <div class="portal-tile-badge">Coming soon</div>
+            <div class="portal-tile-title">Elections</div>
+          </div>
+          <div class="portal-tile-body">
+            <div class="portal-tile-desc">Notices, poll worker info &amp; results</div>
+          </div>
         </div>
-        <div class="portal-tile-body">
-          <div class="portal-tile-desc">Notices, poll worker info &amp; results</div>
+        <div class="portal-tile-divider"></div>
+        <div class="portal-tile-next">
+          <div class="portal-tile-next-label">Next election</div>
+          <div class="portal-tile-next-date">TBD</div>
         </div>
       </div>
 
@@ -188,7 +232,7 @@
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
             </div>
           </div>
-          <img src="winchester-logo.png" alt="Town of Winchester seal">
+          <img src="winchester-logo-tight.png" alt="Town of Winchester seal">
         </div>
         <div class="portal-tile-body">
           <div class="portal-tile-desc">Back to the main town website</div>
