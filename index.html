@@ -240,6 +240,13 @@
       </a>
 
     </div>
+
+    <div class="quick-section">
+      <div class="section-label">Most recent documents</div>
+      <div id="recent-docs">
+        <div class="no-docs">Loading&hellip;</div>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -248,5 +255,72 @@
   <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
 </footer>
 
+<script src="shared.js"></script>
+<script>
+function renderRecentRow(doc) {
+  const [iconClass, iconLabel] = getIconClass(doc.filename);
+  const dateStr = doc.date ? formatDateShort(doc.date) : '';
+  return `
+    <div class="file-row">
+      <div class="file-left">
+        <div class="file-icon ${iconClass}">${iconLabel}</div>
+        <div class="file-info">
+          <div class="file-name">${doc.label || doc.filename}</div>
+          <div class="file-date">${doc.site} &middot; ${doc.folder}${dateStr ? ' &middot; ' + dateStr : ''}</div>
+        </div>
+      </div>
+      <a class="file-view" href="${doc.url}">View &rarr;</a>
+    </div>`;
+}
+
+function humanizeSiteKey(key) {
+  const known = {
+    boardsCommissions: 'Boards & Commissions',
+    governance: 'Governance',
+    elections: 'Elections',
+    recordsArchive: 'Records Archive'
+  };
+  if (known[key]) return known[key];
+  return key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
+}
+
+async function loadRecentDocs() {
+  try {
+    const data = await loadData();
+    const all = [];
+
+    (data.meetings || []).forEach(m => {
+      (m.documents || []).forEach(d => {
+        if (d.date) all.push(Object.assign({}, d, { site: 'Town Board', folder: m.title }));
+      });
+    });
+
+    Object.keys(data.sites || {}).forEach(key => {
+      const site = data.sites[key];
+      const label = humanizeSiteKey(key);
+      (site.libraries || []).forEach(lib => {
+        (lib.documents || []).forEach(d => {
+          if (d.date) all.push(Object.assign({}, d, { site: label, folder: lib.name }));
+        });
+      });
+    });
+
+    all.sort((a, b) => b.date.localeCompare(a.date));
+    const recent = all.slice(0, 8);
+
+    const container = document.getElementById('recent-docs');
+    if (!recent.length) {
+      container.innerHTML = '<div class="no-docs">No documents posted yet.</div>';
+      return;
+    }
+
+    container.innerHTML = '<div class="file-list">' + recent.map(renderRecentRow).join('') + '</div>';
+  } catch (e) {
+    document.getElementById('recent-docs').innerHTML = '<div class="error-msg">Unable to load recent documents. Please try again later.</div>';
+  }
+}
+
+loadRecentDocs();
+</script>
 </body>
 </html>
