@@ -544,5 +544,67 @@
         }
       ]
     }
-  ]
+  ],
+  "sites": {
+    "boardsCommissions": {
+      "libraries": [
+        {
+          "name": "Planning Commission",
+          "documents": []
+        },
+        {
+          "name": "Intermunicipal Committees",
+          "documents": []
+        },
+        {
+          "name": "NEMSD Shared Services",
+          "documents": []
+        }
+      ]
+    },
+    "governance": {
+      "libraries": [
+        {
+          "name": "Ordinances",
+          "documents": []
+        },
+        {
+          "name": "Resolutions",
+          "documents": []
+        },
+        {
+          "name": "Notices",
+          "documents": []
+        },
+        {
+          "name": "Policies",
+          "documents": []
+        },
+        {
+          "name": "Fee Schedule",
+          "documents": []
+        }
+      ]
+    },
+    "elections": {
+      "libraries": [
+        {
+          "name": "Election Notices",
+          "documents": []
+        },
+        {
+          "name": "Poll Worker Materials",
+          "documents": []
+        },
+        {
+          "name": "Canvass Results & Certifications",
+          "documents": []
+        },
+        {
+          "name": "Polling Place & District Info",
+          "documents": []
+        }
+      ]
+    }
+  }
 }
