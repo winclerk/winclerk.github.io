@@ -54,9 +54,9 @@ FLAT_SITES = [
         "path": "/sites/Elections",
         "libraries": [
             "Election Notices",
-            "Poll Worker Materials",
             "Canvass Results & Certifications",
-            "Polling Place & District Info",
+            "Voters",
+            "Election Inspectors",
         ],
     },
 ]
