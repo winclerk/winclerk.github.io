@@ -332,26 +332,52 @@ def parse_date(filename):
 
 
 def scan_folder(token, drive_id, folder_path):
+    """Scan a meeting folder for documents and subfolders.
+    Returns (docs, subfolders) where subfolders is a list of
+    {"name": ..., "url": ..., "documents": [...]} dicts.
+    Skips any subfolder named 'Internal Only'."""
     try:
         children = list_children(token, drive_id, folder_path)
     except Exception as e:
         print(f"  Warning: could not read {folder_path}: {e}")
-        return []
+        return [], []
+
     docs = []
+    subfolders = []
     folder_url = None
     folder_url_fetched = False
+
     for item in children:
         name = item["name"]
+
+        # Handle subfolders: skip Internal Only, scan everything else
         if "folder" in item:
+            if name.strip().lower() == SKIP_FOLDER_NAME.lower():
+                continue
+            sub_path = f"{folder_path}/{name}"
+            print(f"    Scanning subfolder: {name}...")
+            sub_docs = scan_subfolder(token, drive_id, sub_path)
+            if sub_docs:
+                sub_folder_url = make_folder_link(token, drive_id, sub_path)
+                subfolder_entry = {
+                    "name": name,
+                    "documents": sub_docs,
+                }
+                if sub_folder_url:
+                    subfolder_entry["url"] = sub_folder_url
+                subfolders.append(subfolder_entry)
             continue
+
         try:
             link = make_link(token, drive_id, item["id"])
         except Exception as e:
             print(f"  Warning: skipping {name}: {e}")
             continue
+
         if not folder_url_fetched:
             folder_url = make_folder_link(token, drive_id, folder_path)
             folder_url_fetched = True
+
         date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
         doc = {"label": infer_label(name), "filename": name, "url": link, "date": date}
         if "DRAFT" in name.upper():
@@ -366,6 +392,37 @@ def scan_folder(token, drive_id, folder_path):
         if "minutes" in l: return (1, l)
         return (2, l)
     docs.sort(key=key)
+    return docs, subfolders
+
+
+def scan_subfolder(token, drive_id, folder_path):
+    """Scan a subfolder inside a meeting folder for files only.
+    Returns a list of document dicts. Skips any nested subfolders."""
+    try:
+        children = list_children(token, drive_id, folder_path)
+    except Exception as e:
+        print(f"    Warning: could not read subfolder {folder_path}: {e}")
+        return []
+
+    docs = []
+    for item in children:
+        name = item["name"]
+        if "folder" in item:
+            continue  # Don't recurse deeper inside meeting subfolders
+
+        try:
+            link = make_link(token, drive_id, item["id"])
+        except Exception as e:
+            print(f"    Warning: skipping {name}: {e}")
+            continue
+
+        date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
+        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date}
+        if "DRAFT" in name.upper():
+            doc["draft"] = True
+        docs.append(doc)
+
+    docs.sort(key=lambda d: d["label"].lower())
     return docs
 
 
@@ -467,7 +524,7 @@ def build_data(token, drive_id):
     ical_event = get_next_meeting_from_ical()
 
     print("Scanning Next Meeting...")
-    next_docs = scan_folder(token, drive_id, NEXT_MEETING_PATH)
+    next_docs, next_subfolders = scan_folder(token, drive_id, NEXT_MEETING_PATH)
 
     next_date = None
     next_type = "regular"
@@ -497,12 +554,15 @@ def build_data(token, drive_id):
     if not next_date:
         next_date = datetime.today().strftime("%Y-%m-%d")
 
-    meetings.append({
+    next_meeting = {
         "id": f"{next_type}-{next_date}", "title": next_title,
         "type": next_type, "status": "upcoming", "date": next_date,
         "time": next_time, "location": next_location,
         "documents": next_docs,
-    })
+    }
+    if next_subfolders:
+        next_meeting["subfolders"] = next_subfolders
+    meetings.append(next_meeting)
 
     print("Scanning Previous Regular Meetings...")
     try:
@@ -518,9 +578,12 @@ def build_data(token, drive_id):
         if not p:
             continue
         print(f"  Scanning {item['name']}...")
-        docs = scan_folder(token, drive_id, f"{PREV_REGULAR_PATH}/{item['name']}")
-        reg.append({"id": p["id"], "title": p["title"], "type": "regular",
-                    "status": "complete", "date": p["date"], "documents": docs})
+        docs, subfolders = scan_folder(token, drive_id, f"{PREV_REGULAR_PATH}/{item['name']}")
+        entry = {"id": p["id"], "title": p["title"], "type": "regular",
+                 "status": "complete", "date": p["date"], "documents": docs}
+        if subfolders:
+            entry["subfolders"] = subfolders
+        reg.append(entry)
     reg.sort(key=lambda x: x["date"], reverse=True)
     meetings.extend(reg)
 
@@ -538,9 +601,12 @@ def build_data(token, drive_id):
         if not p:
             continue
         print(f"  Scanning {item['name']}...")
-        docs = scan_folder(token, drive_id, f"{PREV_SPECIAL_PATH}/{item['name']}")
-        spec.append({"id": p["id"], "title": p["title"], "type": "special",
-                     "status": "complete", "date": p["date"], "documents": docs})
+        docs, subfolders = scan_folder(token, drive_id, f"{PREV_SPECIAL_PATH}/{item['name']}")
+        entry = {"id": p["id"], "title": p["title"], "type": "special",
+                 "status": "complete", "date": p["date"], "documents": docs}
+        if subfolders:
+            entry["subfolders"] = subfolders
+        spec.append(entry)
     spec.sort(key=lambda x: x["date"], reverse=True)
     meetings.extend(spec)
 
@@ -573,7 +639,11 @@ def main():
     print("Building data.json from SharePoint...")
     data = build_data(token, drive_id)
     total = sum(len(m["documents"]) for m in data["meetings"])
-    print(f"Found {len(data['meetings'])} meetings, {total} documents total.")
+    sub_total = sum(
+        sum(len(sf["documents"]) for sf in m.get("subfolders", []))
+        for m in data["meetings"]
+    )
+    print(f"Found {len(data['meetings'])} meetings, {total} documents + {sub_total} subfolder documents.")
 
     print("Scanning additional sites...")
     sites_data = {}
