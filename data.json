@@ -1019,15 +1019,15 @@
           "documents": []
         },
         {
-          "name": "Poll Worker Materials",
-          "documents": []
-        },
-        {
           "name": "Canvass Results & Certifications",
           "documents": []
         },
         {
-          "name": "Polling Place & District Info",
+          "name": "Voters",
+          "documents": []
+        },
+        {
+          "name": "Election Inspectors",
           "documents": []
         }
       ]
