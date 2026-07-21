@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elections — Town of Winchester, WI</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .lib-section { scroll-margin-top: 24px; margin-bottom: 36px; }
+    .lib-section:last-child { margin-bottom: 0; }
+
+    .hero { background: var(--gold); }
+    .hero h1, .hero p, .hero .hero-label { color: var(--td); }
+    .hero .breadcrumb a { color: var(--td); opacity: 0.7; }
+    .hero .breadcrumb a:hover { opacity: 1; }
+    .hero .breadcrumb span { color: var(--td); }
+
+    .folder-top { background: var(--gold); }
+    .folder-name { color: var(--td); }
+
+    .stat-tile-accent { background: var(--gold) !important; }
+    .stat-tile-accent .stat-label,
+    .stat-tile-accent .stat-value,
+    .stat-tile-accent .stat-sub { color: var(--td) !important; }
+
+    .election-pulse-hero {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--td);
+      margin-right: 8px;
+      vertical-align: middle;
+      animation: electionPulse 2s ease-in-out infinite;
+    }
+    @keyframes electionPulse {
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(25, 60, 60, 0.4); }
+      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(25, 60, 60, 0.2); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="https://winchesterwi.com">
+    <img src="winchester-logo.png" class="seal-logo" alt="Town of Winchester">
+    <span class="brand-name">TOWN OF WINCHESTER, WI</span>
+  </a>
+  <a class="back-link" href="index.html">&#8592; Back to portal home</a>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Public records</div>
+  <h1>Elections</h1>
+  <p>Voter information, election notices, and poll worker resources for the Town of Winchester.</p>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <span style="opacity:0.8;">Elections</span>
+  </nav>
+</div>
+
+<main>
+  <div id="stat-tiles-container"></div>
+
+  <div class="page-body">
+    <div class="section-label">Browse by category</div>
+    <div class="folder-grid" id="folder-grid">
+      <div class="no-docs">Loading&hellip;</div>
+    </div>
+
+    <div id="library-sections"></div>
+  </div>
+</main>
+
+<footer>
+  <span>Town of Winchester &middot; Winchester, WI 54557 &middot; (715) 686-2123</span>
+  <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+// Wisconsin statutory election date calculator
+function nthWeekdayOfMonth(year, month, weekday, n) {
+  const d = new Date(year, month, 1);
+  let count = 0;
+  while (true) {
+    if (d.getDay() === weekday) {
+      count++;
+      if (count === n) return new Date(d);
+    }
+    d.setDate(d.getDate() + 1);
+  }
+}
+
+function getWisconsinElections(year) {
+  const elections = [
+    { name: 'Spring Election', date: nthWeekdayOfMonth(year, 3, 2, 1) }
+  ];
+  if (year % 2 === 0) {
+    elections.push({ name: 'Partisan Primary', date: nthWeekdayOfMonth(year, 7, 2, 2) });
+    const firstMonday = nthWeekdayOfMonth(year, 10, 1, 1);
+    const general = new Date(firstMonday);
+    general.setDate(general.getDate() + 1);
+    elections.push({ name: 'General Election', date: general });
+  }
+  return elections;
+}
+
+function getNextElection() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const candidates = [
+    ...getWisconsinElections(today.getFullYear()),
+    ...getWisconsinElections(today.getFullYear() + 1)
+  ];
+  const upcoming = candidates.filter(e => e.date >= today).sort((a, b) => a.date - b.date);
+  return upcoming[0] || null;
+}
+
+function slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function renderLibrarySection(lib) {
+  const id = 'lib-' + slugify(lib.name);
+  const docs = lib.documents || [];
+  const body = docs.length
+    ? docs.map(doc => renderFileRow(doc)).join('')
+    : '<div class="no-docs">No documents posted yet.</div>';
+
+  return `
+    <div class="lib-section" id="${id}">
+      <div class="section-label">${lib.name}</div>
+      <div class="file-list">${body}</div>
+    </div>`;
+}
+
+async function init() {
+  try {
+    const data = await loadData();
+    const libraries = (data.sites && data.sites.elections && data.sites.elections.libraries) || [];
+
+    // Stat tiles: Next election, Total documents, Categories
+    const next = getNextElection();
+    const nextDateStr = next ? formatDate(next.date.toISOString().slice(0, 10)) : 'TBD';
+    const nextName = next ? next.name : '';
+    const totalDocs = libraries.reduce((s, lib) => s + (lib.documents || []).length, 0);
+
+    document.getElementById('stat-tiles-container').innerHTML = `
+      <div class="stat-tiles">
+        <div class="stat-tile stat-tile-accent">
+          <div class="stat-label"><span class="election-pulse-hero"></span>Next election</div>
+          <div class="stat-value">${nextDateStr}</div>
+          <div class="stat-sub">${nextName}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Total documents</div>
+          <div class="stat-value">${totalDocs}</div>
+          <div class="stat-sub">${totalDocs ? 'Publicly available' : 'Check back soon'}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Categories</div>
+          <div class="stat-value">${libraries.length}</div>
+          <div class="stat-sub">${libraries.map(l => l.name).join(', ') || 'None yet'}</div>
+        </div>
+      </div>`;
+
+    if (!libraries.length) {
+      document.getElementById('folder-grid').innerHTML = '<div class="no-docs">No election categories available yet.</div>';
+      return;
+    }
+
+    document.getElementById('folder-grid').innerHTML = libraries.map(lib => {
+      const count = (lib.documents || []).length;
+      return renderFolderCard(
+        lib.name,
+        'Election resources',
+        `${count} document${count !== 1 ? 's' : ''}`,
+        '#lib-' + slugify(lib.name)
+      );
+    }).join('');
+
+    document.getElementById('library-sections').innerHTML =
+      libraries.map(lib => renderLibrarySection(lib)).join('');
+  } catch (e) {
+    document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
