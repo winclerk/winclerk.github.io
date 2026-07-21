@@ -135,36 +135,48 @@ async function init() {
       nextBar.style.display = 'flex';
     }
 
-    const totalDocs = allMeetings.reduce((s, m) => s + (m.documents || []).reduce((ds, d) => ds + (d.documentCount || 1), 0), 0);
+    // Stat tiles: Next meeting, Most recent meeting, Years covered
     const nextDate = upcoming ? formatDate(upcoming.date) : 'TBD';
-    const nextTime = upcoming ? upcoming.time : '';
-    const nextLocation = upcoming ? upcoming.location : '';
+    const nextTime = upcoming ? (upcoming.time || '') : '';
+    const nextLocation = upcoming ? (upcoming.location || '') : '';
+    const nextSub = [nextTime, nextLocation].filter(Boolean).join(' &middot; ');
+
+    const completeMeetings = allMeetings.filter(m => m.status === 'complete');
+    completeMeetings.sort((a, b) => b.date.localeCompare(a.date));
+    const mostRecentDate = completeMeetings.length ? formatDate(completeMeetings[0].date) : 'None yet';
+    const mostRecentTitle = completeMeetings.length ? (completeMeetings[0].type === 'special' ? 'Special meeting' : 'Regular meeting') : '';
+
+    const allDates = allMeetings.map(m => m.date).filter(Boolean).sort();
+    const earliestYear = allDates.length ? allDates[0].substring(0, 4) : '';
+    const latestYear = allDates.length ? allDates[allDates.length - 1].substring(0, 4) : '';
+    const yearsStr = earliestYear === latestYear ? earliestYear : `${earliestYear}\u2013${latestYear}`;
+    const totalMeetings = allMeetings.length;
 
     document.getElementById('stat-tiles-container').innerHTML = `
       <div class="stat-tiles">
         <div class="stat-tile stat-tile-accent">
           <div class="stat-label">Next meeting</div>
           <div class="stat-value">${nextDate}</div>
-          ${nextTime ? `<div class="stat-sub">${nextTime}</div>` : ''}
-          ${nextLocation ? `<div class="stat-sub">${nextLocation}</div>` : ''}
+          ${nextSub ? `<div class="stat-sub">${nextSub}</div>` : ''}
         </div>
         <div class="stat-tile">
-          <div class="stat-label">Total meetings</div>
-          <div class="stat-value">${allMeetings.length}</div>
-          <div class="stat-sub">on this site. More coming soon!</div>
+          <div class="stat-label">Most recent meeting</div>
+          <div class="stat-value">${mostRecentDate}</div>
+          ${mostRecentTitle ? `<div class="stat-sub">${mostRecentTitle}</div>` : ''}
         </div>
         <div class="stat-tile">
-          <div class="stat-label">Total documents</div>
-          <div class="stat-value">${totalDocs}</div>
-          <div class="stat-sub">publicly available online. More coming soon!</div>
+          <div class="stat-label">Years covered</div>
+          <div class="stat-value">${yearsStr}</div>
+          <div class="stat-sub">${totalMeetings} meeting${totalMeetings !== 1 ? 's' : ''} on record</div>
         </div>
       </div>`;
 
-    const nextMtgDocs = upcoming ? (upcoming.documents || []).length : 0;
+    // Folder cards with subfolder-aware counts
+    const nextMtgDocs = upcoming ? meetingTotalDocs(upcoming) : 0;
     const regMeetings = allMeetings.filter(m => m.type === 'regular' && m.status === 'complete');
     const spMeetings = allMeetings.filter(m => m.type === 'special');
-    const regDocs = regMeetings.reduce((s, m) => s + (m.documents || []).length, 0);
-    const spDocs = spMeetings.reduce((s, m) => s + (m.documents || []).length, 0);
+    const regDocs = regMeetings.reduce((s, m) => s + meetingTotalDocs(m), 0);
+    const spDocs = spMeetings.reduce((s, m) => s + meetingTotalDocs(m), 0);
 
     document.getElementById('folder-grid').innerHTML = `
       ${renderFolderCard('Next Meeting', upcoming ? formatDate(upcoming.date) : 'Upcoming meeting', `${nextMtgDocs} document${nextMtgDocs !== 1 ? 's' : ''}`, 'next-meeting.html')}
