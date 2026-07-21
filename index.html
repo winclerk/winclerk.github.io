@@ -89,7 +89,7 @@
     }
     .tile-elections .portal-tile-head { background: var(--gold); }
     .tile-elections .portal-tile-badge { color: #fff; }
-    .tile-elections .portal-tile-title { color: var(--td); }
+    .tile-elections .portal-tile-title { color: #fff; }
 
     .tile-exit {
       border: 1px solid var(--gold);
@@ -141,6 +141,19 @@
       font-family: 'Electrolize', monospace;
       font-size: 13px;
       color: #444441;
+    }
+    .election-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-bottom: 6px;
+      animation: electionPulse 2s ease-in-out infinite;
+    }
+    @keyframes electionPulse {
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(165, 150, 100, 0.5); }
+      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 8px 4px rgba(165, 150, 100, 0.3); }
     }
 
     @media (max-width: 700px) {
@@ -247,6 +260,7 @@
         </div>
         <div class="portal-tile-divider"></div>
         <div class="portal-tile-next">
+          <div class="election-pulse"></div>
           <div class="portal-tile-next-label">Next election</div>
           <div class="portal-tile-next-date" id="next-election-date">Loading&hellip;</div>
         </div>
@@ -352,7 +366,7 @@ renderNextElection();
 <script>
 function renderRecentRow(doc) {
   const [iconClass, iconLabel] = getIconClass(doc.filename);
-  const dateStr = doc.date ? formatDateShort(doc.date) : '';
+  const dateStr = doc.posted ? formatDateShort(doc.posted) : (doc.date ? formatDateShort(doc.date) : '');
   const folderBtn = doc.folderUrl
     ? `<a class="file-folder-link" href="${doc.folderUrl}">Open folder</a>`
     : '';

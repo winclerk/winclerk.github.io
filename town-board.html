@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Town Board Meetings — Town of Winchester, WI</title>
   <link rel="stylesheet" href="shared.css">
+  <style>
+    a.quick-head-title:hover { text-decoration: underline !important; }
+  </style>
 </head>
 <body>
 
@@ -111,7 +114,7 @@ function renderQuickList(filter) {
     return `
       <div class="quick-card" data-type="${m.type}">
         <div class="quick-head">
-          <div class="quick-head-title">${m.title}</div>
+          <a class="quick-head-title" href="meeting.html?id=${encodeURIComponent(m.id)}" style="text-decoration:none;color:inherit;">${m.title}</a>
           <span class="meeting-badge ${badgeClass}">${badgeLabel}</span>
         </div>
         ${rows}

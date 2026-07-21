@@ -259,7 +259,14 @@ def infer_label(filename):
     if m:
         return "Agenda"
 
-    m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)?\d{8}(_DRAFT)?", name)
+    m = re.match(r"Minutes_(BOR_)?\d{8}(_DRAFT)?", name)
+    if m:
+        is_bor = bool(m.group(1))
+        is_draft = bool(m.group(2))
+        base = "Board of Review Minutes" if is_bor else "Minutes"
+        return f"{base} (Draft)" if is_draft else base
+
+    m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)\d{8}(_DRAFT)?", name)
     if m:
         return "Minutes (Draft)" if m.group(1) else "Minutes"
 
@@ -282,6 +289,11 @@ def infer_label(filename):
     m = re.match(r"Report_Pedalers_\d{6}", name)
     if m:
         return "Pedalers Report"
+
+    m = re.match(r"(?:Report_)?Disbursements_(\d{6})$", name)
+    if m:
+        dt = datetime.strptime(m.group(1), "%Y%m")
+        return f"{dt.strftime('%B')} Disbursements"
 
     m = re.match(r"Report_(.+?)_\d{6}$", name)
     if m:
@@ -379,7 +391,8 @@ def scan_folder(token, drive_id, folder_path):
             folder_url_fetched = True
 
         date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
-        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date}
+        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
+        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date, "posted": posted}
         if "DRAFT" in name.upper():
             doc["draft"] = True
         if folder_url:
@@ -417,7 +430,8 @@ def scan_subfolder(token, drive_id, folder_path):
             continue
 
         date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
-        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date}
+        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
+        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date, "posted": posted}
         if "DRAFT" in name.upper():
             doc["draft"] = True
         docs.append(doc)
@@ -465,7 +479,8 @@ def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
 
         base = re.sub(r"\.(pdf|docx?|xlsx?|pptx?)$", "", name, flags=re.IGNORECASE)
         date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
-        doc = {"label": clean_name(base), "filename": name, "url": link, "date": date}
+        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
+        doc = {"label": clean_name(base), "filename": name, "url": link, "date": date, "posted": posted}
         if folder_label:
             doc["folder"] = folder_label
         if folder_url:
