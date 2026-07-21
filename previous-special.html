@@ -44,11 +44,6 @@
 </footer>
 <script src="shared.js"></script>
 <script>
-function meetingDocCount(m) {
-  const docs = (m.documents || []).length;
-  const sfDocs = (m.subfolders || []).reduce((s, sf) => s + (sf.documents || []).length, 0);
-  return docs + sfDocs;
-}
 async function init() {
   try {
     const data = await loadData();
@@ -60,14 +55,14 @@ async function init() {
       document.getElementById('next-bar').style.display = 'flex';
     }
     const special = meetings.filter(m => m.type === 'special');
-    const totalDocs = special.reduce((s, m) => s + meetingDocCount(m), 0);
+    const totalDocs = special.reduce((s, m) => s + meetingTotalDocs(m), 0);
     document.getElementById('stat-tiles-container').innerHTML = renderStatTiles(data, totalDocs);
     if (!special.length) {
       document.getElementById('folder-grid').innerHTML = '<div class="no-docs">No special meetings on record.</div>';
       return;
     }
     document.getElementById('folder-grid').innerHTML = special.map(m => {
-      const docCount = meetingDocCount(m);
+      const docCount = meetingTotalDocs(m);
       return renderFolderCard(
         m.title,
         formatDate(m.date),

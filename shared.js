@@ -37,9 +37,15 @@ function isDraft(filename) {
   return (filename || '').toLowerCase().includes('draft');
 }
 
+function meetingTotalDocs(m) {
+  const docs = (m.documents || []).length;
+  const sfDocs = (m.subfolders || []).reduce((s, sf) => s + (sf.documents || []).length, 0);
+  return docs + sfDocs;
+}
+
 function renderStatTiles(data, folderDocCount) {
   const upcoming = (data.meetings || []).find(m => m.status === 'upcoming');
-  const totalDocs = (data.meetings || []).reduce((sum, m) => sum + (m.documents || []).length, 0);
+  const totalDocs = (data.meetings || []).reduce((sum, m) => sum + meetingTotalDocs(m), 0);
 
   const nextDate = upcoming ? formatDate(upcoming.date) : 'TBD';
   const nextTime = upcoming ? (upcoming.time || '') : '';
