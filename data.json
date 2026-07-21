@@ -100,6 +100,62 @@
           "date": "2026-07-15",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         }
+      ],
+      "subfolders": [
+        {
+          "name": "Financial",
+          "documents": [
+            {
+              "label": "Disbursements 202605",
+              "filename": "Disbursements_202605.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA1wSs5ASakSadBDOjFq_nUAQrQ5joSrAOssc5qZTvI6H4",
+              "date": "2026-07-15"
+            },
+            {
+              "label": "Disbursements 202606",
+              "filename": "Disbursements_202606.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD336Qw-MZFTKIdJlBjSnGfAT4Eakj1L4uE6asJN6Z8gUw",
+              "date": "2026-07-15"
+            },
+            {
+              "label": "Expense Revenue Summary Report",
+              "filename": "Report_Expense-Revenue-Summary_202606.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDZxRhTSBXAQ4qLJptpqPkkAXIPQHIo0zkqHVS1UE9H9yQ",
+              "date": "2026-07-15"
+            },
+            {
+              "label": "Reconciliation AB Checking Report",
+              "filename": "Report_Reconciliation-AB-Checking_202606.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCPx4dzNQGSS7L3SX6FJ-_XATBazGST-l_L36Q1qmL30Cc",
+              "date": "2026-07-15"
+            },
+            {
+              "label": "Reconciliation AB MM Report",
+              "filename": "Report_Reconciliation-AB-MM_202606.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDzbiC9BcMbRK_LzG-5-T8pATVVfPHaGNo8wdi9fUqkUOY",
+              "date": "2026-07-15"
+            },
+            {
+              "label": "Statement Associated Bank MM Checking 202606",
+              "filename": "Statement_Associated-Bank-MM-Checking_202606.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBL-wTldEE1QYQ7rjHi2voKAfwM_VYFcLybTY5Ytn8Yovw",
+              "date": "2026-07-15"
+            },
+            {
+              "label": "Statement Elan CC YTD2026.csv",
+              "filename": "Statement_Elan-CC_YTD2026.csv",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQCbw9dcaTHORbIz3n8giox8AWizowIt07KGesuKUS49MMA",
+              "date": "2026-07-15"
+            },
+            {
+              "label": "Statement US Bank Credit Card 202606",
+              "filename": "Statement_US-Bank-Credit-Card_202606.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAYNQBh8BETSaZqYsxET5XhAXgrbOuGpkoTSjF6wsxyqYM",
+              "date": "2026-07-15"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgANq8nq44b0SK7ybtS1X-rQAejihQlTvAqE70G8RAAopFQ"
+        }
       ]
     },
     {
@@ -235,6 +291,170 @@
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAD08RI9QBfQaX-zVYZwcsJAdtQDeKY0waDIQ3eoxBgBgI",
           "date": "2026-06-08",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgDeUvugtC1sTIQXQ2yMNc99AV2pAxckMW58q-fKtzzUKn8"
+        }
+      ],
+      "subfolders": [
+        {
+          "name": "Financial",
+          "documents": [
+            {
+              "label": "Expense Revenue Summary Report",
+              "filename": "Report_Expense-Revenue-Summary_202605.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDkXE2aH0Q_RJRK798vI86vAcO5oq_GbJkA7dB3OYbBmys",
+              "date": "2026-06-08"
+            },
+            {
+              "label": "Reconciliation AB Checking Report",
+              "filename": "Report_Reconciliation-AB-Checking_202605.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCk8hy1_GVaRY-YGVBIjJSeAUBbU_kwpL89FIGMeCj-CS8",
+              "date": "2026-06-08"
+            },
+            {
+              "label": "Reconciliation AB MM Report",
+              "filename": "Report_Reconciliation-AB-MM_202605.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDr5PByhYw6Q6FnEIuyrZqvAYnE-UZr1QArLacVf0hjqXQ",
+              "date": "2026-06-08"
+            },
+            {
+              "label": "Statement ELAN AB Credit Card 20260526",
+              "filename": "Statement_ELAN-AB-Credit-Card_20260526.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAlVZnQFfnmQ5gGycs0OdVdAQAmuSCbhqpVR0Hzj1XjjK8",
+              "date": "2026-05-26"
+            },
+            {
+              "label": "Statement MM Checking Associated Bank 20260531",
+              "filename": "Statement_MM-Checking-Associated-Bank_20260531.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCU3nix_SNOQpn0i1R7DXUpAVjdZd5oY4aaGuJTuKUrHP0",
+              "date": "2026-05-31"
+            },
+            {
+              "label": "YTD vs Actual Report",
+              "filename": "Report_YTD-vs-Actual_202605.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDPW5q9GAkySq7MVDKJeq8qAc4Hc0dbgw_LstreytTTdKk",
+              "date": "2026-06-08"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgDVHiZMxdO8QpckdfA1v1ArAQIO0wTO0bH3szLxCDS7rFE"
+        },
+        {
+          "name": "UCA",
+          "documents": [
+            {
+              "label": "2026-04 Uniform Chart of Accounts WI Munis Resolution",
+              "filename": "Resolution_2026-04_Uniform-Chart-of-Accounts-WI-Munis_20260523.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBj2WMlPWg7Sq6J8U4fqKnjAaQOcU-ctH8_jZ3uyOwocLo",
+              "date": "2026-05-23"
+            },
+            {
+              "label": "UCA Guidelines   DOR",
+              "filename": "UCA Guidelines - DOR.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCjL0VF4ozWTa2-QWRL3MkDAewECDOOEBCsHB6xa3vVsSE",
+              "date": "2026-06-06"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgAbNbtQQUKERINFnDNKoYoaAcgBChXdI4nmWUu7ao7_cgE"
+        },
+        {
+          "name": "WMRS",
+          "documents": [
+            {
+              "label": "2026-02 Winchester WMRS Form PR B002 Submission Resolution",
+              "filename": "Resolution_2026-02_Winchester-WMRS-Form-PR-B002-Submission_20260523.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDP_DNAyM4ZQrs4bvZ_nhfxATtuiJBHGg1YLAgfCUUvB90",
+              "date": "2026-05-23"
+            },
+            {
+              "label": "Admin GRS",
+              "filename": "Admin GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBBRcYfKs-dTo0pdUQ_wntwAWqk0ofoebuqyOZg3exl0Rw",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Budget GRS",
+              "filename": "Budget GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA0KT8VDlUVSqg3zDDiWBKrAfg9oEMkB-pIpwILbZFS4vE",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Facilities GRS",
+              "filename": "Facilities GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB0xP6mNGRCRb-YEDPlBL18AUS8iRXLLy8ouYJbAEVUSaM",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Fiscal GRS",
+              "filename": "Fiscal GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD_ZxScVmZVSK-ioCP_gJixASX4NA0bCNRwHsWhrrkxFWk",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Fleet GRS",
+              "filename": "Fleet GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDnIN_59BI8T4KXlvLTQpwQAWGX8CE5c7cUJFV1tSm8mlI",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "GRS   Human Resources",
+              "filename": "GRS - Human Resources.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB43M6KqyVFTYhu49XQBiOvAfgXIUFd0Js6cdHjUtp3PfM",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "GRS Adoption Form PRB 002",
+              "filename": "Form_PRB-002_GRS-Adoption_20260515.docx",
+              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/TownBoard/IQDULM7cil_tRK-cvkw-VmYTAbirwOwpfNyjj7D3-yqvQTo",
+              "date": "2026-05-15"
+            },
+            {
+              "label": "GRS Policy   FINAL 11 2017",
+              "filename": "GRS Policy - FINAL 11-2017.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBq3LzOY85uQ7SK5S4H90PSAbYzkxrncJeo2tx1s6-rI9A",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Intro to GRS",
+              "filename": "Intro to GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCZnWjD3gFmSaHBm7DjoEzMAelz6dfaxzJrtsF3R6Irmsk",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "IT GRS",
+              "filename": "IT GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAzeOw-vVbuTb0nFks74LAhAdBW55ZJ0SLLMEmUeYIzYKU",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Municipal GRS REVISED 6 2020",
+              "filename": "Municipal GRS REVISED 6-2020.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDG3gWhKfIvSIjDRjaV5KabAcOqkefuquFxdL1qgGEWMQE",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Payroll GRS",
+              "filename": "Payroll GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQC-M-MuTfJ4Q5MIGGsWQ0wIAeLTBCO14JXAXBdkRtDw2ZQ",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Purchasing GRS",
+              "filename": "Purchasing GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA3iwVSYPRLQYeJNz-PesbxAWzM_GgRsr7BgJF5cJeiw6c",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "Risk GRS",
+              "filename": "Risk GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCM8GAKZh8NTIw07Mevi3L8ATdmNrafWt2z6RqODe1UMZg",
+              "date": "2026-06-06"
+            },
+            {
+              "label": "UCA Guidelines   DOR",
+              "filename": "UCA Guidelines - DOR.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD-vgQYFC7nSrmHLWvtXWn2AWWWw5oxTFUwyBqa4YaLvxc",
+              "date": "2026-06-06"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgDSd2B-LUR0RqntikemELIQAcF5ipRxRoxSgu2lJ5JQTCs"
         }
       ]
     },
