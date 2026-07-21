@@ -64,31 +64,32 @@
     .tile-governance .portal-tile-title { color: #fff; }
 
     .tile-boards-commissions,
-    .tile-elections,
     .tile-records-archive {
       /* Grayscale while pages are unbuilt. Reserved colors for when live:
          Committees & Commissions -> light teal: head background var(--tl),
            badge color var(--tm), title color var(--td)
-         Elections -> gold: head background var(--gold),
-           badge color #4A3F28, title color var(--td)
          Records Archive -> not yet decided */
       opacity: 0.6;
     }
     .tile-boards-commissions .portal-tile-head,
-    .tile-elections .portal-tile-head,
     .tile-records-archive .portal-tile-head {
       background: #888780;
     }
     .tile-boards-commissions .portal-tile-badge,
-    .tile-elections .portal-tile-badge,
     .tile-records-archive .portal-tile-badge {
       color: #f1efe8;
     }
     .tile-boards-commissions .portal-tile-title,
-    .tile-elections .portal-tile-title,
     .tile-records-archive .portal-tile-title {
       color: #fff;
     }
+
+    .tile-elections {
+      border: 1px solid var(--gold);
+    }
+    .tile-elections .portal-tile-head { background: var(--gold); }
+    .tile-elections .portal-tile-badge { color: #fff; }
+    .tile-elections .portal-tile-title { color: var(--td); }
 
     .tile-exit {
       border: 1px solid var(--gold);
@@ -234,10 +235,10 @@
         </div>
       </a>
 
-      <div class="portal-tile tile-elections">
+      <a class="portal-tile tile-elections" href="elections.html">
         <div class="portal-tile-main">
           <div class="portal-tile-head">
-            <div class="portal-tile-badge">Coming soon</div>
+            <div class="portal-tile-badge">Live</div>
             <div class="portal-tile-title">Elections</div>
           </div>
           <div class="portal-tile-body">
@@ -249,7 +250,7 @@
           <div class="portal-tile-next-label">Next election</div>
           <div class="portal-tile-next-date" id="next-election-date">Loading&hellip;</div>
         </div>
-      </div>
+      </a>
 
       <div class="portal-tile tile-records-archive">
         <div class="portal-tile-head">
