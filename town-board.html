@@ -85,10 +85,8 @@ function renderQuickList(filter) {
 
   list.innerHTML = agendaMinutes.map(m => {
     const isUpcoming = m.status === 'upcoming';
-    const isSpecial = m.type === 'special';
     let badgeClass = 'badge-complete', badgeLabel = 'Complete';
     if (isUpcoming) { badgeClass = 'badge-upcoming'; badgeLabel = 'Upcoming'; }
-    else if (isSpecial) { badgeClass = 'badge-special'; badgeLabel = 'Special Meeting'; }
 
     const rows = m.documents.map(doc => {
       const tag = getDocTag(doc.filename);
