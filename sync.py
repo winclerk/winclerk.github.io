@@ -332,6 +332,11 @@ def infer_label(filename):
         has_date = bool(re.search(r"_\d{8}$", name))
         return f"{rest} Handbook" + (" (revised)" if has_date else "")
 
+    m = re.match(r"Comm_(.+?)_\d{6,8}$", name)
+    if m:
+        desc = m.group(1).replace("-", " ").replace("_", " ").strip()
+        return f"{desc} Communication"
+
     return name.replace("_", " ").replace("-", " ").strip()
 
 
@@ -340,6 +345,13 @@ def parse_date(filename):
     if m:
         d = m.group(1)
         return f"{d[:4]}-{d[4:6]}-{d[6:]}"
+    # Try YYMMDD format (e.g. 260715 = 2026-07-15)
+    m = re.search(r"_(\d{6})(?:\.|$)", filename)
+    if m:
+        d = m.group(1)
+        yy, mm, dd = d[:2], d[2:4], d[4:6]
+        if 1 <= int(mm) <= 12 and 1 <= int(dd) <= 31:
+            return f"20{yy}-{mm}-{dd}"
     return None
 
 
