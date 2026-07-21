@@ -53,14 +53,14 @@
       border: 1px solid var(--gold);
     }
     .tile-town-board .portal-tile-head { background: var(--td); }
-    .tile-town-board .portal-tile-badge { color: var(--gold); }
+    .tile-town-board .portal-tile-badge { color: #fff; }
     .tile-town-board .portal-tile-title { color: #fff; }
 
     .tile-governance {
       border: 1px solid var(--gold);
     }
     .tile-governance .portal-tile-head { background: var(--tm); }
-    .tile-governance .portal-tile-badge { color: var(--tl); }
+    .tile-governance .portal-tile-badge { color: #fff; }
     .tile-governance .portal-tile-title { color: #fff; }
 
     .tile-boards-commissions,
@@ -391,6 +391,12 @@ async function loadRecentDocs() {
     (data.meetings || []).forEach(m => {
       (m.documents || []).forEach(d => {
         if (d.date) all.push(Object.assign({}, d, { site: 'Town Board', folder: m.title }));
+      });
+      // Include subfolder documents in recent docs
+      (m.subfolders || []).forEach(sf => {
+        (sf.documents || []).forEach(d => {
+          if (d.date) all.push(Object.assign({}, d, { site: 'Town Board', folder: m.title + ' / ' + sf.name }));
+        });
       });
     });
 
