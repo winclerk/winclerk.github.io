@@ -1,21 +1,20 @@
 {
   "meetings": [
     {
-      "id": "regular-2026-08-17",
+      "id": "regular-2026-08-05",
       "title": "Regular Town Board Meeting - August 2026",
       "type": "regular",
       "status": "upcoming",
-      "date": "2026-08-17",
+      "date": "2026-08-05",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
       "documents": [
         {
-          "label": "Agenda",
-          "filename": "Agenda_20260817_DRAFT.docx",
-          "url": "https://townofwinchester54557.sharepoint.com/:w:/s/TownBoard/IQCbBQ1Xz-3vQ6gYYyp53I_mAeA9vxyFzwXj8JybpxRvLaw",
-          "date": "2026-08-17",
-          "posted": "2026-07-21",
-          "draft": true,
+          "label": "Agenda Budget Meeting 20260805",
+          "filename": "Agenda_Budget-Meeting_20260805.docx",
+          "url": "https://townofwinchester54557.sharepoint.com/:w:/s/TownBoard/IQBa5aRO_5j5RLZcHtWyXNaLARpmKAaNO6hybo7o1wtWPSQ",
+          "date": "2026-08-05",
+          "posted": "2026-08-03",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         }
       ]
