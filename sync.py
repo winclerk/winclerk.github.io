@@ -1,6 +1,7 @@
 import os
 import json
 import base64
+import io
 import requests
 from datetime import datetime, timezone
 import re
@@ -151,6 +152,93 @@ def make_link(token, drive_id, item_id):
         json={"type": "view", "scope": "anonymous"})
     r.raise_for_status()
     return r.json()["link"]["webUrl"]
+
+
+def download_file(token, drive_id, item_id):
+    """Download a file's content from SharePoint via Graph API.
+    Returns raw bytes, or None on failure."""
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/content"
+    try:
+        r = requests.get(url, headers={"Authorization": f"Bearer {token}"})
+        r.raise_for_status()
+        return r.content
+    except Exception as e:
+        print(f"    Warning: could not download file: {e}")
+        return None
+
+
+def extract_meeting_details_from_pdf(pdf_bytes):
+    """Extract meeting time and location from a PDF agenda's header text.
+
+    Looks for patterns like:
+      'Wednesday, August 5 at 10:00 AM'
+      'Winchester Town Hall • 7228 CTH W, Winchester, WI 54557'
+
+    Returns a dict with 'time' and/or 'location' keys, or empty dict."""
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        print("    Warning: pypdf not installed, skipping PDF parsing")
+        return {}
+
+    try:
+        reader = PdfReader(io.BytesIO(pdf_bytes))
+        # Only need the first page — meeting details are always in the header
+        text = reader.pages[0].extract_text() or ""
+    except Exception as e:
+        print(f"    Warning: could not read PDF: {e}")
+        return {}
+
+    result = {}
+
+    # Extract time: look for "at H:MM AM/PM" or standalone "H:MM AM/PM"
+    # on a line that also contains a day of week or date context
+    time_match = re.search(
+        r'(?:at\s+)?(\d{1,2}:\d{2}\s*[AaPp]\.?[Mm]\.?)',
+        text
+    )
+    if time_match:
+        raw_time = time_match.group(1).strip()
+        # Normalize: remove dots, ensure space before AM/PM
+        raw_time = raw_time.replace(".", "")
+        raw_time = re.sub(r'(\d)([AaPp])', r'\1 \2', raw_time)
+        raw_time = raw_time.upper()
+        result["time"] = raw_time
+
+    # Extract location: look for "Town Hall" mention with address
+    loc_match = re.search(
+        r'(Winchester\s+Town\s+Hall)',
+        text,
+        re.IGNORECASE
+    )
+    if loc_match:
+        result["location"] = "Winchester Town Hall"
+
+    return result
+
+
+def extract_details_from_next_meeting(token, drive_id, docs):
+    """Try to extract time/location from the first agenda PDF in the Next Meeting folder.
+    Returns a dict with 'time' and/or 'location' keys, or empty dict."""
+    for doc in docs:
+        fn = doc["filename"]
+        if not fn.lower().startswith("agenda") or not fn.lower().endswith(".pdf"):
+            continue
+        # Need the item ID — we'll look it up by path
+        try:
+            encoded = requests.utils.quote(f"{NEXT_MEETING_PATH}/{fn}")
+            url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{encoded}"
+            item = graph_get(token, url)
+            pdf_bytes = download_file(token, drive_id, item["id"])
+            if pdf_bytes:
+                details = extract_meeting_details_from_pdf(pdf_bytes)
+                if details:
+                    print(f"    Parsed from PDF: {details}")
+                    return details
+        except Exception as e:
+            print(f"    Warning: could not parse {fn}: {e}")
+            continue
+    return {}
 
 
 def _fetch_ical_events():
@@ -646,12 +734,23 @@ def build_data(token, drive_id):
                 next_type = "special"
             break
 
-    # Match iCal event: try keyword match first, then date-based fallback
-    ical_event = get_next_meeting_from_ical(ical_events, match_date=next_date)
-    if ical_event:
-        next_time = ical_event["time"]
-        next_location = ical_event["location"]
-        print(f"  Next meeting: {ical_event['title']} on {ical_event['date']} at {ical_event['time']} @ {ical_event['location']}")
+    # Resolve time & location: PDF content is most reliable (directly from
+    # the agenda header), iCal is fallback, hardcoded defaults are last resort.
+    print("  Extracting meeting details from agenda PDF...")
+    pdf_details = extract_details_from_next_meeting(token, drive_id, next_docs)
+    if pdf_details.get("time"):
+        next_time = pdf_details["time"]
+    if pdf_details.get("location"):
+        next_location = pdf_details["location"]
+
+    # If PDF didn't yield time, try iCal
+    if not pdf_details.get("time"):
+        ical_event = get_next_meeting_from_ical(ical_events, match_date=next_date)
+        if ical_event:
+            next_time = ical_event["time"]
+            if not pdf_details.get("location"):
+                next_location = ical_event["location"]
+            print(f"  iCal fallback: {ical_event['title']} at {ical_event['time']} @ {ical_event['location']}")
 
     if not next_date:
         next_date = datetime.today().strftime("%Y-%m-%d")
