@@ -51,6 +51,54 @@
 
     .tile-town-board {
       border: 1px solid var(--gold);
+      flex-direction: row;
+    }
+    .tile-town-board .portal-tile-main {
+      flex: 2 1 0;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .tile-town-board .portal-tile-divider {
+      width: 1px;
+      background: rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+    .tile-town-board .portal-tile-next {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+      box-sizing: border-box;
+      background: var(--tl);
+    }
+    .tile-town-board .portal-tile-next-label {
+      font-size: 9px;
+      color: var(--tm);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .tile-town-board .portal-tile-next-date {
+      font-family: 'Electrolize', monospace;
+      font-size: 13px;
+      color: var(--td);
+    }
+    .meeting-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--tm);
+      margin-bottom: 10px;
+      animation: meetingPulse 2s ease-in-out infinite;
+    }
+    @keyframes meetingPulse {
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(0,80,90,0.5); }
+      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(0,80,90,0.3); }
     }
     .tile-town-board .portal-tile-head { background: var(--td); }
     .tile-town-board .portal-tile-badge { color: #fff; }
@@ -234,12 +282,20 @@
     <div class="portal-grid">
 
       <a class="portal-tile tile-town-board" href="town-board.html">
-        <div class="portal-tile-head">
-          <div class="portal-tile-badge">Live</div>
-          <div class="portal-tile-title">Town Board</div>
+        <div class="portal-tile-main">
+          <div class="portal-tile-head">
+            <div class="portal-tile-badge">Live</div>
+            <div class="portal-tile-title">Town Board</div>
+          </div>
+          <div class="portal-tile-body">
+            <div class="portal-tile-desc">Agendas, minutes &amp; meeting records</div>
+          </div>
         </div>
-        <div class="portal-tile-body">
-          <div class="portal-tile-desc">Agendas, minutes &amp; meeting records</div>
+        <div class="portal-tile-divider"></div>
+        <div class="portal-tile-next">
+          <div class="meeting-pulse"></div>
+          <div class="portal-tile-next-label">Next meeting</div>
+          <div class="portal-tile-next-date" id="next-meeting-date">Loading&hellip;</div>
         </div>
       </a>
 
@@ -406,6 +462,44 @@ function renderNextElection() {
 }
 
 renderNextElection();
+
+// Next Town Board meeting: uses data.json (primary), falls back to
+// second Tuesday of current/next month if no upcoming meeting in data.
+async function renderNextMeeting() {
+  const el = document.getElementById('next-meeting-date');
+  if (!el) return;
+
+  try {
+    const data = await loadData();
+    const upcoming = (data.meetings || []).find(m => m.status === 'upcoming');
+    if (upcoming && upcoming.date) {
+      el.textContent = formatDateShort(upcoming.date);
+      el.title = upcoming.title || '';
+      return;
+    }
+  } catch (e) { /* fall through to default schedule */ }
+
+  // Fallback: second Tuesday of current or next month
+  function secondTuesday(year, month) {
+    const d = new Date(year, month, 1);
+    let count = 0;
+    while (true) {
+      if (d.getDay() === 2) { count++; if (count === 2) return new Date(d); }
+      d.setDate(d.getDate() + 1);
+    }
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let next = secondTuesday(today.getFullYear(), today.getMonth());
+  if (next < today) {
+    const m = today.getMonth() + 1;
+    next = secondTuesday(today.getFullYear() + (m > 11 ? 1 : 0), m % 12);
+  }
+  el.textContent = formatDateShort(next.toISOString().slice(0, 10));
+  el.title = 'Regular Town Board Meeting (default schedule)';
+}
+
+renderNextMeeting();
 </script>
 <script>
 function renderRecentRow(doc) {
