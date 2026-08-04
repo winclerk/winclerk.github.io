@@ -1,736 +1,489 @@
-import os
-import json
-import base64
-import requests
-from datetime import datetime, timezone
-import re
-
-
-TENANT_ID     = os.environ["AZURE_TENANT_ID"]
-CLIENT_ID     = os.environ["AZURE_CLIENT_ID"]
-CLIENT_SECRET = os.environ["AZURE_CLIENT_SECRET"]
-GH_PAT        = os.environ["GH_PAT"]
-
-GITHUB_REPO = "winclerk/winclerk.github.io"
-GITHUB_FILE = "data.json"
-
-SITE_HOSTNAME = "townofwinchester54557.sharepoint.com"
-SITE_PATH     = "/sites/TownBoard"
-LIBRARY_NAME  = "Documents"
-
-NEXT_MEETING_PATH = "All Town Board Files/Next Meeting"
-PREV_REGULAR_PATH = "All Town Board Files/Previous Regular Meetings"
-PREV_SPECIAL_PATH = "All Town Board Files/Previous Special Meetings"
-
-SKIP_FOLDER_NAME = "Internal Only"
-
-# Non-meeting sites: flat document libraries, not meeting folders.
-# Each library is scanned recursively up to MAX_SCAN_DEPTH subfolder levels.
-MAX_SCAN_DEPTH = 1
-
-FLAT_SITES = [
-    {
-        "key": "boardsCommissions",
-        "path": "/sites/BoardsCommitteesCommissions",
-        "libraries": [
-            "Planning Commission",
-            "Intermunicipal Committees",
-            "NEMSD Shared Services",
-        ],
-    },
-    {
-        "key": "governance",
-        "path": "/sites/Governance",
-        "libraries": [
-            "Ordinances",
-            "Resolutions",
-            "Notices",
-            "Policies",
-            "Fee Schedule",
-        ],
-    },
-    {
-        "key": "elections",
-        "path": "/sites/Elections",
-        "libraries": [
-            "Election Notices",
-            "Canvass Results & Certifications",
-            "Voters",
-            "Election Inspectors",
-        ],
-    },
-]
-
-ICAL_URL = "https://winchesterwi.com/?post_type=tribe_events&ical=1&eventDisplay=list"
-MEETING_KEYWORDS = ["regular town board meeting", "special town board meeting"]
-
-
-def get_token():
-    url = f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token"
-    data = {
-        "client_id":     CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "grant_type":    "client_credentials",
-        "scope":         "https://graph.microsoft.com/.default",
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Winchester Public Records Portal</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
     }
-    r = requests.post(url, data=data)
-    if not r.ok:
-        print(f"Token error: {r.text}")
-    r.raise_for_status()
-    return r.json()["access_token"]
+    .portal-tile {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+    }
+    a.portal-tile { transition: border-color 0.15s, transform 0.15s; }
+    a.portal-tile:hover { border-color: var(--tm); transform: translateY(-2px); }
+    .portal-tile-head {
+      padding: 16px;
+      height: 78px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .portal-tile-badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .portal-tile-title {
+      font-family: 'Electrolize', monospace;
+      font-size: 15px;
+    }
+    .portal-tile-body {
+      padding: 12px 16px;
+      height: 52px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+    }
+    .portal-tile-desc { font-size: 12px; color: var(--text-muted); }
 
+    .tile-town-board {
+      border: 1px solid var(--gold);
+    }
+    .tile-town-board .portal-tile-head { background: var(--td); }
+    .tile-town-board .portal-tile-badge { color: #fff; }
+    .tile-town-board .portal-tile-title { color: #fff; }
 
-def graph_get(token, url):
-    r = requests.get(url, headers={"Authorization": f"Bearer {token}"})
-    r.raise_for_status()
-    return r.json()
+    .tile-governance,
+    .tile-elections,
+    .tile-boards-commissions,
+    .tile-records-archive {
+      /* Grayscale while pages are unbuilt. To reactivate a tile:
+         1. Remove its class from this rule
+         2. Uncomment its live CSS block below
+         3. Swap <div> → <a href="..."> in the HTML (see commented live versions) */
+      opacity: 0.6;
+    }
+    /* ── Live tile CSS (uncomment per-tile when reactivating) ──
+    .tile-governance { border: 1px solid var(--gold); }
+    .tile-governance .portal-tile-head { background: var(--tm); }
+    .tile-governance .portal-tile-badge { color: #fff; }
+    .tile-governance .portal-tile-title { color: #fff; }
 
-
-def get_site_id(token, site_path=SITE_PATH):
-    url = f"https://graph.microsoft.com/v1.0/sites/{SITE_HOSTNAME}:{site_path}"
-    return graph_get(token, url)["id"]
-
-
-def get_drive_id(token, site_id, library_name=LIBRARY_NAME):
-    url = f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives"
-    for d in graph_get(token, url)["value"]:
-        if d["name"] == library_name:
-            return d["id"]
-    raise ValueError(f"Drive '{library_name}' not found")
-
-
-def list_root(token, drive_id):
-    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root/children"
-    items = []
-    while url:
-        data = graph_get(token, url)
-        items.extend(data.get("value", []))
-        url = data.get("@odata.nextLink")
-    return items
-
-
-def list_children(token, drive_id, folder_path):
-    encoded = requests.utils.quote(folder_path)
-    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{encoded}:/children"
-    items = []
-    while url:
-        data = graph_get(token, url)
-        items.extend(data.get("value", []))
-        url = data.get("@odata.nextLink")
-    return items
-
-
-def get_item(token, drive_id, item_path):
-    encoded = requests.utils.quote(item_path)
-    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{encoded}"
-    return graph_get(token, url)
-
-
-def get_root_item(token, drive_id):
-    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root"
-    return graph_get(token, url)
-
-
-def make_folder_link(token, drive_id, folder_path=None):
-    """Create (or fetch) a public view link for a folder itself, not a file
-    inside it. folder_path=None means the library root. Returns None on
-    failure (e.g. anonymous sharing blocked for this site) rather than
-    raising, so callers can degrade gracefully."""
-    try:
-        item = get_item(token, drive_id, folder_path) if folder_path else get_root_item(token, drive_id)
-        return make_link(token, drive_id, item["id"])
-    except Exception as e:
-        print(f"    Warning: could not create folder link for '{folder_path or '(root)'}': {e}")
-        return None
-
-
-def make_link(token, drive_id, item_id):
-    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/createLink"
-    r = requests.post(url,
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-        json={"type": "view", "scope": "anonymous"})
-    r.raise_for_status()
-    return r.json()["link"]["webUrl"]
-
-
-def get_next_meeting_from_ical():
-    try:
-        r = requests.get(ICAL_URL, timeout=10,
-            headers={"User-Agent": "Winchester-Sync/1.0"})
-        r.raise_for_status()
-    except Exception as e:
-        print(f"  Warning: could not fetch iCal feed: {e}")
-        return None
-
-    now = datetime.now(timezone.utc)
-    events = []
-    current = {}
-    in_event = False
-
-    for line in r.text.splitlines():
-        line = line.strip()
-        if line == "BEGIN:VEVENT":
-            in_event = True
-            current = {}
-        elif line == "END:VEVENT":
-            if current:
-                events.append(current)
-            in_event = False
-            current = {}
-        elif in_event:
-            if line.startswith("SUMMARY:"):
-                current["summary"] = line[8:].strip()
-            elif line.startswith("DTSTART"):
-                current["dtstart_raw"] = line.split(":", 1)[-1].strip()
-            elif line.startswith("LOCATION:"):
-                current["location"] = line[9:].strip()
-
-    candidates = []
-    for ev in events:
-        summary = ev.get("summary", "")
-        if not any(kw in summary.lower() for kw in MEETING_KEYWORDS):
-            continue
-        raw = ev.get("dtstart_raw", "")
-        try:
-            if "T" in raw:
-                raw_clean = re.sub(r"[:-]", "", raw.replace("Z", ""))
-                dt = datetime.strptime(raw_clean[:15], "%Y%m%dT%H%M%S")
-                dt = dt.replace(tzinfo=timezone.utc)
-            else:
-                dt = datetime.strptime(raw[:8], "%Y%m%d")
-                dt = dt.replace(tzinfo=timezone.utc)
-        except Exception:
-            continue
-        if dt >= now:
-            candidates.append((dt, ev))
-
-    if not candidates:
-        print("  Warning: no upcoming town board meetings found in iCal feed.")
-        return None
-
-    candidates.sort(key=lambda x: x[0])
-    dt, ev = candidates[0]
-
-    # Extract just the venue name — everything before the first comma
-    raw_location = ev.get("location", "") or ""
-    location = raw_location.split("\\,")[0].split(",")[0].strip()
-    if not location:
-        location = "Winchester Town Hall"
-
-    # Format time
-    if dt.hour or dt.minute:
-        time_str = dt.strftime("%-I:%M %p")
-    else:
-        time_str = "6:00 PM"
-
-    return {
-        "title":    ev.get("summary", ""),
-        "date":     dt.strftime("%Y-%m-%d"),
-        "time":     time_str,
-        "location": location,
+    .tile-elections { border: 1px solid var(--gold); }
+    .tile-elections .portal-tile-head { background: var(--gold); }
+    .tile-elections .portal-tile-badge { color: #fff; }
+    .tile-elections .portal-tile-title { color: #fff; }
+    .tile-elections .portal-tile-next { background: #f1efe8; }
+    .tile-elections .portal-tile-next-label { color: #888780; }
+    .tile-elections .portal-tile-next-date { color: #444441; }
+    .election-pulse {
+      background: var(--gold);
+      animation: electionPulse 2s ease-in-out infinite;
+    }
+    @keyframes electionPulse {
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(165,150,100,0.5); }
+      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(165,150,100,0.3); }
     }
 
-
-def clean_name(s):
-    s = re.sub(r"_\d{8}$", "", s)
-    s = re.sub(r"_\d{6}$", "", s)
-    s = s.replace("-", " ").replace("_", " ").strip()
-    s = re.sub(r"(\d{4}) (\d{2})\b", r"\1-\2", s)
-    return s
-
-
-def infer_label(filename):
-    name = filename
-    for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
-        if name.lower().endswith(ext):
-            name = name[:-len(ext)]
-            break
-
-    if re.search(r"NEMSD.{0,5}[Ii]ntermunicipal", name):
-        return "NEMSD Intermunicipal Agreement - Current Signed Agreement"
-
-    m = re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_\d{8}", name)
-    if m:
-        type_map = {"RTBM": "Regular Meeting Agenda", "STBM": "Special Meeting Agenda",
-                    "TBSM": "Special Meeting Agenda", "BOR": "Board of Review Agenda"}
-        return type_map[m.group(1)]
-
-    m = re.match(r"Agenda_\d{8}", name)
-    if m:
-        return "Agenda"
-
-    # Agenda with descriptive slug: Agenda_Some-Description_YYYYMMDD
-    # e.g. Agenda_2027-Initial-Budget-Meeting_20260805
-    m = re.match(r"Agenda_(.+?)_(\d{8})$", name)
-    if m:
-        slug = m.group(1).replace("-", " ").replace("_", " ").strip()
-        return f"Agenda — {slug}"
-
-    m = re.match(r"Minutes_(BOR_)?\d{8}(_DRAFT)?", name)
-    if m:
-        is_bor = bool(m.group(1))
-        is_draft = bool(m.group(2))
-        base = "Board of Review Minutes" if is_bor else "Minutes"
-        return f"{base} (Draft)" if is_draft else base
-
-    m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)\d{8}(_DRAFT)?", name)
-    if m:
-        return "Minutes (Draft)" if m.group(1) else "Minutes"
-
-    m = re.match(r"Report_Clerk_\d{8}", name)
-    if m:
-        return "Clerk's Report"
-
-    m = re.match(r"Clerks?_Report_\d{8}", name, re.IGNORECASE)
-    if m:
-        return "Clerk's Report"
-
-    m = re.match(r"Report_Treasurer_\d{6}", name)
-    if m:
-        return "Treasurer's Report"
-
-    m = re.match(r"Report_NEMSD_\d{6}", name)
-    if m:
-        return "NEMSD Report"
-
-    m = re.match(r"Report_Pedalers_\d{6}", name)
-    if m:
-        return "Pedalers Report"
-
-    m = re.match(r"(?:Report_)?Disbursements_(\d{6})$", name)
-    if m:
-        dt = datetime.strptime(m.group(1), "%Y%m")
-        return f"{dt.strftime('%B')} Disbursements"
-
-    m = re.match(r"Report_(.+?)_\d{6}$", name)
-    if m:
-        return f"{m.group(1).replace('-', ' ').replace('_', ' ')} Report"
-
-    m = re.match(r"Report_(.+?)_\d{8}$", name)
-    if m:
-        return f"{m.group(1).replace('-', ' ').replace('_', ' ')} Report"
-
-    m = re.match(r"Policy_(\d{4}-\d{2})_(.+)", name)
-    if m:
-        return f"{m.group(1)} {clean_name(m.group(2))} Policy"
-
-    m = re.match(r"Resolution_(\d{4}-\d{2})_(.+)", name)
-    if m:
-        return f"{m.group(1)} {clean_name(m.group(2))} Resolution"
-
-    m = re.match(r"Ordinance_(\d{4}-\d{2})_(.+)", name)
-    if m:
-        return f"{m.group(1)} {clean_name(m.group(2))} Ordinance"
-
-    m = re.match(r"Permit_(.+?)(?:_\d{8})?$", name)
-    if m:
-        return f"{m.group(1).replace('-', ' ').replace('_', ' ').strip()} Permit"
-
-    m = re.match(r"Form_([A-Z0-9\-]+)_(.+?)(?:_\d{8})?$", name)
-    if m:
-        num = m.group(1).replace("-", " ")
-        desc = m.group(2).replace("-", " ").replace("_", " ").strip()
-        return f"{desc} Form {num}"
-
-    m = re.match(r"Handbook_(.+?)(?:_\d{8})?$", name)
-    if m:
-        rest = re.sub(r"^TOW-?", "", m.group(1))
-        rest = rest.replace("-", " ").replace("_", " ").strip()
-        has_date = bool(re.search(r"_\d{8}$", name))
-        return f"{rest} Handbook" + (" (revised)" if has_date else "")
-
-    m = re.match(r"Comm_(.+?)_\d{6,8}$", name)
-    if m:
-        desc = m.group(1).replace("-", " ").replace("_", " ").strip()
-        return f"{desc} Communication"
-
-    return name.replace("_", " ").replace("-", " ").strip()
-
-
-def parse_date(filename):
-    m = re.search(r"(\d{8})", filename)
-    if m:
-        d = m.group(1)
-        return f"{d[:4]}-{d[4:6]}-{d[6:]}"
-    # Try YYMMDD format (e.g. 260715 = 2026-07-15)
-    m = re.search(r"_(\d{6})(?:\.|$)", filename)
-    if m:
-        d = m.group(1)
-        yy, mm, dd = d[:2], d[2:4], d[4:6]
-        if 1 <= int(mm) <= 12 and 1 <= int(dd) <= 31:
-            return f"20{yy}-{mm}-{dd}"
-    return None
-
-
-def extract_meeting_slug(filename):
-    """Extract a descriptive meeting title from a non-standard filename.
-    e.g. Agenda_2027-Initial-Budget-Meeting_20260805.pdf -> '2027 Initial Budget Meeting'
-    Returns None if the filename matches standard RTBM/STBM/TBSM patterns."""
-    name = filename
-    for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
-        if name.lower().endswith(ext):
-            name = name[:-len(ext)]
-            break
-    # Only applies to Agenda files that aren't standard patterns
-    if not name.startswith("Agenda_"):
-        return None
-    if re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_", name):
-        return None
-    if re.match(r"Agenda_\d{8}$", name):
-        return None
-    # Strip "Agenda_" prefix
-    slug = re.sub(r"^Agenda_", "", name)
-    # Strip trailing date
-    slug = re.sub(r"_?\d{8}$", "", slug)
-    # Strip DRAFT suffix
-    slug = re.sub(r"_?DRAFT$", "", slug, flags=re.IGNORECASE)
-    # Clean separators
-    slug = slug.replace("_", " ").replace("-", " ").strip()
-    return slug if slug else None
-
-
-def scan_folder(token, drive_id, folder_path):
-    """Scan a meeting folder for documents and subfolders.
-    Returns (docs, subfolders) where subfolders is a list of
-    {"name": ..., "url": ..., "documents": [...]} dicts.
-    Skips any subfolder named 'Internal Only'."""
-    try:
-        children = list_children(token, drive_id, folder_path)
-    except Exception as e:
-        print(f"  Warning: could not read {folder_path}: {e}")
-        return [], []
-
-    docs = []
-    subfolders = []
-    folder_url = None
-    folder_url_fetched = False
-
-    for item in children:
-        name = item["name"]
-
-        # Handle subfolders: skip Internal Only, scan everything else
-        if "folder" in item:
-            if name.strip().lower() == SKIP_FOLDER_NAME.lower():
-                continue
-            sub_path = f"{folder_path}/{name}"
-            print(f"    Scanning subfolder: {name}...")
-            sub_docs = scan_subfolder(token, drive_id, sub_path)
-            if sub_docs:
-                sub_folder_url = make_folder_link(token, drive_id, sub_path)
-                subfolder_entry = {
-                    "name": name,
-                    "documents": sub_docs,
-                }
-                if sub_folder_url:
-                    subfolder_entry["url"] = sub_folder_url
-                subfolders.append(subfolder_entry)
-            continue
-
-        try:
-            link = make_link(token, drive_id, item["id"])
-        except Exception as e:
-            print(f"  Warning: skipping {name}: {e}")
-            continue
-
-        if not folder_url_fetched:
-            folder_url = make_folder_link(token, drive_id, folder_path)
-            folder_url_fetched = True
-
-        date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
-        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
-        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date, "posted": posted}
-        if "DRAFT" in name.upper():
-            doc["draft"] = True
-        if folder_url:
-            doc["folderUrl"] = folder_url
-        docs.append(doc)
-
-    def key(d):
-        l = d["label"].lower()
-        if "agenda" in l: return (0, l)
-        if "minutes" in l: return (1, l)
-        return (2, l)
-    docs.sort(key=key)
-    return docs, subfolders
-
-
-def scan_subfolder(token, drive_id, folder_path):
-    """Scan a subfolder inside a meeting folder for files only.
-    Returns a list of document dicts. Skips any nested subfolders."""
-    try:
-        children = list_children(token, drive_id, folder_path)
-    except Exception as e:
-        print(f"    Warning: could not read subfolder {folder_path}: {e}")
-        return []
-
-    docs = []
-    for item in children:
-        name = item["name"]
-        if "folder" in item:
-            continue  # Don't recurse deeper inside meeting subfolders
-
-        try:
-            link = make_link(token, drive_id, item["id"])
-        except Exception as e:
-            print(f"    Warning: skipping {name}: {e}")
-            continue
-
-        date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
-        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
-        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date, "posted": posted}
-        if "DRAFT" in name.upper():
-            doc["draft"] = True
-        docs.append(doc)
-
-    docs.sort(key=lambda d: d["label"].lower())
-    return docs
-
-
-def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
-    """Recursively scan a document library (not meeting-folder-shaped).
-    Skips any folder named SKIP_FOLDER_NAME at any depth. Recurses into
-    other subfolders up to MAX_SCAN_DEPTH levels below the library root.
-    Each doc gets a folderUrl pointing at its own parent folder (fetched
-    once per folder, not once per file)."""
-    try:
-        items = list_children(token, drive_id, folder_path) if folder_path else list_root(token, drive_id)
-    except Exception as e:
-        print(f"  Warning: could not read {folder_path or '(root)'}: {e}")
-        return []
-
-    docs = []
-    folder_url = None
-    folder_url_fetched = False
-
-    for item in items:
-        name = item["name"]
-
-        if "folder" in item:
-            if name.strip().lower() == SKIP_FOLDER_NAME.lower():
-                continue
-            if depth < MAX_SCAN_DEPTH:
-                sub_path = f"{folder_path}/{name}" if folder_path else name
-                docs.extend(scan_library(token, drive_id, sub_path, name, depth + 1))
-            continue
-
-        try:
-            link = make_link(token, drive_id, item["id"])
-        except Exception as e:
-            print(f"    Warning: skipping {name}: {e}")
-            continue
-
-        if not folder_url_fetched:
-            folder_url = make_folder_link(token, drive_id, folder_path)
-            folder_url_fetched = True
-
-        base = re.sub(r"\.(pdf|docx?|xlsx?|pptx?)$", "", name, flags=re.IGNORECASE)
-        date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
-        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
-        doc = {"label": clean_name(base), "filename": name, "url": link, "date": date, "posted": posted}
-        if folder_label:
-            doc["folder"] = folder_label
-        if folder_url:
-            doc["folderUrl"] = folder_url
-        docs.append(doc)
-
-    return docs
-
-
-def build_flat_site_data(token, site_config):
-    print(f"Locating site: {site_config['key']} ({site_config['path']})...")
-    try:
-        site_id = get_site_id(token, site_config["path"])
-    except Exception as e:
-        print(f"  Warning: could not find site {site_config['path']}: {e}")
-        return {"libraries": [{"name": lib, "documents": []} for lib in site_config["libraries"]]}
-
-    libraries_out = []
-    for lib_name in site_config["libraries"]:
-        print(f"  Scanning library: {lib_name}...")
-        try:
-            drive_id = get_drive_id(token, site_id, lib_name)
-        except Exception as e:
-            print(f"    Warning: {e}")
-            libraries_out.append({"name": lib_name, "documents": []})
-            continue
-        docs = scan_library(token, drive_id)
-        docs.sort(key=lambda d: d["label"].lower())
-        print(f"    Found {len(docs)} document(s).")
-        libraries_out.append({"name": lib_name, "documents": docs})
-
-    return {"libraries": libraries_out}
-
-
-def parse_folder_name(name, mtype):
-    m = re.search(r"(\d{8})$", name)
-    if not m:
-        return None
-    raw = m.group(1)
-    date_str = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
-    dt = datetime.strptime(date_str, "%Y-%m-%d")
-    if mtype == "regular":
-        return {"id": f"regular-{date_str}",
-                "title": f"Regular Town Board Meeting - {dt.strftime('%B %Y')}",
-                "date": date_str}
-    else:
-        return {"id": f"special-{date_str}",
-                "title": f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}",
-                "date": date_str}
-
-
-def build_data(token, drive_id):
-    meetings = []
-
-    print("Fetching next meeting from Events Calendar...")
-    ical_event = get_next_meeting_from_ical()
-
-    print("Scanning Next Meeting...")
-    next_docs, next_subfolders = scan_folder(token, drive_id, NEXT_MEETING_PATH)
-
-    next_date = None
-    next_type = "regular"
-    next_title = "Upcoming Town Board Meeting"
-    next_time = "6:00 PM"
-    next_location = "Winchester Town Hall"
-
-    for doc in next_docs:
-        fn = doc["filename"]
-        m = re.search(r"(\d{8})", fn)
-        if m:
-            raw = m.group(1)
-            next_date = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
-            dt = datetime.strptime(next_date, "%Y-%m-%d")
-            if "RTBM" in fn:
-                next_type = "regular"
-                next_title = f"Regular Town Board Meeting - {dt.strftime('%B %Y')}"
-            elif "STBM" in fn or "TBSM" in fn:
-                next_type = "special"
-                next_title = f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
-            else:
-                # Non-standard meeting — extract descriptive slug from filename
-                slug = extract_meeting_slug(fn)
-                if slug:
-                    next_title = slug
-                else:
-                    next_title = f"Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
-                next_type = "special"
-            break
-
-    if ical_event:
-        next_time = ical_event["time"]
-        next_location = ical_event["location"]
-        print(f"  Next meeting: {ical_event['title']} on {ical_event['date']} at {ical_event['time']} @ {ical_event['location']}")
-
-    if not next_date:
-        next_date = datetime.today().strftime("%Y-%m-%d")
-
-    next_meeting = {
-        "id": f"{next_type}-{next_date}", "title": next_title,
-        "type": next_type, "status": "upcoming", "date": next_date,
-        "time": next_time, "location": next_location,
-        "documents": next_docs,
+    Committees & Commissions reserved: head bg var(--tl), badge var(--tm), title var(--td)
+    Records Archive: not yet decided
+    ──────────────────────────────────────────────────────── */
+    .tile-governance .portal-tile-head,
+    .tile-elections .portal-tile-head,
+    .tile-boards-commissions .portal-tile-head,
+    .tile-records-archive .portal-tile-head {
+      background: #888780;
     }
-    if next_subfolders:
-        next_meeting["subfolders"] = next_subfolders
-    meetings.append(next_meeting)
-
-    print("Scanning Previous Regular Meetings...")
-    try:
-        reg_folders = list_children(token, drive_id, PREV_REGULAR_PATH)
-    except Exception as e:
-        print(f"  Warning: {e}")
-        reg_folders = []
-    reg = []
-    for item in reg_folders:
-        if "folder" not in item:
-            continue
-        p = parse_folder_name(item["name"], "regular")
-        if not p:
-            continue
-        print(f"  Scanning {item['name']}...")
-        docs, subfolders = scan_folder(token, drive_id, f"{PREV_REGULAR_PATH}/{item['name']}")
-        entry = {"id": p["id"], "title": p["title"], "type": "regular",
-                 "status": "complete", "date": p["date"], "documents": docs}
-        if subfolders:
-            entry["subfolders"] = subfolders
-        reg.append(entry)
-    reg.sort(key=lambda x: x["date"], reverse=True)
-    meetings.extend(reg)
-
-    print("Scanning Previous Special Meetings...")
-    try:
-        spec_folders = list_children(token, drive_id, PREV_SPECIAL_PATH)
-    except Exception as e:
-        print(f"  Warning: {e}")
-        spec_folders = []
-    spec = []
-    for item in spec_folders:
-        if "folder" not in item:
-            continue
-        p = parse_folder_name(item["name"], "special")
-        if not p:
-            continue
-        print(f"  Scanning {item['name']}...")
-        docs, subfolders = scan_folder(token, drive_id, f"{PREV_SPECIAL_PATH}/{item['name']}")
-        entry = {"id": p["id"], "title": p["title"], "type": "special",
-                 "status": "complete", "date": p["date"], "documents": docs}
-        if subfolders:
-            entry["subfolders"] = subfolders
-        spec.append(entry)
-    spec.sort(key=lambda x: x["date"], reverse=True)
-    meetings.extend(spec)
-
-    return {"meetings": meetings}
-
-
-def write_github(data):
-    headers = {"Authorization": f"Bearer {GH_PAT}", "Accept": "application/vnd.github+json"}
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE}"
-    r = requests.get(url, headers=headers)
-    sha = r.json().get("sha") if r.status_code == 200 else None
-    content = base64.b64encode(json.dumps(data, indent=2, ensure_ascii=False).encode()).decode()
-    payload = {
-        "message": f"Auto-sync from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
-        "content": content
+    .tile-governance .portal-tile-badge,
+    .tile-elections .portal-tile-badge,
+    .tile-boards-commissions .portal-tile-badge,
+    .tile-records-archive .portal-tile-badge {
+      color: #f1efe8;
     }
-    if sha:
-        payload["sha"] = sha
-    r = requests.put(url, headers=headers, json=payload)
-    r.raise_for_status()
-    print("data.json updated successfully.")
+    .tile-governance .portal-tile-title,
+    .tile-elections .portal-tile-title,
+    .tile-boards-commissions .portal-tile-title,
+    .tile-records-archive .portal-tile-title {
+      color: #fff;
+    }
 
+    .tile-elections {
+      flex-direction: row;
+    }
+    .tile-elections .portal-tile-main {
+      flex: 2 1 0;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .tile-elections .portal-tile-divider {
+      width: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .tile-elections .portal-tile-next {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+      box-sizing: border-box;
+      background: #e0dfda;
+    }
+    .tile-elections .portal-tile-next-label {
+      font-size: 9px;
+      color: #888780;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .tile-elections .portal-tile-next-date {
+      font-family: 'Electrolize', monospace;
+      font-size: 13px;
+      color: #888780;
+    }
+    .election-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #888780;
+      margin-bottom: 10px;
+      /* Pulse animation restored when tile goes live */
+    }
 
-def main():
-    print("Authenticating with Microsoft Graph...")
-    token = get_token()
-    print("Locating SharePoint site and drive...")
-    site_id = get_site_id(token)
-    drive_id = get_drive_id(token, site_id)
-    print("Building data.json from SharePoint...")
-    data = build_data(token, drive_id)
-    total = sum(len(m["documents"]) for m in data["meetings"])
-    sub_total = sum(
-        sum(len(sf["documents"]) for sf in m.get("subfolders", []))
-        for m in data["meetings"]
-    )
-    print(f"Found {len(data['meetings'])} meetings, {total} documents + {sub_total} subfolder documents.")
+    .tile-exit {
+      border: 1px solid var(--gold);
+    }
+    .tile-exit .portal-tile-head {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tile-exit .portal-tile-badge { color: var(--tm); margin-bottom: 4px; }
+    .tile-exit .portal-tile-title { color: var(--td); display: flex; align-items: center; gap: 6px; font-size: 14px; }
+    .tile-exit img { height: 34px; width: auto; flex-shrink: 0; align-self: flex-start; }
 
-    print("Scanning additional sites...")
-    sites_data = {}
-    for site_config in FLAT_SITES:
-        sites_data[site_config["key"]] = build_flat_site_data(token, site_config)
-    data["sites"] = sites_data
-    sites_total = sum(
-        len(lib["documents"])
-        for site in sites_data.values()
-        for lib in site["libraries"]
-    )
-    print(f"Found {sites_total} document(s) across {len(FLAT_SITES)} additional site(s).")
+    @media (max-width: 700px) {
+      .portal-grid { grid-template-columns: 1fr; }
+      .file-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+      }
+      .file-folder-link,
+      .file-view {
+        text-align: center;
+      }
+    }
 
-    print("Writing to GitHub...")
-    write_github(data)
-    print("Done.")
+    .file-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .file-folder-link,
+    .file-view {
+      width: 96px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .file-folder-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 5px 14px;
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .file-folder-link:hover { border-color: var(--tm); color: var(--tm); }
+    .file-posted {
+      font-size: 11px;
+      color: var(--tm);
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
 
+<div class="topbar">
+  <a class="brand" href="https://winchesterwi.com">
+    <img src="winchester-logo.png" class="seal-logo" alt="Town of Winchester">
+    <span class="brand-name">TOWN OF WINCHESTER, WI</span>
+  </a>
+</div>
 
-if __name__ == "__main__":
-    main()
+<div class="hero">
+  <div class="hero-label">Public records</div>
+  <h1>Winchester Public Records Portal</h1>
+  <p>Meetings, ordinances, elections, and public documents for the Town of Winchester. No sign-in required.</p>
+</div>
+
+<main>
+  <div class="page-body">
+    <div class="portal-grid">
+
+      <a class="portal-tile tile-town-board" href="town-board.html">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Live</div>
+          <div class="portal-tile-title">Town Board</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Agendas, minutes &amp; meeting records</div>
+        </div>
+      </a>
+
+      <div class="portal-tile tile-boards-commissions">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-title">Committees &amp; Commissions</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Planning, intermunicipal &amp; shared services</div>
+        </div>
+      </div>
+
+      <!-- GOVERNANCE — grayscale while page is unbuilt -->
+      <div class="portal-tile tile-governance">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-title">Governance</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Ordinances, resolutions, policies &amp; fees</div>
+        </div>
+      </div>
+      <!-- GOVERNANCE — live version (uncomment to reactivate; remove grayscale block above)
+      <a class="portal-tile tile-governance" href="governance.html">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Live</div>
+          <div class="portal-tile-title">Governance</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Ordinances, resolutions, policies &amp; fees</div>
+        </div>
+      </a>
+      -->
+
+      <!-- ELECTIONS — grayscale while page is unbuilt -->
+      <div class="portal-tile tile-elections">
+        <div class="portal-tile-main">
+          <div class="portal-tile-head">
+            <div class="portal-tile-badge">Coming soon</div>
+            <div class="portal-tile-title">Elections</div>
+          </div>
+          <div class="portal-tile-body">
+            <div class="portal-tile-desc">Notices, voter info &amp; election inspector resources</div>
+          </div>
+        </div>
+        <div class="portal-tile-divider"></div>
+        <div class="portal-tile-next">
+          <div class="election-pulse"></div>
+          <div class="portal-tile-next-label">Next election</div>
+          <div class="portal-tile-next-date" id="next-election-date">Loading&hellip;</div>
+        </div>
+      </div>
+      <!-- ELECTIONS — live version (uncomment to reactivate; remove grayscale block above)
+      <a class="portal-tile tile-elections" href="elections.html">
+        <div class="portal-tile-main">
+          <div class="portal-tile-head">
+            <div class="portal-tile-badge">Live</div>
+            <div class="portal-tile-title">Elections</div>
+          </div>
+          <div class="portal-tile-body">
+            <div class="portal-tile-desc">Notices, voter info &amp; election inspector resources</div>
+          </div>
+        </div>
+        <div class="portal-tile-divider"></div>
+        <div class="portal-tile-next">
+          <div class="election-pulse"></div>
+          <div class="portal-tile-next-label">Next election</div>
+          <div class="portal-tile-next-date" id="next-election-date">Loading&hellip;</div>
+        </div>
+      </a>
+      When reactivating: also restore tile-elections CSS (gold bg, border, #f1efe8 sidebar,
+      animation on .election-pulse), and call renderNextElection() from the script block.
+      -->
+
+      <div class="portal-tile tile-records-archive">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-title">Records Archive</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Ordinance &amp; resolution history</div>
+        </div>
+      </div>
+
+      <a class="portal-tile tile-exit" href="https://winchesterwi.com">
+        <div class="portal-tile-head">
+          <div>
+            <div class="portal-tile-badge">Exit portal</div>
+            <div class="portal-tile-title">
+              winchesterwi.com
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            </div>
+          </div>
+          <img src="winchester-logo-tight.png" alt="Town of Winchester seal">
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Back to the main town website</div>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="quick-section">
+      <div class="section-label">Most recent documents</div>
+      <div id="recent-docs">
+        <div class="no-docs">Loading&hellip;</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>Town of Winchester &middot; Winchester, WI 54557 &middot; (715) 686-2123</span>
+  <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+// Wisconsin statutory election date calculator retained for when Elections goes live.
+function nthWeekdayOfMonth(year, month, weekday, n) {
+  const d = new Date(year, month, 1);
+  let count = 0;
+  while (true) {
+    if (d.getDay() === weekday) {
+      count++;
+      if (count === n) return new Date(d);
+    }
+    d.setDate(d.getDate() + 1);
+  }
+}
+
+function getWisconsinElections(year) {
+  const elections = [
+    { name: 'Spring Election', date: nthWeekdayOfMonth(year, 3, 2, 1) }
+  ];
+  if (year % 2 === 0) {
+    elections.push({ name: 'Partisan Primary', date: nthWeekdayOfMonth(year, 7, 2, 2) });
+    const firstMonday = nthWeekdayOfMonth(year, 10, 1, 1);
+    const general = new Date(firstMonday);
+    general.setDate(general.getDate() + 1);
+    elections.push({ name: 'General Election', date: general });
+  }
+  return elections;
+}
+
+function getNextElection() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const candidates = [
+    ...getWisconsinElections(today.getFullYear()),
+    ...getWisconsinElections(today.getFullYear() + 1)
+  ];
+  const upcoming = candidates.filter(e => e.date >= today).sort((a, b) => a.date - b.date);
+  return upcoming[0] || null;
+}
+
+function renderNextElection() {
+  const el = document.getElementById('next-election-date');
+  if (!el) return;
+  const next = getNextElection();
+  el.textContent = next ? formatDateShort(next.date.toISOString().slice(0, 10)) : 'TBD';
+  el.title = next ? next.name : '';
+}
+
+renderNextElection();
+</script>
+<script>
+function renderRecentRow(doc) {
+  const [iconClass, iconLabel] = getIconClass(doc.filename);
+  const dateStr = doc.posted ? formatDateShort(doc.posted) : (doc.date ? formatDateShort(doc.date) : '');
+  const folderBtn = doc.folderUrl
+    ? `<a class="file-folder-link" href="${doc.folderUrl}">Open folder</a>`
+    : '';
+  return `
+    <div class="file-row">
+      <div class="file-left">
+        <div class="file-icon ${iconClass}">${iconLabel}</div>
+        <div class="file-info">
+          <div class="file-name">${doc.label || doc.filename}</div>
+          <div class="file-date">${doc.site} &middot; ${doc.folder}</div>
+          ${dateStr ? `<div class="file-posted">Posted ${dateStr}</div>` : ''}
+        </div>
+      </div>
+      <div class="file-actions">
+        ${folderBtn}
+        <a class="file-view" href="${doc.url}">View &rarr;</a>
+      </div>
+    </div>`;
+}
+
+function humanizeSiteKey(key) {
+  const known = {
+    boardsCommissions: 'Committees & Commissions',
+    governance: 'Governance',
+    elections: 'Elections',
+    recordsArchive: 'Records Archive'
+  };
+  if (known[key]) return known[key];
+  return key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
+}
+
+async function loadRecentDocs() {
+  try {
+    const data = await loadData();
+    const all = [];
+
+    (data.meetings || []).forEach(m => {
+      (m.documents || []).forEach(d => {
+        if (d.date) all.push(Object.assign({}, d, { site: 'Town Board', folder: m.title }));
+      });
+      (m.subfolders || []).forEach(sf => {
+        (sf.documents || []).forEach(d => {
+          if (d.date) all.push(Object.assign({}, d, { site: 'Town Board', folder: m.title + ' / ' + sf.name }));
+        });
+      });
+    });
+
+    Object.keys(data.sites || {}).forEach(key => {
+      const site = data.sites[key];
+      const label = humanizeSiteKey(key);
+      (site.libraries || []).forEach(lib => {
+        (lib.documents || []).forEach(d => {
+          if (d.date) all.push(Object.assign({}, d, { site: label, folder: lib.name }));
+        });
+      });
+    });
+
+    all.sort((a, b) => b.date.localeCompare(a.date));
+    const recent = all.slice(0, 8);
+
+    const container = document.getElementById('recent-docs');
+    if (!recent.length) {
+      container.innerHTML = '<div class="no-docs">No documents posted yet.</div>';
+      return;
+    }
+
+    container.innerHTML = '<div class="file-list">' + recent.map(renderRecentRow).join('') + '</div>';
+  } catch (e) {
+    document.getElementById('recent-docs').innerHTML = '<div class="error-msg">Unable to load recent documents. Please try again later.</div>';
+  }
+}
+
+loadRecentDocs();
+</script>
+</body>
+</html>
