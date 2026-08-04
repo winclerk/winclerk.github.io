@@ -153,16 +153,17 @@ def make_link(token, drive_id, item_id):
     return r.json()["link"]["webUrl"]
 
 
-def get_next_meeting_from_ical():
+def _fetch_ical_events():
+    """Fetch and parse all events from the WordPress iCal feed.
+    Returns a list of dicts with summary, dtstart_raw, location."""
     try:
         r = requests.get(ICAL_URL, timeout=10,
             headers={"User-Agent": "Winchester-Sync/1.0"})
         r.raise_for_status()
     except Exception as e:
         print(f"  Warning: could not fetch iCal feed: {e}")
-        return None
+        return []
 
-    now = datetime.now(timezone.utc)
     events = []
     current = {}
     in_event = False
@@ -185,50 +186,79 @@ def get_next_meeting_from_ical():
             elif line.startswith("LOCATION:"):
                 current["location"] = line[9:].strip()
 
-    candidates = []
-    for ev in events:
-        summary = ev.get("summary", "")
-        if not any(kw in summary.lower() for kw in MEETING_KEYWORDS):
-            continue
-        raw = ev.get("dtstart_raw", "")
-        try:
-            if "T" in raw:
-                raw_clean = re.sub(r"[:-]", "", raw.replace("Z", ""))
-                dt = datetime.strptime(raw_clean[:15], "%Y%m%dT%H%M%S")
-                dt = dt.replace(tzinfo=timezone.utc)
-            else:
-                dt = datetime.strptime(raw[:8], "%Y%m%d")
-                dt = dt.replace(tzinfo=timezone.utc)
-        except Exception:
-            continue
-        if dt >= now:
-            candidates.append((dt, ev))
+    return events
 
-    if not candidates:
-        print("  Warning: no upcoming town board meetings found in iCal feed.")
+
+def _parse_event_dt(raw):
+    """Parse an iCal DTSTART value into a datetime. Returns None on failure."""
+    try:
+        if "T" in raw:
+            raw_clean = re.sub(r"[:-]", "", raw.replace("Z", ""))
+            dt = datetime.strptime(raw_clean[:15], "%Y%m%dT%H%M%S")
+            return dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = datetime.strptime(raw[:8], "%Y%m%d")
+            return dt.replace(tzinfo=timezone.utc)
+    except Exception:
         return None
 
-    candidates.sort(key=lambda x: x[0])
-    dt, ev = candidates[0]
 
-    # Extract just the venue name — everything before the first comma
+def _event_to_result(dt, ev):
+    """Convert a parsed event into a result dict with title, date, time, location."""
     raw_location = ev.get("location", "") or ""
     location = raw_location.split("\\,")[0].split(",")[0].strip()
     if not location:
         location = "Winchester Town Hall"
-
-    # Format time
     if dt.hour or dt.minute:
         time_str = dt.strftime("%-I:%M %p")
     else:
         time_str = "6:00 PM"
-
     return {
         "title":    ev.get("summary", ""),
         "date":     dt.strftime("%Y-%m-%d"),
         "time":     time_str,
         "location": location,
     }
+
+
+def get_next_meeting_from_ical(ical_events=None, match_date=None):
+    """Find the next meeting from the iCal feed.
+
+    Strategy:
+    1. Try keyword match (MEETING_KEYWORDS) — finds standard regular/special meetings.
+    2. If that fails and match_date is provided, find any event on that date.
+    This handles non-standard meetings like budget meetings that aren't named
+    with the standard keywords but are still in the Events Calendar."""
+    if ical_events is None:
+        ical_events = _fetch_ical_events()
+
+    now = datetime.now(timezone.utc)
+
+    # Pass 1: keyword match (standard meeting names)
+    candidates = []
+    for ev in ical_events:
+        summary = ev.get("summary", "")
+        if not any(kw in summary.lower() for kw in MEETING_KEYWORDS):
+            continue
+        dt = _parse_event_dt(ev.get("dtstart_raw", ""))
+        if dt and dt >= now:
+            candidates.append((dt, ev))
+
+    if candidates:
+        candidates.sort(key=lambda x: x[0])
+        dt, ev = candidates[0]
+        return _event_to_result(dt, ev)
+
+    # Pass 2: date match (any event on the meeting date from SharePoint)
+    if match_date:
+        for ev in ical_events:
+            dt = _parse_event_dt(ev.get("dtstart_raw", ""))
+            if dt and dt.strftime("%Y-%m-%d") == match_date:
+                print(f"  Found calendar event by date match: {ev.get('summary', '')}")
+                return _event_to_result(dt, ev)
+
+    print("  Warning: no matching town board meetings found in iCal feed.")
+    return None
 
 
 def clean_name(s):
@@ -260,11 +290,11 @@ def infer_label(filename):
         return "Agenda"
 
     # Agenda with descriptive slug: Agenda_Some-Description_YYYYMMDD
-    # e.g. Agenda_2027-Initial-Budget-Meeting_20260805
+    # e.g. Agenda_2027-Initial-Budget-Meeting_20260805 -> "2027 Initial Budget Meeting Agenda"
     m = re.match(r"Agenda_(.+?)_(\d{8})$", name)
     if m:
         slug = m.group(1).replace("-", " ").replace("_", " ").strip()
-        return f"Agenda — {slug}"
+        return f"{slug} Agenda"
 
     m = re.match(r"Minutes_(BOR_)?\d{8}(_DRAFT)?", name)
     if m:
@@ -581,8 +611,8 @@ def parse_folder_name(name, mtype):
 def build_data(token, drive_id):
     meetings = []
 
-    print("Fetching next meeting from Events Calendar...")
-    ical_event = get_next_meeting_from_ical()
+    print("Fetching Events Calendar...")
+    ical_events = _fetch_ical_events()
 
     print("Scanning Next Meeting...")
     next_docs, next_subfolders = scan_folder(token, drive_id, NEXT_MEETING_PATH)
@@ -616,6 +646,8 @@ def build_data(token, drive_id):
                 next_type = "special"
             break
 
+    # Match iCal event: try keyword match first, then date-based fallback
+    ical_event = get_next_meeting_from_ical(ical_events, match_date=next_date)
     if ical_event:
         next_time = ical_event["time"]
         next_location = ical_event["location"]
