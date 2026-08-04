@@ -1,16 +1,16 @@
 {
   "meetings": [
     {
-      "id": "regular-2026-08-05",
-      "title": "Regular Town Board Meeting - August 2026",
-      "type": "regular",
+      "id": "special-2026-08-05",
+      "title": "2027 Initial Budget Meeting",
+      "type": "special",
       "status": "upcoming",
       "date": "2026-08-05",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
       "documents": [
         {
-          "label": "Agenda 2027 Initial Budget Meeting 20260805",
+          "label": "Agenda — 2027 Initial Budget Meeting",
           "filename": "Agenda_2027-Initial-Budget-Meeting_20260805.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQASgHehEYEUQ417W5-h1sdJAQsPxqXjIAEtU8X7Xn9lrqU",
           "date": "2026-08-05",
