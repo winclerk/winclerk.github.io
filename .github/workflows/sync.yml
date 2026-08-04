@@ -1,9 +1,8 @@
-# Sync SharePoint documents to data.json every 20 minutes
 name: Sync SharePoint to data.json
 
 on:
   schedule:
-    - cron: '*/20 * * * *'
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 jobs:
@@ -22,7 +21,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install requests pypdf
 
       - name: Run SharePoint sync
         env:
