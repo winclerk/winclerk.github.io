@@ -5,6 +5,7 @@ import io
 import requests
 from datetime import datetime, timezone
 import re
+from pypdf import PdfReader
 
 
 TENANT_ID     = os.environ["AZURE_TENANT_ID"]
@@ -175,12 +176,6 @@ def extract_meeting_details_from_pdf(pdf_bytes):
       'Winchester Town Hall • 7228 CTH W, Winchester, WI 54557'
 
     Returns a dict with 'time' and/or 'location' keys, or empty dict."""
-    try:
-        from pypdf import PdfReader
-    except ImportError:
-        print("    Warning: pypdf not installed, skipping PDF parsing")
-        return {}
-
     try:
         reader = PdfReader(io.BytesIO(pdf_bytes))
         # Only need the first page — meeting details are always in the header
