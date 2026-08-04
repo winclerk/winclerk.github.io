@@ -259,6 +259,13 @@ def infer_label(filename):
     if m:
         return "Agenda"
 
+    # Agenda with descriptive slug: Agenda_Some-Description_YYYYMMDD
+    # e.g. Agenda_2027-Initial-Budget-Meeting_20260805
+    m = re.match(r"Agenda_(.+?)_(\d{8})$", name)
+    if m:
+        slug = m.group(1).replace("-", " ").replace("_", " ").strip()
+        return f"Agenda — {slug}"
+
     m = re.match(r"Minutes_(BOR_)?\d{8}(_DRAFT)?", name)
     if m:
         is_bor = bool(m.group(1))
@@ -353,6 +360,33 @@ def parse_date(filename):
         if 1 <= int(mm) <= 12 and 1 <= int(dd) <= 31:
             return f"20{yy}-{mm}-{dd}"
     return None
+
+
+def extract_meeting_slug(filename):
+    """Extract a descriptive meeting title from a non-standard filename.
+    e.g. Agenda_2027-Initial-Budget-Meeting_20260805.pdf -> '2027 Initial Budget Meeting'
+    Returns None if the filename matches standard RTBM/STBM/TBSM patterns."""
+    name = filename
+    for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
+        if name.lower().endswith(ext):
+            name = name[:-len(ext)]
+            break
+    # Only applies to Agenda files that aren't standard patterns
+    if not name.startswith("Agenda_"):
+        return None
+    if re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_", name):
+        return None
+    if re.match(r"Agenda_\d{8}$", name):
+        return None
+    # Strip "Agenda_" prefix
+    slug = re.sub(r"^Agenda_", "", name)
+    # Strip trailing date
+    slug = re.sub(r"_?\d{8}$", "", slug)
+    # Strip DRAFT suffix
+    slug = re.sub(r"_?DRAFT$", "", slug, flags=re.IGNORECASE)
+    # Clean separators
+    slug = slug.replace("_", " ").replace("-", " ").strip()
+    return slug if slug else None
 
 
 def scan_folder(token, drive_id, folder_path):
@@ -560,17 +594,26 @@ def build_data(token, drive_id):
     next_location = "Winchester Town Hall"
 
     for doc in next_docs:
-        m = re.search(r"(\d{8})", doc["filename"])
+        fn = doc["filename"]
+        m = re.search(r"(\d{8})", fn)
         if m:
             raw = m.group(1)
             next_date = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
             dt = datetime.strptime(next_date, "%Y-%m-%d")
-            if "STBM" in doc["filename"] or "TBSM" in doc["filename"]:
+            if "RTBM" in fn:
+                next_type = "regular"
+                next_title = f"Regular Town Board Meeting - {dt.strftime('%B %Y')}"
+            elif "STBM" in fn or "TBSM" in fn:
                 next_type = "special"
                 next_title = f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
             else:
-                next_type = "regular"
-                next_title = f"Regular Town Board Meeting - {dt.strftime('%B %Y')}"
+                # Non-standard meeting — extract descriptive slug from filename
+                slug = extract_meeting_slug(fn)
+                if slug:
+                    next_title = slug
+                else:
+                    next_title = f"Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
+                next_type = "special"
             break
 
     if ical_event:
