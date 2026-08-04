@@ -56,40 +56,36 @@
     .tile-town-board .portal-tile-badge { color: #fff; }
     .tile-town-board .portal-tile-title { color: #fff; }
 
-    .tile-governance {
-      border: 1px solid var(--gold);
-    }
-    .tile-governance .portal-tile-head { background: var(--tm); }
-    .tile-governance .portal-tile-badge { color: #fff; }
-    .tile-governance .portal-tile-title { color: #fff; }
-
+    .tile-governance,
+    .tile-elections,
     .tile-boards-commissions,
     .tile-records-archive {
       /* Grayscale while pages are unbuilt. Reserved colors for when live:
+         Governance -> head background var(--tm), badge/title #fff, gold border
+         Elections -> head background var(--gold), badge/title #fff, gold border
          Committees & Commissions -> light teal: head background var(--tl),
            badge color var(--tm), title color var(--td)
          Records Archive -> not yet decided */
       opacity: 0.6;
     }
+    .tile-governance .portal-tile-head,
+    .tile-elections .portal-tile-head,
     .tile-boards-commissions .portal-tile-head,
     .tile-records-archive .portal-tile-head {
       background: #888780;
     }
+    .tile-governance .portal-tile-badge,
+    .tile-elections .portal-tile-badge,
     .tile-boards-commissions .portal-tile-badge,
     .tile-records-archive .portal-tile-badge {
       color: #f1efe8;
     }
+    .tile-governance .portal-tile-title,
+    .tile-elections .portal-tile-title,
     .tile-boards-commissions .portal-tile-title,
     .tile-records-archive .portal-tile-title {
       color: #fff;
     }
-
-    .tile-elections {
-      border: 1px solid var(--gold);
-    }
-    .tile-elections .portal-tile-head { background: var(--gold); }
-    .tile-elections .portal-tile-badge { color: #fff; }
-    .tile-elections .portal-tile-title { color: #fff; }
 
     .tile-exit {
       border: 1px solid var(--gold);
@@ -104,57 +100,6 @@
     .tile-exit .portal-tile-badge { color: var(--tm); margin-bottom: 4px; }
     .tile-exit .portal-tile-title { color: var(--td); display: flex; align-items: center; gap: 6px; font-size: 14px; }
     .tile-exit img { height: 34px; width: auto; flex-shrink: 0; align-self: flex-start; }
-
-    .tile-elections {
-      flex-direction: row;
-    }
-    .tile-elections .portal-tile-main {
-      flex: 2 1 0;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-    .tile-elections .portal-tile-divider {
-      width: 1px;
-      background: var(--border);
-      flex-shrink: 0;
-    }
-    .tile-elections .portal-tile-next {
-      flex: 1 1 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8px;
-      box-sizing: border-box;
-      background: #f1efe8;
-    }
-    .tile-elections .portal-tile-next-label {
-      font-size: 9px;
-      color: #888780;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
-    }
-    .tile-elections .portal-tile-next-date {
-      font-family: 'Electrolize', monospace;
-      font-size: 13px;
-      color: #444441;
-    }
-    .election-pulse {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--gold);
-      margin-bottom: 10px;
-      animation: electionPulse 2s ease-in-out infinite;
-    }
-    @keyframes electionPulse {
-      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(165, 150, 100, 0.5); }
-      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(165, 150, 100, 0.3); }
-    }
 
     @media (max-width: 700px) {
       .portal-grid { grid-template-columns: 1fr; }
@@ -238,33 +183,25 @@
         </div>
       </div>
 
-      <a class="portal-tile tile-governance" href="governance.html">
+      <div class="portal-tile tile-governance">
         <div class="portal-tile-head">
-          <div class="portal-tile-badge">Live</div>
+          <div class="portal-tile-badge">Coming soon</div>
           <div class="portal-tile-title">Governance</div>
         </div>
         <div class="portal-tile-body">
           <div class="portal-tile-desc">Ordinances, resolutions, policies &amp; fees</div>
         </div>
-      </a>
+      </div>
 
-      <a class="portal-tile tile-elections" href="elections.html">
-        <div class="portal-tile-main">
-          <div class="portal-tile-head">
-            <div class="portal-tile-badge">Live</div>
-            <div class="portal-tile-title">Elections</div>
-          </div>
-          <div class="portal-tile-body">
-            <div class="portal-tile-desc">Notices, voter info &amp; election inspector resources</div>
-          </div>
+      <div class="portal-tile tile-elections">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-title">Elections</div>
         </div>
-        <div class="portal-tile-divider"></div>
-        <div class="portal-tile-next">
-          <div class="election-pulse"></div>
-          <div class="portal-tile-next-label">Next election</div>
-          <div class="portal-tile-next-date" id="next-election-date">Loading&hellip;</div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Notices, voter info &amp; election inspector resources</div>
         </div>
-      </a>
+      </div>
 
       <div class="portal-tile tile-records-archive">
         <div class="portal-tile-head">
@@ -310,12 +247,7 @@
 
 <script src="shared.js"></script>
 <script>
-// Computes Wisconsin's regularly-scheduled statutory election dates.
-// Spring Election: first Tuesday in April, every year.
-// Partisan Primary: second Tuesday in August, even years.
-// General Election: Tuesday after the first Monday in November, even years.
-// This does NOT cover special elections, recalls, or referenda-only dates —
-// those still need to be entered manually if they come up.
+// Wisconsin statutory election date calculator retained for when Elections goes live.
 function nthWeekdayOfMonth(year, month, weekday, n) {
   const d = new Date(year, month, 1);
   let count = 0;
@@ -352,16 +284,6 @@ function getNextElection() {
   const upcoming = candidates.filter(e => e.date >= today).sort((a, b) => a.date - b.date);
   return upcoming[0] || null;
 }
-
-function renderNextElection() {
-  const el = document.getElementById('next-election-date');
-  if (!el) return;
-  const next = getNextElection();
-  el.textContent = next ? formatDateShort(next.date.toISOString().slice(0, 10)) : 'TBD';
-  el.title = next ? next.name : '';
-}
-
-renderNextElection();
 </script>
 <script>
 function renderRecentRow(doc) {
@@ -407,7 +329,6 @@ async function loadRecentDocs() {
       (m.documents || []).forEach(d => {
         if (d.date) all.push(Object.assign({}, d, { site: 'Town Board', folder: m.title }));
       });
-      // Include subfolder documents in recent docs
       (m.subfolders || []).forEach(sf => {
         (sf.documents || []).forEach(d => {
           if (d.date) all.push(Object.assign({}, d, { site: 'Town Board', folder: m.title + ' / ' + sf.name }));
