@@ -17,6 +17,36 @@
           "posted": "2026-08-04",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         }
+      ],
+      "subfolders": [
+        {
+          "name": "Financial",
+          "documents": [
+            {
+              "label": "2026 Budget Worksheet",
+              "filename": "2026 Budget Worksheet.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQCVrlW82sFlRJsaEc6sHKIiAZm_1JUwRzS0NvmfWUDdKTU",
+              "date": "2026-08-05",
+              "posted": "2026-08-05"
+            },
+            {
+              "label": "2026 Proposed Budget detail with prior years",
+              "filename": "2026 Proposed Budget detail with prior years.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQBClKNc4bNoR4qQQqkn_H7nATIoIFRJOM9DtjjjKrZZkh8",
+              "date": "2026-08-05",
+              "posted": "2026-08-05"
+            },
+            {
+              "label": "2027 Budget Worksheet DRAFT",
+              "filename": "2027 Budget Worksheet DRAFT.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQAI9vBTMrerR6P2_aclMIaIAeUZWBxulJLRDW53MDrSTqI",
+              "date": "2026-08-05",
+              "posted": "2026-08-05",
+              "draft": true
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgANq8nq44b0SK7ybtS1X-rQAejihQlTvAqE70G8RAAopFQ"
+        }
       ]
     },
     {
