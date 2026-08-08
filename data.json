@@ -1030,7 +1030,17 @@
         },
         {
           "name": "Fee Schedule",
-          "documents": []
+          "documents": [
+            {
+              "label": "Fee Schedule",
+              "filename": "Fee-Schedule_20260717.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQCn3CLylNzbSol__6vsSszsAXTZnG2ZvkOJ37r24XCqUWY",
+              "date": "2026-07-17",
+              "posted": "2026-07-19",
+              "folder": "Fee Schedule",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCBXlrllx4NSbV0ETWWtH3JAT2dBLfZvukFV-djde8TBb8"
+            }
+          ]
         }
       ]
     },
@@ -1038,7 +1048,29 @@
       "libraries": [
         {
           "name": "Election Notices",
-          "documents": []
+          "documents": [
+            {
+              "label": "Notice Type B Ballot Sample",
+              "filename": "Notice_Type-B_Ballot-Sample_20260716.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQD15_-ASFVWTrDE4iQ_QCtsATRpj9OKfEST4L0PHMiTwS8",
+              "date": "2026-07-16",
+              "posted": "2026-07-21"
+            },
+            {
+              "label": "Notice Type B Partisan Primary",
+              "filename": "Notice_Type-B_Partisan-Primary_20260716.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQCexWbGAFyIRrz5lBWtgchlAf2uNBm4K6XCTXply0O1cE0",
+              "date": "2026-07-16",
+              "posted": "2026-07-21"
+            },
+            {
+              "label": "Notice Type D Polling Hours & Locations",
+              "filename": "Notice_Type-D_Polling-Hours-&-Locations_20260716.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQD9LEmXv-RtQIf-K7JhAl5fAaJtI7uA0XnwDwHe2u2VquA",
+              "date": "2026-07-16",
+              "posted": "2026-07-21"
+            }
+          ]
         },
         {
           "name": "Canvass Results & Certifications",
@@ -1046,11 +1078,76 @@
         },
         {
           "name": "Voters",
-          "documents": []
+          "documents": [
+            {
+              "label": "Comm Absentee Ballot Return Guidance for Voters",
+              "filename": "Comm_Absentee-Ballot-Return-Guidance-for-Voters_20260717.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQBbbDpmBC2jTaxmvpL9D7-tAdwWodEmYGKXSX2EheqUJsg",
+              "date": "2026-07-17",
+              "posted": "2026-07-27"
+            },
+            {
+              "label": "Comm Prediction Markets Memo",
+              "filename": "Comm_Prediction-Markets-Memo_20260715.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQCHLC9O10hiRqH8Kr1N8YbsAciJFsH6E73hGmWqABDFPkc",
+              "date": "2026-07-15",
+              "posted": "2026-07-21"
+            },
+            {
+              "label": "Comm Prediction Markets News Release",
+              "filename": "Comm_Prediction-Markets-News-Release_20260715.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQBS76Me02ZlRJ3VOLbmTqN3AWLexLdO3KVpEUpHbPQn8nc",
+              "date": "2026-07-15",
+              "posted": "2026-07-21"
+            },
+            {
+              "label": "Comm USPS Election Mail Recommendations and Updates",
+              "filename": "Comm_USPS-Election-Mail-Recommendations-and-Updates_20260715.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQCMPzSzVsxHRronRKgp5MrMAWPzC8WRA8UlUambpQ7sXzs",
+              "date": "2026-07-15",
+              "posted": "2026-07-21"
+            },
+            {
+              "label": "Form EL 128 Uniform Instructions Absentee Voting Standard 200260724",
+              "filename": "Form_EL-128_Uniform-Instructions-Absentee-Voting-Standard_200260724.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQAvfQpxtkc_T7ZDMtcHPTvTAaj2TIpL60ZgJscQyuhKIjk",
+              "date": "2002-60-72",
+              "posted": "2026-07-24"
+            },
+            {
+              "label": "Form EL 128up Uniform Instructions Absentee Voting Overseas 200260724",
+              "filename": "Form_EL-128up_Uniform-Instructions-Absentee-Voting-Overseas_200260724.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQBPGZBc7QwTRbK78UMcepnqAebZdH-4qUI7ngQzoODHQv0",
+              "date": "2002-60-72",
+              "posted": "2026-07-24"
+            }
+          ]
         },
         {
           "name": "Election Inspectors",
-          "documents": []
+          "documents": [
+            {
+              "label": "Comm Absentee Ballot Return Guidance for Voters",
+              "filename": "Comm_Absentee-Ballot-Return-Guidance-for-Voters_20260717.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQDd54oi5zXORoq1NiVvOdsxAdou-RVS8O2_ImsxiUdIdX4",
+              "date": "2026-07-17",
+              "posted": "2026-07-27"
+            },
+            {
+              "label": "Form EL 128 Uniform Instructions Absentee Voting Overseas 200260724",
+              "filename": "Form_EL-128_Uniform-Instructions-Absentee-Voting-Overseas_200260724.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQCdiGPhVaRKQ4_3nAwpYIN3AdrJ97z8A3iDkXA_wZjp24k",
+              "date": "2002-60-72",
+              "posted": "2026-07-24"
+            },
+            {
+              "label": "Form EL 128up Uniform Instructions Absentee Voting Standard 200260724",
+              "filename": "Form_EL-128up_Uniform-Instructions-Absentee-Voting-Standard_200260724.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQBZTxDCIujxTZ-iv1Pt65mAAcWRT5ncOl0kDrl42E8kDak",
+              "date": "2002-60-72",
+              "posted": "2026-07-24"
+            }
+          ]
         }
       ]
     }
