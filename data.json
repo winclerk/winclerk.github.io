@@ -1,11 +1,11 @@
 {
   "meetings": [
     {
-      "id": "regular-2026-08-09",
+      "id": "regular-2026-08-10",
       "title": "Upcoming Town Board Meeting",
       "type": "regular",
       "status": "upcoming",
-      "date": "2026-08-09",
+      "date": "2026-08-10",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
       "documents": [],
@@ -799,7 +799,8 @@
           "filename": "Agenda_2027-Initial-Budget-Meeting_20260805.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQASgHehEYEUQ417W5-h1sdJAQsPxqXjIAEtU8X7Xn9lrqU",
           "date": "2026-08-05",
-          "posted": "2026-08-04"
+          "posted": "2026-08-04",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgBq2wEyEdl7TqhZkqC0AFakASLI7F61fWg11hZUVh05zCg"
         }
       ],
       "subfolders": [
