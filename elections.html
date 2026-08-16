@@ -10,32 +10,48 @@
     .lib-section:last-child { margin-bottom: 0; }
 
     .hero { background: var(--gold); }
-    .hero h1, .hero p, .hero .hero-label { color: var(--td); }
-    .hero .breadcrumb a { color: var(--td); opacity: 0.7; }
+    .hero h1, .hero p, .hero .hero-label { color: #fff; }
+    .hero .breadcrumb a { color: #fff; opacity: 0.7; }
     .hero .breadcrumb a:hover { opacity: 1; }
-    .hero .breadcrumb span { color: var(--td); }
+    .hero .breadcrumb span { color: #fff; }
 
     .folder-top { background: var(--gold); }
-    .folder-name { color: var(--td); }
+    .folder-name { color: #fff; }
 
     .stat-tile-accent { background: var(--gold) !important; }
     .stat-tile-accent .stat-label,
     .stat-tile-accent .stat-value,
-    .stat-tile-accent .stat-sub { color: var(--td) !important; }
+    .stat-tile-accent .stat-sub { color: #fff !important; }
 
     .election-pulse-hero {
       display: inline-block;
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--td);
+      background: #fff;
       margin-right: 8px;
       vertical-align: middle;
+      opacity: 0.4;
+    }
+    .election-pulse-hero.active {
+      opacity: 1;
       animation: electionPulse 2s ease-in-out infinite;
     }
     @keyframes electionPulse {
-      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(25, 60, 60, 0.4); }
-      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(25, 60, 60, 0.2); }
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(255, 255, 255, 0.2); }
+    }
+
+    /* Keep folder cards uniform height: pin the bottom content */
+    .folder-grid .folder-card {
+      display: flex;
+      flex-direction: column;
+    }
+    .folder-grid .folder-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
     }
   </style>
 </head>
@@ -147,10 +163,20 @@ async function init() {
     const nextName = next ? next.name : '';
     const totalDocs = libraries.reduce((s, lib) => s + (lib.documents || []).length, 0);
 
+    // Check if within 30 days of election
+    let pulseActive = false;
+    if (next) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const daysUntil = Math.ceil((next.date - today) / (1000 * 60 * 60 * 24));
+      if (daysUntil <= 30) pulseActive = true;
+    }
+    const pulseClass = pulseActive ? 'election-pulse-hero active' : 'election-pulse-hero';
+
     document.getElementById('stat-tiles-container').innerHTML = `
       <div class="stat-tiles">
         <div class="stat-tile stat-tile-accent">
-          <div class="stat-label"><span class="election-pulse-hero"></span>Next election</div>
+          <div class="stat-label"><span class="${pulseClass}"></span>Next election</div>
           <div class="stat-value">${nextDateStr}</div>
           <div class="stat-sub">${nextName}</div>
         </div>
