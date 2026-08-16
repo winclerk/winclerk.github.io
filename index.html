@@ -104,7 +104,6 @@
     .tile-town-board .portal-tile-badge { color: #fff; }
     .tile-town-board .portal-tile-title { color: #fff; }
 
-    .tile-governance,
     .tile-elections,
     .tile-boards-commissions,
     .tile-records-archive {
@@ -114,11 +113,11 @@
          3. Swap <div> → <a href="..."> in the HTML (see commented live versions) */
       opacity: 0.6;
     }
-    /* ── Live tile CSS (uncomment per-tile when reactivating) ──
     .tile-governance { border: 1px solid var(--gold); }
     .tile-governance .portal-tile-head { background: var(--tm); }
     .tile-governance .portal-tile-badge { color: #fff; }
     .tile-governance .portal-tile-title { color: #fff; }
+    /* ── Live tile CSS (uncomment per-tile when reactivating) ──
 
     .tile-elections { border: 1px solid var(--gold); }
     .tile-elections .portal-tile-head { background: var(--gold); }
@@ -139,19 +138,16 @@
     Committees & Commissions reserved: head bg var(--tl), badge var(--tm), title var(--td)
     Records Archive: not yet decided
     ──────────────────────────────────────────────────────── */
-    .tile-governance .portal-tile-head,
     .tile-elections .portal-tile-head,
     .tile-boards-commissions .portal-tile-head,
     .tile-records-archive .portal-tile-head {
       background: #888780;
     }
-    .tile-governance .portal-tile-badge,
     .tile-elections .portal-tile-badge,
     .tile-boards-commissions .portal-tile-badge,
     .tile-records-archive .portal-tile-badge {
       color: #f1efe8;
     }
-    .tile-governance .portal-tile-title,
     .tile-elections .portal-tile-title,
     .tile-boards-commissions .portal-tile-title,
     .tile-records-archive .portal-tile-title {
@@ -309,17 +305,6 @@
         </div>
       </div>
 
-      <!-- GOVERNANCE — grayscale while page is unbuilt -->
-      <div class="portal-tile tile-governance">
-        <div class="portal-tile-head">
-          <div class="portal-tile-badge">Coming soon</div>
-          <div class="portal-tile-title">Governance</div>
-        </div>
-        <div class="portal-tile-body">
-          <div class="portal-tile-desc">Ordinances, resolutions, policies &amp; fees</div>
-        </div>
-      </div>
-      <!-- GOVERNANCE — live version (uncomment to reactivate; remove grayscale block above)
       <a class="portal-tile tile-governance" href="governance.html">
         <div class="portal-tile-head">
           <div class="portal-tile-badge">Live</div>
@@ -329,7 +314,6 @@
           <div class="portal-tile-desc">Ordinances, resolutions, policies &amp; fees</div>
         </div>
       </a>
-      -->
 
       <!-- ELECTIONS — grayscale while page is unbuilt -->
       <div class="portal-tile tile-elections">
