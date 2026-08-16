@@ -1043,7 +1043,62 @@
         },
         {
           "name": "Policies",
-          "documents": []
+          "documents": [
+            {
+              "label": "Policy 2026-01 Town Facility Use",
+              "filename": "Policy_2026-01_Town-Facility-Use_20260619.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBj_GuuFEj2SqW-QleGzTXtATl3dtKgVV6H9IH7OPU_0Kg",
+              "date": "2026-06-19",
+              "posted": "2026-08-16",
+              "folder": "2026",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgDyZ_VsAj1xSpBJdTQbyuzgAbJjVSHwsmf13S23sZv9Jko"
+            },
+            {
+              "label": "Policy 2026-02 Facility Reservations Key Access Code Management",
+              "filename": "Policy_2026-02_Facility-Reservations-Key-Access-Code-Management_20260617.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQB8wDC91FV9TI5GTjQZ538bAdjlBsXaaKvUHx7r7-K6Ns4",
+              "date": "2026-06-17",
+              "posted": "2026-08-16",
+              "folder": "2026",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgDyZ_VsAj1xSpBJdTQbyuzgAbJjVSHwsmf13S23sZv9Jko"
+            },
+            {
+              "label": "Policy 2026-03 Check Expiration",
+              "filename": "Policy_2026-03_Check-Expiration_20260617.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQCgBVhX_jMRSrFZCB6ssBUCAYq1OmBNQy4dlP6b1tccAi8",
+              "date": "2026-06-17",
+              "posted": "2026-08-16",
+              "folder": "2026",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgDyZ_VsAj1xSpBJdTQbyuzgAbJjVSHwsmf13S23sZv9Jko"
+            },
+            {
+              "label": "Policy 2026-04 Fire Numbers",
+              "filename": "Policy_2026-04_Fire-Numbers_20260630.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQCHDdMSiJiOQLYyhwb47JUeAZ4ESMxqpWIifeuhXejkAuY",
+              "date": "2026-06-30",
+              "posted": "2026-08-16",
+              "folder": "2026",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgDyZ_VsAj1xSpBJdTQbyuzgAbJjVSHwsmf13S23sZv9Jko"
+            },
+            {
+              "label": "Policy 2026-05 Clerk's Office Copy Fee Schedule",
+              "filename": "Policy_2026-05_Clerk's-Office-Copy-Fee-Schedule_20260630.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBMpLoigtiAQ6ji-1Ls68ffASec8VMLIfQTu2xQr9hnjs8",
+              "date": "2026-06-30",
+              "posted": "2026-08-16",
+              "folder": "2026",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgDyZ_VsAj1xSpBJdTQbyuzgAbJjVSHwsmf13S23sZv9Jko"
+            },
+            {
+              "label": "Policy 2026-06 Facility Use Refund Requests",
+              "filename": "Policy_2026-06_Facility-Use-Refund-Requests_20260630.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQC-KzCHw-gBSYyoWVsiY6D2AZun4MKKt8eRYFRnE9rOjZA",
+              "date": "2026-06-30",
+              "posted": "2026-08-16",
+              "folder": "2026",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgDyZ_VsAj1xSpBJdTQbyuzgAbJjVSHwsmf13S23sZv9Jko"
+            }
+          ]
         },
         {
           "name": "Fee Schedule",
