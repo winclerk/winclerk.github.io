@@ -1031,15 +1031,62 @@
       "libraries": [
         {
           "name": "Ordinances",
-          "documents": []
+          "documents": [
+            {
+              "label": "Ordinance 2026-01 Driveway",
+              "filename": "Ordinance_2026-01_Driveway_20260223.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBHztkgLSoZQqObl9lVjFhrAbKsM0zsf-10bWh3seCpVLs",
+              "date": "2026-02-23",
+              "posted": "2026-08-16",
+              "folder": "Active",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            }
+          ]
         },
         {
           "name": "Resolutions",
-          "documents": []
+          "documents": [
+            {
+              "label": "Resolution 2026-01 Posting Locations",
+              "filename": "Resolution_2026-01_Posting-Locations_20260511.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQAifmOAFdp9RJnq8ZVovNzaAe5onY9tn6sQG3Ofjy9PAU0",
+              "date": "2026-05-11",
+              "posted": "2026-08-16"
+            },
+            {
+              "label": "Resolution 2026-02 Winchester WMRS Form PR B002 Submission",
+              "filename": "Resolution_2026-02_Winchester-WMRS-Form-PR-B002-Submission_20260523.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQAQ2Yqx0hBHRaqD0IxPaiBJAWffqcmXthnh-jRwKTDYO4c",
+              "date": "2026-05-23",
+              "posted": "2026-08-16"
+            },
+            {
+              "label": "Resolution 2026-03 Fee Schedule Adoption",
+              "filename": "Resolution_2026-03_Fee-Schedule-Adoption_20260630.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQD-W56QmS8ARYdyXpHSV3-sAV6dnLyUVgrZRvx-mjCaDmo",
+              "date": "2026-06-30",
+              "posted": "2026-08-16"
+            },
+            {
+              "label": "Resolution 2026-04 Uniform Chart of Accounts WI Munis",
+              "filename": "Resolution_2026-04_Uniform-Chart-of-Accounts-WI-Munis_20260523.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBR7LIqTxmeR5nAmYG0VycgAXzriW-Xmql-Z3esB50fKt4",
+              "date": "2026-05-23",
+              "posted": "2026-08-16"
+            }
+          ]
         },
         {
           "name": "Notices",
-          "documents": []
+          "documents": [
+            {
+              "label": "Notice Public Records Access",
+              "filename": "Notice_Public-Records-Access_20260512.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQDgbVfh0dEYR4EwJ8Ps6Lm-Aem4HK_r31D48KmKVC4eKP0",
+              "date": "2026-05-12",
+              "posted": "2026-08-16"
+            }
+          ]
         },
         {
           "name": "Policies",
