@@ -104,7 +104,6 @@
     .tile-town-board .portal-tile-badge { color: #fff; }
     .tile-town-board .portal-tile-title { color: #fff; }
 
-    .tile-elections,
     .tile-boards-commissions,
     .tile-records-archive {
       /* Grayscale while pages are unbuilt. To reactivate a tile:
@@ -117,7 +116,6 @@
     .tile-governance .portal-tile-head { background: var(--tm); }
     .tile-governance .portal-tile-badge { color: #fff; }
     .tile-governance .portal-tile-title { color: #fff; }
-    /* ── Live tile CSS (uncomment per-tile when reactivating) ──
 
     .tile-elections { border: 1px solid var(--gold); }
     .tile-elections .portal-tile-head { background: var(--gold); }
@@ -126,29 +124,18 @@
     .tile-elections .portal-tile-next { background: #f1efe8; }
     .tile-elections .portal-tile-next-label { color: #888780; }
     .tile-elections .portal-tile-next-date { color: #444441; }
-    .election-pulse {
-      background: var(--gold);
-      animation: electionPulse 2s ease-in-out infinite;
-    }
-    @keyframes electionPulse {
-      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(165,150,100,0.5); }
-      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(165,150,100,0.3); }
-    }
-
+    /* ── Live tile CSS (uncomment per-tile when reactivating) ──
     Committees & Commissions reserved: head bg var(--tl), badge var(--tm), title var(--td)
     Records Archive: not yet decided
     ──────────────────────────────────────────────────────── */
-    .tile-elections .portal-tile-head,
     .tile-boards-commissions .portal-tile-head,
     .tile-records-archive .portal-tile-head {
       background: #888780;
     }
-    .tile-elections .portal-tile-badge,
     .tile-boards-commissions .portal-tile-badge,
     .tile-records-archive .portal-tile-badge {
       color: #f1efe8;
     }
-    .tile-elections .portal-tile-title,
     .tile-boards-commissions .portal-tile-title,
     .tile-records-archive .portal-tile-title {
       color: #fff;
@@ -177,7 +164,7 @@
       text-align: center;
       padding: 8px;
       box-sizing: border-box;
-      background: #e0dfda;
+      background: #f1efe8;
     }
     .tile-elections .portal-tile-next-label {
       font-size: 9px;
@@ -189,16 +176,24 @@
     .tile-elections .portal-tile-next-date {
       font-family: 'Electrolize', monospace;
       font-size: 13px;
-      color: #888780;
+      color: #444441;
     }
     .election-pulse {
       display: inline-block;
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #888780;
+      background: var(--gold);
       margin-bottom: 10px;
-      /* Pulse animation restored when tile goes live */
+      opacity: 0.4;
+    }
+    .election-pulse.active {
+      opacity: 1;
+      animation: electionPulse 2s ease-in-out infinite;
+    }
+    @keyframes electionPulse {
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(165,150,100,0.5); }
+      50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(165,150,100,0.3); }
     }
 
     .tile-exit {
@@ -315,25 +310,6 @@
         </div>
       </a>
 
-      <!-- ELECTIONS — grayscale while page is unbuilt -->
-      <div class="portal-tile tile-elections">
-        <div class="portal-tile-main">
-          <div class="portal-tile-head">
-            <div class="portal-tile-badge">Coming soon</div>
-            <div class="portal-tile-title">Elections</div>
-          </div>
-          <div class="portal-tile-body">
-            <div class="portal-tile-desc">Notices, voter info &amp; election inspector resources</div>
-          </div>
-        </div>
-        <div class="portal-tile-divider"></div>
-        <div class="portal-tile-next">
-          <div class="election-pulse"></div>
-          <div class="portal-tile-next-label">Next election</div>
-          <div class="portal-tile-next-date" id="next-election-date">Loading&hellip;</div>
-        </div>
-      </div>
-      <!-- ELECTIONS — live version (uncomment to reactivate; remove grayscale block above)
       <a class="portal-tile tile-elections" href="elections.html">
         <div class="portal-tile-main">
           <div class="portal-tile-head">
@@ -351,9 +327,6 @@
           <div class="portal-tile-next-date" id="next-election-date">Loading&hellip;</div>
         </div>
       </a>
-      When reactivating: also restore tile-elections CSS (gold bg, border, #f1efe8 sidebar,
-      animation on .election-pulse), and call renderNextElection() from the script block.
-      -->
 
       <div class="portal-tile tile-records-archive">
         <div class="portal-tile-head">
@@ -443,6 +416,14 @@ function renderNextElection() {
   const next = getNextElection();
   el.textContent = next ? formatDateShort(next.date.toISOString().slice(0, 10)) : 'TBD';
   el.title = next ? next.name : '';
+
+  const pulse = document.querySelector('.election-pulse');
+  if (pulse && next) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const daysUntil = Math.ceil((next.date - today) / (1000 * 60 * 60 * 24));
+    if (daysUntil <= 30) pulse.classList.add('active');
+  }
 }
 
 renderNextElection();
