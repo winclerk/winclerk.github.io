@@ -1,20 +1,36 @@
 {
   "meetings": [
     {
-      "id": "special-2026-08-17",
-      "title": "Town Board Meeting - August 17, 2026",
-      "type": "special",
+      "id": "regular-2026-08-17",
+      "title": "Regular Town Board Meeting - August 2026",
+      "type": "regular",
       "status": "upcoming",
       "date": "2026-08-17",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
       "documents": [
         {
-          "label": "Agenda",
-          "filename": "Agenda_20260817.pdf",
+          "label": "Regular Meeting Agenda",
+          "filename": "Agenda_RTBM_20260817.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBynmS4yn7MSrXk-ROFCShLAWHZBrjDWIAw4C6x7bLiR5c",
           "date": "2026-08-17",
           "posted": "2026-08-15",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "MWWinchester Tourism Entity Agreement",
+          "filename": "MWWinchester Tourism Entity Agreement.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCENCjwXrySRI71fIR-rAuaAQtmbRl3smTXZUN0QjtAMIU",
+          "date": "2026-08-17",
+          "posted": "2026-08-17",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "Treasurer's Report",
+          "filename": "Report_Treasurer_202607.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCts_vAS_ARRYKeaPF2cQJ4ATypIKUFo4eiI7d0zcSJQ0c",
+          "date": "2026-08-17",
+          "posted": "2026-08-17",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         }
       ]
