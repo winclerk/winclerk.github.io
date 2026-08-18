@@ -34,10 +34,35 @@
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         },
         {
+          "label": "Minutes (Draft)",
+          "filename": "Minutes_RTBM_20260817_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDx-Ns93SY1QZ_WqVanKM6YAZJ7MeN9a22gpFf2fHiG78w",
+          "date": "2026-08-17",
+          "posted": "2026-08-18",
+          "draft": true,
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
           "label": "Minutes 2027 Initial Budget Meeting 20260805",
           "filename": "Minutes_2027-Initial-Budget-Meeting_20260805.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAGDcztarZNRLWJ7ztRzDXBAaaNhVatVAF3K8FV9uQPq0Q",
           "date": "2026-08-05",
+          "posted": "2026-08-17",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "2026-07 Road Sign Installation Standards Policy",
+          "filename": "Policy_2026-07_Road-Sign-Installation-Standards_20260816.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDlpHOg_LraQJoXOrWNGH8sAapSRkjV-4oVNOQO3UDSrcM",
+          "date": "2026-08-16",
+          "posted": "2026-08-18",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "Clerk's Report",
+          "filename": "Report_Clerk_20260817.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDZk49sA-qzQZdyPrSU6wGfAWTtk8pyQPljihziSC2kHOE",
+          "date": "2026-08-17",
           "posted": "2026-08-17",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         },
@@ -106,11 +131,25 @@
               "posted": "2026-08-17"
             },
             {
+              "label": "Statement AB ELAN CC 202607",
+              "filename": "Statement_AB-ELAN-CC_202607.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBG7fqJsnN4Qpwn1WVijTkMAe3pC542Uz64DyaO1XIDM4o",
+              "date": "2026-08-18",
+              "posted": "2026-08-18"
+            },
+            {
               "label": "Statement AB MM Checking 202607",
               "filename": "Statement_AB-MM-Checking_202607.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD3syfO9ljRTbWu2XXXNxExAQb8imajfjlNqT3LIwyBm4g",
               "date": "2026-08-17",
               "posted": "2026-08-17"
+            },
+            {
+              "label": "Statement USB CC 202607",
+              "filename": "Statement_USB-CC_202607.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAkHvLHkfpRQKLAu9ye_NGHARQAShG8yHMLKpVDk4w7xzg",
+              "date": "2026-08-18",
+              "posted": "2026-08-18"
             },
             {
               "label": "YTD Budget vs Actual Report",
