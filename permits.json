@@ -1,0 +1,52 @@
+{
+  "_README": [
+    "Town of Winchester — driveway & right-of-way permit map data.",
+    "This file drives row-permits.html. Edit it, commit it, and the public page updates.",
+    "",
+    "REQUIRED per entry: id, title, org, location, lat, lng, startDate, endDate, status",
+    "OPTIONAL:          traffic, contactName, contactPhone, jurisdiction, permitNumber, notes",
+    "",
+    "status:            proposed  = on an upcoming Board agenda, not yet decided",
+    "                   approved  = Board approved; the page colours it from the dates",
+    "                   denied    = hidden from the public page entirely",
+    "                   withdrawn = hidden from the public page entirely",
+    "",
+    "jurisdiction:      omit or 'town' for Town permits.",
+    "                   'Vilas County' or 'WisDOT' renders a hollow marker labelled",
+    "                   'Not a Town permit' — use for county/state work shown for information.",
+    "",
+    "Dates are YYYY-MM-DD. Approved entries move upcoming -> active -> finished on their own,",
+    "and drop off the map 90 days after endDate. No maintenance needed once dates are right.",
+    "",
+    "Do NOT put applicant home addresses, emails, parcel numbers or internal notes in this file.",
+    "It is public. Publish only what a neighbour needs: what, where, when, and who to call.",
+    "",
+    "Coordinates for common Winchester locations:",
+    "  Town Hall 46.21196,-89.88619   Library/Townsite 46.22109,-89.89632",
+    "  Townsite Rd 46.22541,-89.89838 Old County O 46.25729,-89.89056",
+    "  Rock Lake Rd 46.26095,-89.87620 W Birch Lake Rd 46.21842,-89.84602",
+    "  N Turtle Lake 46.23661,-89.88421 Harris Lake 46.25929,-89.83644",
+    "  CTH J 46.19292,-89.92784       CTH O 46.26446,-89.86673"
+  ],
+
+  "updated": "2026-08-18",
+
+  "permits": [
+    {
+      "id": "EXAMPLE-DELETE-ME",
+      "permitNumber": "",
+      "title": "Example entry — delete this before going live",
+      "org": "Town of Winchester",
+      "location": "Townsite Rd near the Winchester Public Library",
+      "lat": 46.22541,
+      "lng": -89.89838,
+      "startDate": "2026-09-01",
+      "endDate": "2026-09-30",
+      "status": "proposed",
+      "traffic": "Shoulder only, traffic unaffected",
+      "contactName": "Town Clerk",
+      "contactPhone": "715-686-2123",
+      "jurisdiction": "town"
+    }
+  ]
+}

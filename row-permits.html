@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driveway &amp; Right-of-Way Permits — Town of Winchester</title>
+<meta name="description" content="Current road and utility work in the Town of Winchester, Vilas County, and how to apply for a driveway or right-of-way permit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Electrolize&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --td:#193C3C; --tm:#00505A; --th:#0e2a2a; --tl:#E6F0F1; --tan:#F5F2EC; --gold:#A59664;
+  --white:#fff;
+  --st-proposed:#B8952E; --st-upcoming:#2B7BA8; --st-active:#D97A1F; --st-complete:#2D8A56;
+  --g100:#F7F7F7; --g200:#E8E8E8; --g300:#D4D4D4; --g400:#999; --g600:#555; --g800:#2A2A2A;
+  --radius:6px; --shadow:0 2px 8px rgba(0,0,0,.08); --shadow-lg:0 4px 20px rgba(0,0,0,.12);
+}
+[hidden]{display:none!important}
+body{font-family:'Noto Sans',sans-serif;background:var(--g100);color:var(--g800);line-height:1.55}
+a{color:var(--tm)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.site-header{background:var(--td);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.site-header h1{font-family:'Electrolize',sans-serif;font-size:19px;font-weight:400;letter-spacing:.4px}
+.site-header .sub{font-size:11px;opacity:.65;margin-top:2px;letter-spacing:.3px}
+.site-header a.back{color:var(--gold);font-size:12px;text-decoration:none;font-weight:600;white-space:nowrap}
+.site-header a.back:hover{text-decoration:underline}
+
+.wrap{max-width:960px;margin:0 auto;padding:28px 24px 72px}
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin-bottom:20px}
+h2{font-family:'Electrolize',sans-serif;font-size:20px;color:var(--td);margin-bottom:8px;line-height:1.25}
+h3{font-size:15px;font-weight:700;color:var(--td);margin-bottom:6px}
+p{font-size:14px;color:var(--g600)}
+p+p{margin-top:10px}
+ul,ol{margin:8px 0 0 20px;font-size:14px;color:var(--g600)}
+li+li{margin-top:6px}
+.eyebrow{font-family:'Electrolize',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin:30px 0 12px}
+.eyebrow:first-child{margin-top:0}
+
+.callout{border-left:4px solid var(--gold);background:var(--tan);padding:14px 18px;border-radius:0 4px 4px 0;font-size:13px;line-height:1.65;margin:16px 0}
+.callout.info{border-left-color:var(--tm);background:var(--tl)}
+.callout.warn{border-left-color:#A32D2D;background:#FCEBEB}
+.callout strong{color:var(--td)}
+.ord{display:inline-block;font-family:'Electrolize',sans-serif;font-size:11px;background:var(--tl);color:var(--tm);padding:2px 7px;border-radius:3px;white-space:nowrap}
+
+/* map */
+.map-stats{display:flex;gap:22px;flex-wrap:wrap;padding:14px 18px;background:#fff;border-radius:var(--radius) var(--radius) 0 0;border-bottom:1px solid var(--g200)}
+.stat{display:flex;align-items:center;gap:9px}
+.stat-dot{width:10px;height:10px;border-radius:50%}
+.stat-num{font-family:'Electrolize',sans-serif;font-size:19px;color:var(--td);line-height:1}
+.stat-label{font-size:10px;color:var(--g400);text-transform:uppercase;letter-spacing:.6px}
+#map{height:440px;border-radius:0 0 var(--radius) var(--radius)}
+.map-shell{box-shadow:var(--shadow);border-radius:var(--radius);overflow:hidden;background:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;padding:12px 18px;font-size:12px;color:var(--g600);background:#fff;border-top:1px solid var(--g200)}
+.legend span.d{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+.map-empty{padding:44px 20px;text-align:center;color:var(--g400);font-size:14px}
+
+/* work list */
+.job{border:1px solid var(--g200);border-radius:var(--radius);padding:16px 18px;margin-bottom:10px;border-left:4px solid var(--g300);background:#fff}
+.job[data-s="active"]{border-left-color:var(--st-active)}
+.job[data-s="upcoming"]{border-left-color:var(--st-upcoming)}
+.job[data-s="complete"]{border-left-color:var(--st-complete)}
+.job[data-s="proposed"]{border-left-color:var(--st-proposed)}
+.job-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.job-title{font-weight:700;font-size:15px;color:var(--td)}
+.job-org{font-size:12px;color:var(--g600);margin-top:2px}
+.badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:3px 9px;border-radius:3px;white-space:nowrap}
+.badge.active{background:#FEF0E1;color:var(--st-active)}
+.badge.upcoming{background:#E3F0F7;color:var(--st-upcoming)}
+.badge.complete{background:#E1F5EA;color:var(--st-complete)}
+.badge.proposed{background:#FDF5E1;color:var(--st-proposed)}
+.badge.info{background:var(--tl);color:var(--tm)}
+.job-meta{font-size:12px;color:var(--g600);margin-top:9px;line-height:1.6}
+.job-meta b{color:var(--g800)}
+
+/* router */
+.router{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.opt{border:1px solid var(--g300);border-radius:var(--radius);padding:14px 16px;cursor:pointer;background:#fff;text-align:left;font-family:inherit;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--tm);background:var(--tl)}
+.opt.sel{border-color:var(--tm);background:var(--tl);box-shadow:0 0 0 2px rgba(0,80,90,.12)}
+.opt b{display:block;font-size:14px;color:var(--td);margin-bottom:3px}
+.opt span{font-size:12px;color:var(--g600)}
+#router-out{margin-top:14px}
+
+/* steps */
+.step{display:flex;gap:18px}
+.step-m{display:flex;flex-direction:column;align-items:center;width:34px;flex-shrink:0}
+.step-n{width:32px;height:32px;border-radius:50%;background:var(--tm);color:#fff;font-family:'Electrolize',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:center}
+.step-l{width:2px;flex:1;background:var(--tl);min-height:16px}
+.step-c{padding-bottom:26px}
+.step-c h3{margin-bottom:4px}
+.step-c p{font-size:13px}
+
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th{text-align:left;font-family:'Electrolize',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--g400);padding:8px 10px;border-bottom:2px solid var(--g200);font-weight:400}
+td{padding:9px 10px;border-bottom:1px solid var(--g200);vertical-align:top;color:var(--g600)}
+td:first-child{color:var(--g800);font-weight:600}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border:none;border-radius:4px;font-family:'Noto Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .15s}
+.btn-primary{background:var(--tm);color:#fff}
+.btn-primary:hover{background:var(--th);color:#fff}
+.btn-gold{background:var(--gold);color:var(--td)}
+.btn-gold:hover{background:#8f8355}
+
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.contact-grid h3{font-size:13px;margin-bottom:4px}
+.contact-grid p{font-size:13px}
+
+footer{background:var(--td);color:#fff;padding:26px 24px;font-size:12px;text-align:center}
+footer a{color:var(--gold)}
+.updated{font-size:11px;color:var(--g400);margin-top:10px}
+
+@media (max-width:700px){
+  .wrap{padding:20px 16px 56px}
+  .card{padding:18px}
+  .router,.contact-grid,.apply-grid{grid-template-columns:1fr!important}
+  #map{height:320px}
+  .map-stats{gap:14px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <h1>Driveway &amp; Right-of-Way Permits</h1>
+    <div class="sub">Town of Winchester · Vilas County, Wisconsin</div>
+  </div>
+  <a class="back" href="https://winchesterwi.com/">← winchesterwi.com</a>
+</header>
+
+<div class="wrap">
+
+  <!-- ─────────── LIVE MAP ─────────── -->
+  <div class="eyebrow">Road &amp; utility work in Winchester</div>
+  <div class="map-shell">
+    <div class="map-stats" id="stats"></div>
+    <div id="map"></div>
+    <div class="legend">
+      <span><span class="d" style="background:var(--st-active)"></span>Work happening now</span>
+      <span><span class="d" style="background:var(--st-upcoming)"></span>Approved, not started</span>
+      <span><span class="d" style="background:var(--st-complete)"></span>Finished (last 90 days)</span>
+      <span><span class="d" style="background:var(--st-proposed)"></span>On an upcoming Board agenda</span>
+      <span><span class="d" style="background:#fff;border:2px solid var(--g400)"></span>County or State — not a Town permit</span>
+    </div>
+  </div>
+  <div class="updated" id="updated"></div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>What's going on out there</h2>
+    <p style="margin-bottom:14px">Click any marker for dates and a phone number. If work is affecting your driveway or your road, call the contact listed for that job first — they're the ones on site.</p>
+    <div id="joblist"></div>
+  </div>
+
+  <!-- ─────────── ROUTER ─────────── -->
+  <div class="eyebrow">Do you need a Town permit?</div>
+  <div class="card">
+    <h2>Start here</h2>
+    <p style="margin-bottom:14px">Winchester has three County highways running through it — CTH W, CTH J and CTH O. Those aren't Town roads, and the Town can't permit work on them. Pick what you're doing:</p>
+
+    <div class="router" id="router">
+      <button class="opt" data-k="driveway"><b>A new or rebuilt driveway</b><span>Building, rerouting, or changing the slope of a driveway onto a Town road</span></button>
+      <button class="opt" data-k="county"><b>Driveway onto CTH W, J or O</b><span>Your access comes off a County highway</span></button>
+      <button class="opt" data-k="utility"><b>Utility work in a Town road</b><span>Burying or stringing electric, fiber, gas or water in the right-of-way</span></button>
+      <button class="opt" data-k="private"><b>A private road serving 3+ homes</b><span>Shared access, not a single driveway</span></button>
+      <button class="opt" data-k="dig"><b>Just digging on my own land</b><span>Not in the road right-of-way at all</span></button>
+      <button class="opt" data-k="emerg"><b>Emergency — outage, leak, washout</b><span>Something needs fixing right now</span></button>
+    </div>
+
+    <div id="router-out"></div>
+  </div>
+
+  <!-- ─────────── ORDINANCE REQUIREMENTS ─────────── -->
+  <div class="eyebrow">What the driveway ordinance requires</div>
+  <div class="card">
+    <h2>Ordinance 2024-04 — the specs you'll be held to</h2>
+    <p style="margin-bottom:6px">Adopted June 3, 2024. These are the numbers the Town Board checks against, so it's worth reading before you order material or hire an excavator.</p>
+    <table>
+      <thead><tr><th>Requirement</th><th>Standard</th></tr></thead>
+      <tbody>
+        <tr><td>Culvert</td><td>Minimum 12 in. diameter × 24 ft long, unless the Board specifies otherwise. Both ends riprapped or sodded. Fill must not cover the ends.</td></tr>
+        <tr><td>Driveway width</td><td>12 ft roadbed for a single property.</td></tr>
+        <tr><td>Overhead clearance</td><td>15 ft, so fire and EMS apparatus can get in and out.</td></tr>
+        <tr><td>Distance from lot line</td><td>At least 15 ft from the nearest side lot line — unless it's a shared driveway serving two adjacent parcels, which may sit on the line with recorded maintenance and easement agreements.</td></tr>
+        <tr><td>Slope</td><td>No more than 5% up or down within 50 ft of the road centerline. The Board may allow more where existing slopes exceed 10%, but never above 15%, and anything over 10% needs rounding at the road.</td></tr>
+        <tr><td>Angle</td><td>Meet the road at right angles where possible, with adequate stopping sight distance. Not on sharp curves.</td></tr>
+        <tr><td>Right-of-way</td><td>Assumed to extend 33 ft from the centerline of the Town road unless documented otherwise.</td></tr>
+        <tr><td>Restoration</td><td>Road surface, slopes, shoulders, ditches and vegetation disturbed by the work get restored by the property owner. Culvert installation and maintenance is the owner's cost too.</td></tr>
+        <tr><td>Private roads (3+ homes)</td><td>66 ft easement, 12 ft minimum graveled width over 4 in. compacted gravel, 50 ft turnaround, bridges rated for a 30-ton fire apparatus at 10 ft minimum width.</td></tr>
+        <tr><td>Temporary driveways</td><td>Restored to natural state within 6 months after use stops.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>Don't buy the culvert yet.</strong> Twelve inches by twenty-four feet is the floor, not automatically the answer.
+      The Board can require something larger depending on the ditch grade and drainage. Wait for the permit.
+    </div>
+  </div>
+
+  <!-- ─────────── PROCESS ─────────── -->
+  <div class="eyebrow">How it works</div>
+  <div class="card">
+    <h2>From application to inspection</h2>
+    <p style="margin-bottom:20px">Under Ordinance 2024-04 the <strong>Town Board</strong> approves or denies every driveway permit — this isn't something the Clerk can sign off on alone. Plan around the meeting schedule.</p>
+
+    <div class="step">
+      <div class="step-m"><div class="step-n">1</div><div class="step-l"></div></div>
+      <div class="step-c">
+        <h3>Submit to the Town Clerk</h3>
+        <p>A completed application, the fee, and a sketch map showing roughly where the project goes and its dimensions. You can send the sketch to the Board early for initial comments, but a permit won't be granted until the full package is in <span class="ord">§ VII(B)</span>.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-m"><div class="step-n">2</div><div class="step-l"></div></div>
+      <div class="step-c">
+        <h3>The Board may ask for more</h3>
+        <p>Plat map, aerial photo, soil or slope analysis, construction plan — the Board can require any of these depending on the site. Getting them in early avoids losing a month.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-m"><div class="step-n">3</div><div class="step-l"></div></div>
+      <div class="step-c">
+        <h3>Board decides at a regular meeting</h3>
+        <p>Regular meetings are the <strong>second Monday of the month at 6:00 PM</strong>, Town Hall, 7228 CTH W. Approve, approve with conditions, or deny. Conditions attached to a permit are binding on you. A denial comes with a written explanation of the facts it was based on <span class="ord">§ VII(D)</span>.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-m"><div class="step-n">4</div><div class="step-l"></div></div>
+      <div class="step-c">
+        <h3>Build it</h3>
+        <p>Call Diggers Hotline at <strong>811</strong> at least three working days before you dig — that's state law, separate from the Town permit. Your permit is good for one year, renewable once for six months. After that it's a new application and a new fee <span class="ord">§ VII(F)</span>.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-m"><div class="step-n">5</div><div class="step-l"></div></div>
+      <div class="step-c">
+        <h3>Tell the Board you're done</h3>
+        <p>Within 30 days of finishing. The Board then inspects within 30 days of your notice to confirm it matches the permit and the ordinance <span class="ord">§ VII(E)</span>. Don't skip this step — an uninspected driveway is an open permit.</p>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-top:4px">
+      <strong>Two denials on the same parcel</strong> and a third application can't be considered for 60 days. If the Board turns something down, ask what would fix it before you refile.
+    </div>
+  </div>
+
+  <!-- ─────────── APPLY ─────────── -->
+  <div class="card" style="background:var(--tan)">
+    <h2 style="margin-bottom:8px">Apply for a driveway permit</h2>
+    <p style="margin-bottom:16px">
+      Submit the completed application and the fee to the Town Clerk. The Board reviews applications
+      at its regular meeting — <strong>the second Monday of the month, 6:00 PM</strong>, at the Town Hall,
+      7228 CTH W. Get it in early enough to make the agenda.
+    </p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px" class="apply-grid">
+      <div style="background:#fff;border-radius:var(--radius);padding:18px">
+        <h3>1. The application</h3>
+        <p style="font-size:13px;margin-bottom:12px">
+          Fill it out, attach a sketch showing property lines, grade, slope, width, length, turnoffs
+          and erosion control, and stake out the proposed driveway before inspection.
+        </p>
+        <a class="btn btn-primary" style="font-size:14px;padding:11px 20px" id="pdf-link" href="#">Download the application</a>
+        <p style="font-size:12px;margin-top:10px">Or call the Clerk at <strong>715-686-2123</strong> and one goes out to you.</p>
+      </div>
+      <div style="background:#fff;border-radius:var(--radius);padding:18px">
+        <h3>2. The fee</h3>
+        <p style="font-size:13px;margin-bottom:12px">
+          <strong>$100, non-refundable</strong>, due with the application. Pay online or by check to the
+          Town of Winchester.
+        </p>
+        <a class="btn btn-gold" style="font-size:14px;padding:11px 20px"
+           href="https://winchesterwi.com/construction-zoning-and-addressing/">Pay the permit fee</a>
+        <p style="font-size:12px;margin-top:10px">Payment link lives on the Construction &amp; Addressing page.</p>
+      </div>
+    </div>
+
+    <div id="online-option" hidden></div>
+
+    <p style="font-size:13px">
+      Questions before you file? <a href="mailto:clerk@winchester.wi.gov">clerk@winchester.wi.gov</a> · 715-686-2123
+    </p>
+  </div>
+
+  <!-- ─────────── CONTACTS ─────────── -->
+  <div class="eyebrow">Who to call</div>
+  <div class="card">
+    <div class="contact-grid">
+      <div>
+        <h3>Town of Winchester Clerk</h3>
+        <p>Driveway permits, right-of-way questions, application status<br>
+        <strong>715-686-2123</strong> · <a href="mailto:clerk@winchester.wi.gov">clerk@winchester.wi.gov</a><br>
+        7228 CTH W, Winchester, WI 54557</p>
+      </div>
+      <div>
+        <h3>Report a road problem</h3>
+        <p>Washouts, downed trees, plow damage, blocked culverts<br>
+        <strong>715-543-2385</strong> (Town Crew)</p>
+      </div>
+      <div>
+        <h3>Vilas County Zoning &amp; Planning</h3>
+        <p>Driveways onto County highways, shoreland and floodplain, land disturbance, sanitary<br>
+        <strong>715-479-3620</strong> · <a href="mailto:zoning@vilascountywi.gov">zoning@vilascountywi.gov</a></p>
+      </div>
+      <div>
+        <h3>Vilas County Highway Department</h3>
+        <p>Utility work and access permits on CTH W, J and O<br>
+        <strong>715-479-4641</strong> · <a href="mailto:vchwy@vilascountywi.gov">vchwy@vilascountywi.gov</a></p>
+      </div>
+      <div>
+        <h3>Diggers Hotline</h3>
+        <p>Before any digging, anywhere. Free, and required by state law.<br>
+        <strong>811</strong> · at least 3 working days ahead</p>
+      </div>
+      <div>
+        <h3>Building Inspector</h3>
+        <p>RC Inspection Agency<br>
+        <strong>715-439-4222</strong></p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Town of Winchester, Vilas County, Wisconsin ·
+  <a href="https://winchesterwi.com/">winchesterwi.com</a> ·
+  <a href="https://winchesterwi.com/your-government/code-of-ordinances/">Town Ordinances</a>
+  <div style="opacity:.6;margin-top:8px">Driveway permits are governed by Ordinance 2024-04, adopted June 3, 2024.</div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   CONFIG — set these two, then the page runs itself.
+   ══════════════════════════════════════════════════════════ */
+const CONFIG = {
+  // Paste the Microsoft Forms share link here to switch the online option on.
+  applyUrl: "",
+  // The Town's existing paper application (already live on winchesterwi.com).
+  pdfUrl: "https://winchesterwi.com/wp-content/uploads/2026/05/Driveway-Permit-Application-2026-Winchester.pdf",
+  // Where the permit data lives, relative to this page.
+  dataUrl: "permits.json"
+};
+
+const TOWN_HALL = { lat: 46.21196, lng: -89.88619 };
+
+const COLORS = {
+  proposed:'#B8952E', upcoming:'#2B7BA8', active:'#D97A1F', complete:'#2D8A56'
+};
+const LABELS = {
+  proposed:'On an upcoming agenda', upcoming:'Approved', active:'Work happening now', complete:'Finished'
+};
+
+let map, layer;
+
+function d0(){const d=new Date();d.setHours(0,0,0,0);return d}
+function pd(s){return new Date(s+'T00:00:00')}
+function fmt(s){return pd(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function statusOf(p){
+  if(p.status==='proposed') return 'proposed';
+  const t=d0(), s=pd(p.startDate), e=pd(p.endDate);
+  if(t<s) return 'upcoming';
+  if(t>e) return 'complete';
+  return 'active';
+}
+function visible(p){
+  if(p.status==='denied'||p.status==='withdrawn') return false;
+  if(statusOf(p)==='complete') return (d0()-pd(p.endDate))/864e5 <= 90;
+  return true;
+}
+
+/* ─────────── MAP ─────────── */
+function initMap(){
+  map = L.map('map',{scrollWheelZoom:false}).setView([46.2250,-89.8850],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; OpenStreetMap contributors', maxZoom:18
+  }).addTo(map);
+  map.on('click',()=>map.scrollWheelZoom.enable());
+  L.marker([TOWN_HALL.lat,TOWN_HALL.lng],{icon:L.divIcon({
+    className:'',html:'<div style="width:13px;height:13px;background:#193C3C;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>',
+    iconSize:[13,13],iconAnchor:[6,6]})})
+   .addTo(map).bindPopup('<b>Winchester Town Hall</b><br>7228 CTH W');
+  layer = L.layerGroup().addTo(map);
+}
+
+function render(jobs){
+  layer.clearLayers();
+  const pts=[[TOWN_HALL.lat,TOWN_HALL.lng]];
+  const shown = jobs.filter(visible);
+
+  shown.forEach(p=>{
+    const s=statusOf(p), info = p.jurisdiction && p.jurisdiction!=='town';
+    L.circleMarker([p.lat,p.lng],{
+      radius: s==='active'?10:8,
+      fillColor: info?'#ffffff':COLORS[s],
+      color: info?'#999999':'#ffffff',
+      weight: info?3:2, fillOpacity:.92
+    }).bindPopup(
+      '<div style="font-family:Noto Sans,sans-serif;min-width:210px">'+
+      '<span class="badge '+s+'">'+esc(LABELS[s])+'</span>'+
+      '<div style="font-weight:700;color:#193C3C;margin:7px 0 2px">'+esc(p.title)+'</div>'+
+      '<div style="font-size:11px;color:#999;margin-bottom:7px">'+esc(p.org)+'</div>'+
+      '<div style="font-size:12px;color:#555;line-height:1.6">'+
+        '<b>Where</b> '+esc(p.location)+'<br>'+
+        '<b>When</b> '+fmt(p.startDate)+' – '+fmt(p.endDate)+
+        (p.traffic?'<br><b>Traffic</b> '+esc(p.traffic):'')+
+      '</div>'+
+      (p.contactName?'<div style="margin-top:8px;padding-top:8px;border-top:1px solid #E8E8E8;font-size:11px;color:#555">'+
+        '<b>Questions:</b> '+esc(p.contactName)+'<br>'+esc(p.contactPhone||'')+'</div>':'')+
+      (info?'<div style="margin-top:7px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#A59664;font-weight:700">Not a Town permit — '+esc(p.jurisdiction)+'</div>':'')+
+      '</div>'
+    ).addTo(layer);
+    pts.push([p.lat,p.lng]);
+  });
+
+  if(pts.length>1) map.fitBounds(L.latLngBounds(pts),{padding:[45,45],maxZoom:12});
+
+  // stats
+  const c={active:0,upcoming:0,complete:0,proposed:0};
+  shown.forEach(p=>{const s=statusOf(p); if(c[s]!==undefined)c[s]++});
+  document.getElementById('stats').innerHTML =
+    ['active','upcoming','complete','proposed'].map(k=>
+      '<div class="stat"><span class="stat-dot" style="background:'+COLORS[k]+'"></span>'+
+      '<div><div class="stat-num">'+c[k]+'</div><div class="stat-label">'+
+      ({active:'Happening now',upcoming:'Approved',complete:'Finished',proposed:'On an agenda'})[k]+
+      '</div></div></div>').join('');
+
+  // list
+  const list=document.getElementById('joblist');
+  if(!shown.length){
+    list.innerHTML='<div class="map-empty">No permitted work on the books right now. Check back — this updates as the Board acts on applications.</div>';
+    return;
+  }
+  const order={active:0,upcoming:1,proposed:2,complete:3};
+  list.innerHTML = shown.slice().sort((a,b)=>order[statusOf(a)]-order[statusOf(b)]).map(p=>{
+    const s=statusOf(p), info=p.jurisdiction && p.jurisdiction!=='town';
+    return '<div class="job" data-s="'+s+'">'+
+      '<div class="job-top"><div>'+
+        '<div class="job-title">'+esc(p.title)+'</div>'+
+        '<div class="job-org">'+esc(p.org)+'</div>'+
+      '</div><div style="display:flex;gap:6px;flex-wrap:wrap">'+
+        '<span class="badge '+s+'">'+esc(LABELS[s])+'</span>'+
+        (info?'<span class="badge info">'+esc(p.jurisdiction)+'</span>':'')+
+      '</div></div>'+
+      '<div class="job-meta">'+
+        '<b>Where:</b> '+esc(p.location)+'<br>'+
+        '<b>When:</b> '+fmt(p.startDate)+' – '+fmt(p.endDate)+
+        (p.traffic?'<br><b>Traffic:</b> '+esc(p.traffic):'')+
+        (p.contactName?'<br><b>Contact:</b> '+esc(p.contactName)+(p.contactPhone?' · '+esc(p.contactPhone):''):'')+
+      '</div></div>';
+  }).join('');
+}
+
+/* ─────────── ROUTER ─────────── */
+const ROUTES = {
+  driveway:{cls:'info',html:
+    '<strong>Yes — you need a Town of Winchester driveway permit.</strong> Ordinance 2024-04 requires one before you '+
+    'establish, construct, reconstruct, reroute or alter the slope of a driveway. The Town Board issues it, so it goes '+
+    'on a meeting agenda. Start with the application below and get your sketch map in early.'},
+  county:{cls:'warn',html:
+    '<strong>That one goes to the County, not the Town.</strong> Ordinance 2024-04 § V(E) sends driveways accessing a '+
+    'County highway to <strong>Vilas County Zoning &amp; Planning — 715-479-3620</strong>. If you\'re doing utility work '+
+    'rather than a driveway on CTH W, J or O, that\'s the County Highway Department at <strong>715-479-4641</strong>. '+
+    'Call the Town Clerk if you\'re not sure which applies.'},
+  utility:{cls:'info',html:
+    '<strong>Yes — contact the Clerk before you start.</strong> State law requires a permit from the authority that '+
+    'maintains the road before any excavation, fill, culvert or other alteration, and written consent before placing '+
+    'lines or pipes in the right-of-way. For Town roads that\'s the Town of Winchester. Call '+
+    '<strong>715-686-2123</strong> and the Clerk will get you onto the right agenda.'},
+  private:{cls:'info',html:
+    '<strong>Different rules apply.</strong> A private road serving more than three residences falls under the Town of '+
+    'Winchester Road Ordinance rather than the driveway ordinance — 66 ft easement, 12 ft graveled width over 4 in. of '+
+    'compacted gravel, a 50 ft turnaround, and bridges rated for a 30-ton fire apparatus. Talk to the Clerk before designing it.'},
+  dig:{cls:'',html:
+    '<strong>No Town permit needed for work entirely on your own land</strong> and outside the road right-of-way — but '+
+    'note the right-of-way is assumed to reach <strong>33 feet from the centerline</strong> of a Town road unless documented '+
+    'otherwise, which is further than most people expect. And call <strong>811</strong> before you dig regardless. '+
+    'Shoreland or floodplain work needs Vilas County Zoning at 715-479-3620.'},
+  emerg:{cls:'warn',html:
+    '<strong>Make it safe first.</strong> Then call the Town Clerk at <strong>715-686-2123</strong>, or the Town Crew at '+
+    '<strong>715-543-2385</strong> for a road hazard, by the next business day and file the paperwork after the fact. '+
+    'Don\'t wait on a permit to stop a leak or clear a washout.'}
+};
+
+document.querySelectorAll('#router .opt').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#router .opt').forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+    const r=ROUTES[btn.dataset.k];
+    document.getElementById('router-out').innerHTML =
+      '<div class="callout '+r.cls+'" style="margin-bottom:0">'+r.html+'</div>';
+  });
+});
+
+/* ─────────── APPLY BUTTONS ─────────── */
+(function(){
+  const pdf=document.getElementById('pdf-link');
+  if(CONFIG.pdfUrl){ pdf.href=CONFIG.pdfUrl; pdf.target='_blank'; pdf.rel='noopener'; }
+  else { pdf.textContent='Call the Clerk — 715-686-2123'; pdf.href='tel:17156862123'; }
+
+  const box=document.getElementById('online-option');
+  if(CONFIG.applyUrl){
+    box.hidden=false;
+    box.innerHTML='<div class="callout info" style="margin:0 0 16px">'+
+      '<strong>Prefer to do it online?</strong> You can submit the same information through a web form '+
+      'and attach photos and your sketch from your phone. The fee is still paid separately. '+
+      '<a href="'+CONFIG.applyUrl+'" target="_blank" rel="noopener">Start the online application →</a></div>';
+  }
+})();
+
+/* ─────────── LOAD ─────────── */
+initMap();
+fetch(CONFIG.dataUrl+'?t='+Date.now())
+  .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d=>{
+    render(d.permits||[]);
+    if(d.updated){
+      document.getElementById('updated').textContent='Last updated '+
+        new Date(d.updated).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+    }
+  })
+  .catch(()=>{
+    render([]);
+    document.getElementById('updated').textContent='Work list temporarily unavailable.';
+  });
+</script>
+</body>
+</html>
