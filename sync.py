@@ -3,9 +3,10 @@ import json
 import base64
 import io
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 import re
 from pypdf import PdfReader
+from openpyxl import load_workbook
 
 
 TENANT_ID     = os.environ["AZURE_TENANT_ID"]
@@ -65,6 +66,17 @@ FLAT_SITES = [
 
 ICAL_URL = "https://winchesterwi.com/?post_type=tribe_events&ical=1&eventDisplay=list"
 MEETING_KEYWORDS = ["regular town board meeting", "special town board meeting"]
+
+# ── Permits sync config ──────────────────────────────────
+PERMITS_GITHUB_FILE = "permits.json"
+PERMITS_DRIVE_ID = "b!c95LT9gy6kqiItDGFto7RFnHF7mxITJGsCZJt01CCvi1TQvoZoFtT7YMKBgrUG67"
+PERMITS_ITEM_ID  = "01UVO6XCSTSHOVIGOYBJE3ZIQJYCZ3YSTV"
+PERMITS_SHEET    = "Permits"
+PERMITS_HEADER_ROW   = 2
+PERMITS_FIRST_DATA   = 3
+PERMITS_PUBLISHED    = {"proposed", "approved"}
+
+GRAPH_BASE = "https://graph.microsoft.com/v1.0"
 
 
 def get_token():
@@ -826,6 +838,221 @@ def write_github(data):
     print("data.json updated successfully.")
 
 
+def write_github_file(path, content_str):
+    """Write any file to the GitHub repo. Used by permits sync."""
+    headers = {"Authorization": f"Bearer {GH_PAT}", "Accept": "application/vnd.github+json"}
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{path}"
+    r = requests.get(url, headers=headers)
+    sha = r.json().get("sha") if r.status_code == 200 else None
+    encoded = base64.b64encode(content_str.encode()).decode()
+    payload = {
+        "message": f"Auto-sync {path} [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
+        "content": encoded
+    }
+    if sha:
+        payload["sha"] = sha
+    r = requests.put(url, headers=headers, json=payload)
+    r.raise_for_status()
+    print(f"{path} updated successfully.")
+
+
+# ── Permits sync ─────────────────────────────────────────
+
+def _ps(v):
+    """Cell value -> clean string."""
+    if v is None:
+        return ""
+    if isinstance(v, (datetime, date)):
+        return v.strftime("%Y-%m-%d")
+    return str(v).strip()
+
+
+def _pdate(v):
+    """Cell value -> YYYY-MM-DD, or '' if unparseable."""
+    if v is None:
+        return ""
+    if isinstance(v, (datetime, date)):
+        return v.strftime("%Y-%m-%d")
+    t = str(v).strip()
+    if not t:
+        return ""
+    if re.match(r"^\d{4}-\d{2}-\d{2}$", t):
+        return t
+    m = re.match(r"^(\d{4}-\d{2}-\d{2})T", t)
+    if m:
+        return m.group(1)
+    for fmt in ("%m/%d/%Y", "%m/%d/%y", "%m-%d-%Y"):
+        try:
+            return datetime.strptime(t, fmt).strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+    return ""
+
+
+def _pfloat(v):
+    try:
+        return round(float(str(v).strip()), 6)
+    except (TypeError, ValueError):
+        return None
+
+
+def _pcoords(v):
+    """route_coords cell -> list of [lat, lng] pairs, or None."""
+    t = _ps(v)
+    if not t:
+        return None
+    try:
+        parsed = json.loads(t)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(parsed, list) or len(parsed) < 2:
+        return None
+    out = []
+    for pt in parsed:
+        if isinstance(pt, (list, tuple)) and len(pt) >= 2:
+            lat, lng = _pfloat(pt[0]), _pfloat(pt[1])
+            if lat is not None and lng is not None:
+                out.append([lat, lng])
+    return out if len(out) >= 2 else None
+
+
+def _plocation(row):
+    """Build a public-facing location string from road + address."""
+    road = _ps(row.get("road"))
+    addr = _ps(row.get("address"))
+    if road and addr:
+        if road.lower() in addr.lower():
+            return addr
+        return f"{road} \u2014 {addr}"
+    return road or addr or "Location on file with the Town Clerk"
+
+
+def fetch_permit_rows(token):
+    """Download the tracker workbook and return a list of row dicts."""
+    url = f"{GRAPH_BASE}/drives/{PERMITS_DRIVE_ID}/items/{PERMITS_ITEM_ID}/content"
+    r = requests.get(url, headers={"Authorization": f"Bearer {token}"}, timeout=60)
+    r.raise_for_status()
+
+    wb = load_workbook(io.BytesIO(r.content), data_only=True, read_only=True)
+    if PERMITS_SHEET not in wb.sheetnames:
+        raise RuntimeError(f"Sheet '{PERMITS_SHEET}' not found in workbook")
+    ws = wb[PERMITS_SHEET]
+
+    rows = list(ws.iter_rows(values_only=True))
+    if len(rows) < PERMITS_HEADER_ROW:
+        return []
+
+    headers = [_ps(h) for h in rows[PERMITS_HEADER_ROW - 1]]
+    out = []
+    for raw in rows[PERMITS_FIRST_DATA - 1:]:
+        rec = {}
+        for i, h in enumerate(headers):
+            if h and i < len(raw):
+                rec[h] = raw[i]
+        if any(_ps(v) for v in rec.values()):
+            out.append(rec)
+    wb.close()
+    return out
+
+
+def build_permits_data(rows):
+    """Convert tracker rows into the public permits.json structure.
+    Only published fields are included — no applicant PII."""
+    permits = []
+    skipped = {"status": 0, "geo": 0, "dates": 0}
+
+    for row in rows:
+        status = _ps(row.get("map_status")).lower()
+
+        if _ps(row.get("permit_id")).upper().startswith("EXAMPLE"):
+            continue
+
+        if status not in PERMITS_PUBLISHED:
+            skipped["status"] += 1
+            continue
+
+        start = _pdate(row.get("authorized_start")) or _pdate(row.get("start_date"))
+        end   = _pdate(row.get("authorized_end"))   or _pdate(row.get("end_date"))
+        if not start or not end:
+            skipped["dates"] += 1
+            continue
+        if end < start:
+            start, end = end, start
+
+        entry = {
+            "id":           _ps(row.get("permit_id")) or f"P{len(permits)+1:04d}",
+            "permitNumber": _ps(row.get("permit_number")),
+            "title":        _ps(row.get("title")) or _ps(row.get("type")) or "Permitted work",
+            "org":          _ps(row.get("org")) or "Applicant on file",
+            "location":     _plocation(row),
+            "startDate":    start,
+            "endDate":      end,
+            "status":       status,
+            "jurisdiction": "town",
+        }
+
+        traffic = _ps(row.get("traffic"))
+        if traffic:
+            entry["traffic"] = traffic
+
+        cname = _ps(row.get("public_contact_name"))
+        cphone = _ps(row.get("public_contact_phone"))
+        if cname:
+            entry["contactName"] = cname
+        if cphone:
+            entry["contactPhone"] = cphone
+
+        geo_type = _ps(row.get("geo_type")).lower()
+        coords = _pcoords(row.get("route_coords"))
+        lat, lng = _pfloat(row.get("lat")), _pfloat(row.get("lng"))
+
+        if geo_type == "line" and coords:
+            entry["geoType"] = "line"
+            entry["coordinates"] = coords
+            mid = coords[len(coords) // 2]
+            entry["lat"], entry["lng"] = mid[0], mid[1]
+        elif lat is not None and lng is not None:
+            entry["geoType"] = "point"
+            entry["lat"], entry["lng"] = lat, lng
+        elif coords:
+            entry["geoType"] = "line"
+            entry["coordinates"] = coords
+            mid = coords[len(coords) // 2]
+            entry["lat"], entry["lng"] = mid[0], mid[1]
+        else:
+            skipped["geo"] += 1
+            continue
+
+        permits.append(entry)
+
+    order = {"proposed": 1, "approved": 0}
+    permits.sort(key=lambda p: (order.get(p["status"], 2), p["startDate"]))
+
+    return {
+        "updated": datetime.utcnow().strftime("%Y-%m-%d"),
+        "permits": permits,
+    }, skipped
+
+
+def sync_permits(token):
+    """Fetch permit tracker from SharePoint, build permits.json, push to GitHub."""
+    print("\n── Permits ──")
+    rows = fetch_permit_rows(token)
+    print(f"   {len(rows)} row(s) in tracker")
+
+    data, skipped = build_permits_data(rows)
+    print(f"   {len(data['permits'])} published")
+    if skipped["status"]:
+        print(f"   {skipped['status']} withheld (status not proposed/approved)")
+    if skipped["dates"]:
+        print(f"   {skipped['dates']} skipped — missing or invalid dates")
+    if skipped["geo"]:
+        print(f"   {skipped['geo']} skipped — no map location")
+
+    payload = json.dumps(data, indent=2, ensure_ascii=False)
+    write_github_file(PERMITS_GITHUB_FILE, payload)
+
+
 def main():
     print("Authenticating with Microsoft Graph...")
     token = get_token()
@@ -855,6 +1082,9 @@ def main():
 
     print("Writing to GitHub...")
     write_github(data)
+
+    sync_permits(token)
+
     print("Done.")
 
 
