@@ -828,7 +828,7 @@ def write_github(data):
     sha = r.json().get("sha") if r.status_code == 200 else None
     content = base64.b64encode(json.dumps(data, indent=2, ensure_ascii=False).encode()).decode()
     payload = {
-        "message": f"Auto-sync from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
+        "message": f"Auto-sync from SharePoint [{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}]",
         "content": content
     }
     if sha:
@@ -846,7 +846,7 @@ def write_github_file(path, content_str):
     sha = r.json().get("sha") if r.status_code == 200 else None
     encoded = base64.b64encode(content_str.encode()).decode()
     payload = {
-        "message": f"Auto-sync {path} [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
+        "message": f"Auto-sync {path} [{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}]",
         "content": encoded
     }
     if sha:
@@ -1029,7 +1029,7 @@ def build_permits_data(rows):
     permits.sort(key=lambda p: (order.get(p["status"], 2), p["startDate"]))
 
     return {
-        "updated": datetime.utcnow().strftime("%Y-%m-%d"),
+        "updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "permits": permits,
     }, skipped
 
