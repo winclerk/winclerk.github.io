@@ -1,4 +1,55 @@
 {
-  "updated": "2026-08-20",
-  "permits": []
+  "updated": "2026-08-20T23:39:37Z",
+  "permits": [
+    {
+      "id": "P0001",
+      "permitNumber": "",
+      "title": "test4",
+      "org": "j",
+      "location": "W Birch Lake Rd — 2",
+      "startDate": "2026-08-21",
+      "endDate": "2026-08-22",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "contactName": "1",
+      "contactPhone": "2",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.216473,
+          -89.887819
+        ],
+        [
+          46.217602,
+          -89.890308
+        ],
+        [
+          46.214751,
+          -89.899063
+        ],
+        [
+          46.221699,
+          -89.895458
+        ]
+      ],
+      "lat": 46.214751,
+      "lng": -89.899063
+    },
+    {
+      "id": "P0002",
+      "permitNumber": "",
+      "title": "Driveway const",
+      "org": "Jane Doe",
+      "location": "Old County O — 8907",
+      "startDate": "2026-08-21",
+      "endDate": "2026-08-24",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "contactName": "Jack Jill",
+      "contactPhone": "4567182999",
+      "geoType": "point",
+      "lat": 46.235632,
+      "lng": -89.90001
+    }
+  ]
 }
