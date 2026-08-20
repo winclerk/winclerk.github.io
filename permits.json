@@ -4,36 +4,18 @@
     {
       "id": "P0001",
       "permitNumber": "",
-      "title": "test3",
-      "org": "asdf",
-      "location": "Other Town road — adsf",
+      "title": "Driveway const",
+      "org": "Jane Doe",
+      "location": "Old County O — 8907",
       "startDate": "2026-08-21",
-      "endDate": "2026-08-22",
+      "endDate": "2026-08-24",
       "status": "proposed",
       "jurisdiction": "town",
-      "traffic": "No impact — work entirely off the travelled way",
-      "contactName": "asdf",
-      "contactPhone": "asdf",
+      "contactName": "Jack Jill",
+      "contactPhone": "4567182999",
       "geoType": "point",
-      "lat": 46.428917,
-      "lng": -90.385895
-    },
-    {
-      "id": "P0002",
-      "permitNumber": "",
-      "title": "test3",
-      "org": "asdf",
-      "location": "Other Town road — adsf",
-      "startDate": "2026-08-21",
-      "endDate": "2026-08-22",
-      "status": "proposed",
-      "jurisdiction": "town",
-      "traffic": "No impact — work entirely off the travelled way",
-      "contactName": "asdf",
-      "contactPhone": "asdf",
-      "geoType": "point",
-      "lat": 46.428917,
-      "lng": -90.385895
+      "lat": 46.235632,
+      "lng": -89.90001
     }
   ]
 }
