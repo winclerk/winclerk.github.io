@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-20T23:39:37Z",
+  "updated": "2026-08-20T23:56:25Z",
   "permits": [
     {
       "id": "P0001",
@@ -9,7 +9,7 @@
       "location": "W Birch Lake Rd — 2",
       "startDate": "2026-08-21",
       "endDate": "2026-08-22",
-      "status": "proposed",
+      "status": "approved",
       "jurisdiction": "town",
       "contactName": "1",
       "contactPhone": "2",
