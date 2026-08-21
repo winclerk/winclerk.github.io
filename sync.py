@@ -8,6 +8,7 @@ import re
 from pypdf import PdfReader
 from openpyxl import load_workbook
 from permit_notify import notify_status_changes
+from permit_pdf import generate_for_rows as generate_permit_pdfs, PUBLIC_PATH as PDF_PUBLIC_PATH
 
 
 TENANT_ID     = os.environ["AZURE_TENANT_ID"]
@@ -22,16 +23,10 @@ SITE_HOSTNAME = "townofwinchester54557.sharepoint.com"
 SITE_PATH     = "/sites/TownBoard"
 LIBRARY_NAME  = "Documents"
 
-NEXT_MEETING_PATH  = "All Town Board Files/Next Meeting"
-INTERNAL_ONLY_PATH = "All Town Board Files/Internal Only"
-PREV_REGULAR_PATH  = "All Town Board Files/Previous Regular Meetings"
-PREV_SPECIAL_PATH  = "All Town Board Files/Previous Special Meetings"
+NEXT_MEETING_PATH = "All Town Board Files/Next Meeting"
+PREV_REGULAR_PATH = "All Town Board Files/Previous Regular Meetings"
+PREV_SPECIAL_PATH = "All Town Board Files/Previous Special Meetings"
 
-# Any folder with this name is skipped by scan_folder / scan_library. This
-# covers the nested "Internal Only" subfolders inside RTBM_/STBM_ meeting
-# folders. The root-level Internal Only folder at INTERNAL_ONLY_PATH is
-# handled separately (read-only, for next-meeting date determination) and
-# is NOT included in the public data.json.
 SKIP_FOLDER_NAME = "Internal Only"
 
 # Non-meeting sites: flat document libraries, not meeting folders.
@@ -233,12 +228,7 @@ def extract_meeting_details_from_pdf(pdf_bytes):
 
 def extract_details_from_next_meeting(token, drive_id, docs):
     """Try to extract time/location from the first agenda PDF in the Next Meeting folder.
-    Returns a dict with 'time' and/or 'location' keys, or empty dict.
-
-    NOTE: kept for compatibility. build_data() now uses the reference-agenda
-    flow via find_next_meeting_reference() + extract_meeting_details_from_pdf()
-    directly on the winning item's ID, which works whether that item lives in
-    Next Meeting or Internal Only."""
+    Returns a dict with 'time' and/or 'location' keys, or empty dict."""
     for doc in docs:
         fn = doc["filename"]
         if not fn.lower().startswith("agenda") or not fn.lower().endswith(".pdf"):
@@ -526,81 +516,6 @@ def extract_meeting_slug(filename):
     return slug if slug else None
 
 
-# ── Next-meeting date determination ──────────────────────
-#
-# The "next meeting" date shown on the portal used to come solely from
-# whatever agenda was in the Next Meeting folder. That meant:
-#   * If Next Meeting was empty, next_date fell back to datetime.today() —
-#     which is why the portal briefly showed today's date as the next
-#     meeting when no agenda had been posted yet.
-#   * A draft agenda for a sooner meeting (e.g. a special meeting the clerk
-#     is still preparing) sitting in Internal Only was invisible to sync,
-#     so the header would show a farther-out regular meeting instead.
-#
-# New behavior: look at BOTH the root-level Next Meeting folder and the
-# root-level Internal Only folder (peer to Next Meeting), collect every
-# agenda file with a parseable date, and pick the one whose date is the
-# soonest upcoming (>= today). Ties go to Next Meeting (posted wins over
-# draft for the same date).
-#
-# Only the winning agenda's DATE/TITLE/TIME/LOCATION are used. The
-# Internal Only folder's contents are NEVER included in data.json — the
-# public Next Meeting card still shows only what's in Next Meeting.
-
-
-def collect_agenda_candidates(token, drive_id, folder_path, source_label):
-    """List agenda files directly in a folder (no recursion) with parsed
-    dates and item IDs. Returns [] if the folder doesn't exist or errors."""
-    try:
-        children = list_children(token, drive_id, folder_path)
-    except Exception as e:
-        print(f"  Warning: could not read {folder_path}: {e}")
-        return []
-
-    candidates = []
-    for item in children:
-        if "folder" in item:
-            continue
-        name = item["name"]
-        if not name.lower().startswith("agenda"):
-            continue
-        date_str = parse_date(name)
-        if not date_str:
-            continue
-        candidates.append({
-            "filename":    name,
-            "date":        date_str,
-            "item_id":     item["id"],
-            "folder_path": folder_path,
-            "source":      source_label,
-        })
-    return candidates
-
-
-def find_next_meeting_reference(token, drive_id):
-    """Find the agenda for the soonest upcoming meeting across the Next
-    Meeting and root-level Internal Only folders. Returns a dict describing
-    the winning agenda (filename, date, item_id, folder_path, source), or
-    None if no upcoming agenda exists in either folder."""
-    today_str = date.today().strftime("%Y-%m-%d")
-
-    # Next Meeting first so it wins ties on same date (stable sort).
-    candidates = []
-    candidates.extend(
-        collect_agenda_candidates(token, drive_id, NEXT_MEETING_PATH, "Next Meeting")
-    )
-    candidates.extend(
-        collect_agenda_candidates(token, drive_id, INTERNAL_ONLY_PATH, "Internal Only")
-    )
-
-    upcoming = [c for c in candidates if c["date"] >= today_str]
-    if not upcoming:
-        return None
-
-    upcoming.sort(key=lambda c: c["date"])
-    return upcoming[0]
-
-
 def scan_folder(token, drive_id, folder_path):
     """Scan a meeting folder for documents and subfolders.
     Returns (docs, subfolders) where subfolders is a list of
@@ -799,67 +714,60 @@ def build_data(token, drive_id):
     print("Scanning Next Meeting...")
     next_docs, next_subfolders = scan_folder(token, drive_id, NEXT_MEETING_PATH)
 
-    print("Finding next meeting reference (Next Meeting + Internal Only)...")
-    ref = find_next_meeting_reference(token, drive_id)
-
     next_date = None
     next_type = "regular"
     next_title = "Upcoming Town Board Meeting"
     next_time = "6:00 PM"
     next_location = "Winchester Town Hall"
 
-    if ref:
-        fn = ref["filename"]
-        next_date = ref["date"]
-        dt = datetime.strptime(next_date, "%Y-%m-%d")
-        if "RTBM" in fn:
-            next_type = "regular"
-            next_title = f"Regular Town Board Meeting - {dt.strftime('%B %Y')}"
-        elif "STBM" in fn or "TBSM" in fn:
-            next_type = "special"
-            next_title = f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
-        else:
-            slug = extract_meeting_slug(fn)
-            next_title = slug if slug else f"Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
-            next_type = "special"
-        print(f"  Reference agenda: {fn} (from {ref['source']}) -> {next_date}")
+    for doc in next_docs:
+        fn = doc["filename"]
+        m = re.search(r"(\d{8})", fn)
+        if m:
+            raw = m.group(1)
+            next_date = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
+            dt = datetime.strptime(next_date, "%Y-%m-%d")
+            if "RTBM" in fn:
+                next_type = "regular"
+                next_title = f"Regular Town Board Meeting - {dt.strftime('%B %Y')}"
+            elif "STBM" in fn or "TBSM" in fn:
+                next_type = "special"
+                next_title = f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
+            else:
+                # Non-standard meeting — extract descriptive slug from filename
+                slug = extract_meeting_slug(fn)
+                if slug:
+                    next_title = slug
+                else:
+                    next_title = f"Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
+                next_type = "special"
+            break
 
-        # Extract time & location from the reference PDF directly (works for
-        # either folder — we have the item ID from the candidate scan).
-        print("  Extracting meeting details from reference agenda PDF...")
-        pdf_bytes = download_file(token, drive_id, ref["item_id"])
-        pdf_details = extract_meeting_details_from_pdf(pdf_bytes) if pdf_bytes else {}
-        if pdf_details:
-            print(f"    Parsed from PDF: {pdf_details}")
-        if pdf_details.get("time"):
-            next_time = pdf_details["time"]
-        if pdf_details.get("location"):
-            next_location = pdf_details["location"]
+    # Resolve time & location: PDF content is most reliable (directly from
+    # the agenda header), iCal is fallback, hardcoded defaults are last resort.
+    print("  Extracting meeting details from agenda PDF...")
+    pdf_details = extract_details_from_next_meeting(token, drive_id, next_docs)
+    if pdf_details.get("time"):
+        next_time = pdf_details["time"]
+    if pdf_details.get("location"):
+        next_location = pdf_details["location"]
 
-        # If PDF didn't yield time, try iCal.
-        if not pdf_details.get("time"):
-            ical_event = get_next_meeting_from_ical(ical_events, match_date=next_date)
-            if ical_event:
-                next_time = ical_event["time"]
-                if not pdf_details.get("location"):
-                    next_location = ical_event["location"]
-                print(f"  iCal fallback: {ical_event['title']} at {ical_event['time']} @ {ical_event['location']}")
-    else:
-        print("  No upcoming agenda found in Next Meeting or Internal Only.")
-        print("  Leaving next_date null so the frontend's own fallback applies.")
+    # If PDF didn't yield time, try iCal
+    if not pdf_details.get("time"):
+        ical_event = get_next_meeting_from_ical(ical_events, match_date=next_date)
+        if ical_event:
+            next_time = ical_event["time"]
+            if not pdf_details.get("location"):
+                next_location = ical_event["location"]
+            print(f"  iCal fallback: {ical_event['title']} at {ical_event['time']} @ {ical_event['location']}")
 
-    # Note: next_date is intentionally left as None when no reference agenda
-    # exists. The previous behavior of falling back to datetime.today() caused
-    # the portal to briefly display today's date as the next meeting date
-    # whenever the Next Meeting folder was empty.
+    if not next_date:
+        next_date = datetime.today().strftime("%Y-%m-%d")
+
     next_meeting = {
-        "id": f"{next_type}-{next_date}" if next_date else "upcoming-tbd",
-        "title": next_title,
-        "type": next_type,
-        "status": "upcoming",
-        "date": next_date,
-        "time": next_time,
-        "location": next_location,
+        "id": f"{next_type}-{next_date}", "title": next_title,
+        "type": next_type, "status": "upcoming", "date": next_date,
+        "time": next_time, "location": next_location,
         "documents": next_docs,
     }
     if next_subfolders:
@@ -1073,8 +981,9 @@ def build_permits_data(rows):
         if end < start:
             start, end = end, start
 
+        pid_for_url = _ps(row.get("permit_id")) or f"P{len(permits)+1:04d}"
         entry = {
-            "id":           _ps(row.get("permit_id")) or f"P{len(permits)+1:04d}",
+            "id":           pid_for_url,
             "permitNumber": _ps(row.get("permit_number")),
             "title":        _ps(row.get("title")) or _ps(row.get("type")) or "Permitted work",
             "org":          _ps(row.get("org")) or "Applicant on file",
@@ -1083,6 +992,7 @@ def build_permits_data(rows):
             "endDate":      end,
             "status":       status,
             "jurisdiction": "town",
+            "pdfUrl":       f"/{PDF_PUBLIC_PATH}/{pid_for_url}.pdf",
         }
 
         traffic = _ps(row.get("traffic"))
@@ -1163,6 +1073,25 @@ def sync_permits(token):
                 write_github_file("permit_notify_state.json", _f.read())
     except Exception as e:
         print(f"   ! notification step failed: {e}")
+        print("   (permits.json was still published)")
+
+    print("   Generating permit record PDFs...")
+    try:
+        pub_pdfs, int_pdfs, pdf_unchanged, pdf_errors = generate_permit_pdfs(rows, token=token)
+        if pub_pdfs or int_pdfs:
+            print(f"   {pub_pdfs} public + {int_pdfs} internal PDF(s) rebuilt")
+        else:
+            print("   No PDFs needed rebuilding (content unchanged)")
+        if pdf_errors:
+            print(f"   {pdf_errors} PDF error(s) — see above")
+
+        # Commit the PDF state file so next run knows what content hashes it saw.
+        import os as _os2
+        if _os2.path.exists("permit_pdf_state.json"):
+            with open("permit_pdf_state.json", "r", encoding="utf-8") as _f2:
+                write_github_file("permit_pdf_state.json", _f2.read())
+    except Exception as e:
+        print(f"   ! PDF step failed: {e}")
         print("   (permits.json was still published)")
 
 
