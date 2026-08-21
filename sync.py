@@ -7,6 +7,7 @@ from datetime import datetime, timezone, date
 import re
 from pypdf import PdfReader
 from openpyxl import load_workbook
+from permit_notify import notify_status_changes
 
 
 TENANT_ID     = os.environ["AZURE_TENANT_ID"]
@@ -1051,6 +1052,25 @@ def sync_permits(token):
 
     payload = json.dumps(data, indent=2, ensure_ascii=False)
     write_github_file(PERMITS_GITHUB_FILE, payload)
+
+    print("   Checking for status-change notifications...")
+    try:
+        sent, notify_skipped = notify_status_changes(token, rows)
+        if sent:
+            print(f"   {sent} email(s) sent")
+        else:
+            print("   No status changes to notify")
+        if notify_skipped:
+            print(f"   {notify_skipped} skipped (no applicant email)")
+
+        # Commit the updated state file so next run remembers what we notified.
+        import os as _os
+        if _os.path.exists("permit_notify_state.json"):
+            with open("permit_notify_state.json", "r", encoding="utf-8") as _f:
+                write_github_file("permit_notify_state.json", _f.read())
+    except Exception as e:
+        print(f"   ! notification step failed: {e}")
+        print("   (permits.json was still published)")
 
 
 def main():
