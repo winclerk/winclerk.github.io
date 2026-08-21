@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-21T19:14:20Z",
+  "updated": "2026-08-21T19:55:50Z",
   "permits": [
     {
       "id": "P0001",
@@ -11,6 +11,7 @@
       "endDate": "2026-08-28",
       "status": "approved",
       "jurisdiction": "town",
+      "pdfUrl": "/public/permits/P0001.pdf",
       "traffic": "Single-lane alternating with flaggers",
       "contactName": "Marie",
       "contactPhone": "7157767777",
