@@ -42,7 +42,7 @@ CLIENT_ID     = os.environ.get("AZURE_CLIENT_ID", "")
 CLIENT_SECRET = os.environ.get("AZURE_CLIENT_SECRET", "")
 
 # GitHub — for publishing public PDFs to winclerk.github.io
-GITHUB_TOKEN  = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_TOKEN  = os.environ.get("GH_PAT", "") or os.environ.get("GITHUB_TOKEN", "")
 GITHUB_REPO   = os.environ.get("GITHUB_REPO", "winclerk/winclerk.github.io")
 GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
 PUBLIC_PATH   = "public/permits"  # rendered URL: winclerk.github.io/public/permits/<id>.pdf
