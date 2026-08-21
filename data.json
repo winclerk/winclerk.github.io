@@ -1,24 +1,14 @@
 {
   "meetings": [
     {
-      "id": "special-2026-09-01",
-      "title": "Special Town Board Meeting - September 1, 2026",
-      "type": "special",
+      "id": "regular-2026-08-21",
+      "title": "Upcoming Town Board Meeting",
+      "type": "regular",
       "status": "upcoming",
-      "date": "2026-09-01",
-      "time": "10:00 AM",
+      "date": "2026-08-21",
+      "time": "6:00 PM",
       "location": "Winchester Town Hall",
-      "documents": [
-        {
-          "label": "Special Meeting Agenda",
-          "filename": "Agenda_STBM_20260901_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBnAN4XyxdfToCaPQA6wm2AAUzepchRIBwc46bA7W8UViQ",
-          "date": "2026-09-01",
-          "posted": "2026-08-21",
-          "draft": true,
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        }
-      ],
+      "documents": [],
       "subfolders": [
         {
           "name": "Room Tax",
