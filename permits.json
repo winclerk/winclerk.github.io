@@ -1,4 +1,56 @@
 {
-  "updated": "2026-08-21T00:28:07Z",
-  "permits": []
+  "updated": "2026-08-21T03:58:47Z",
+  "permits": [
+    {
+      "id": "P0001",
+      "permitNumber": "",
+      "title": "Xcel (Test)",
+      "org": "Xcel Energy",
+      "location": "Old County O — 2837",
+      "startDate": "2026-08-24",
+      "endDate": "2026-08-28",
+      "status": "approved",
+      "jurisdiction": "town",
+      "traffic": "Single-lane alternating with flaggers",
+      "contactName": "Marie",
+      "contactPhone": "7157767777",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.23061,
+          -89.876543
+        ],
+        [
+          46.232821,
+          -89.877959
+        ],
+        [
+          46.235612,
+          -89.877445
+        ],
+        [
+          46.238268,
+          -89.876221
+        ],
+        [
+          46.24189,
+          -89.874054
+        ],
+        [
+          46.244086,
+          -89.872745
+        ],
+        [
+          46.246905,
+          -89.871501
+        ],
+        [
+          46.250986,
+          -89.870964
+        ]
+      ],
+      "lat": 46.24189,
+      "lng": -89.874054
+    }
+  ]
 }
