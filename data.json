@@ -8,7 +8,64 @@
       "date": "2026-08-21",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
-      "documents": []
+      "documents": [],
+      "subfolders": [
+        {
+          "name": "Room Tax",
+          "documents": [
+            {
+              "label": "BYLAWS and Rules of the Lafayette PC",
+              "filename": "BYLAWS and Rules of the Lafayette PC.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBZbKhZG95lSLZlR6AWAclgAa11T_S7UxMCX1RAZinCOP0",
+              "date": "2026-08-21",
+              "posted": "2026-08-21"
+            },
+            {
+              "label": "Rental Summary Lafayette",
+              "filename": "Rental Summary Lafayette.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQA-Ph7tVa4pTY9bIBahfJcVAZohagTaMM2EGQo8iPEEkTM",
+              "date": "2026-08-21",
+              "posted": "2026-08-21"
+            },
+            {
+              "label": "Room Tax Ordinance Lake Hallie",
+              "filename": "Room Tax Ordinance Lake Hallie.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQD0FIdeCJ9mQp0vPtHqtLvAAY8FsVZ9vc5p3Q9AqRq0j8w",
+              "date": "2026-08-21",
+              "posted": "2026-08-21"
+            },
+            {
+              "label": "Room Tax Report Lafayette",
+              "filename": "Room Tax Report Lafayette.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAp8IFh21JIRqCaGyJs5WFJAZWYDQKVdUVq0hQDyPJmeh0",
+              "date": "2026-08-21",
+              "posted": "2026-08-21"
+            },
+            {
+              "label": "Room Tax Report Lake Hallie",
+              "filename": "Room Tax Report Lake Hallie.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQAHaKkgjYM5S49LxD7pShdsAaLmPZcI8VPwucbrsiidFUA",
+              "date": "2026-08-21",
+              "posted": "2026-08-21"
+            },
+            {
+              "label": "Solicitation of Commissioners Lafayette",
+              "filename": "Solicitation of Commissioners Lafayette.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDKofr5miHaTpQSVD2Izgn0AW58P0vculyJmJf6mw5H_9Y",
+              "date": "2026-08-21",
+              "posted": "2026-08-21"
+            },
+            {
+              "label": "Wis Stat 66",
+              "filename": "Wis Stat 66.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQDGOl2zR1gqQL44_yWtf7ifAZgfezU8ZClHmPD-oZIBvJ4",
+              "date": "2026-08-21",
+              "posted": "2026-08-21"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgA5I_lUMeq3TK84UYU-ghBYAeHxFuC7PDz3kfWsHKhzck0"
+        }
+      ]
     },
     {
       "id": "regular-2026-08-17",
@@ -1186,10 +1243,10 @@
           "documents": [
             {
               "label": "Ordinance 2026-01 Driveway",
-              "filename": "Ordinance_2026-01_Driveway_20260223.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBHztkgLSoZQqObl9lVjFhrAbKsM0zsf-10bWh3seCpVLs",
-              "date": "2026-02-23",
-              "posted": "2026-08-16",
+              "filename": "Ordinance_2026-01_Driveway_20260820.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQAwJYJ3xa3ySpeQoYhTUMESAdLMBcYcjj5_Qs6pEMNyxwQ",
+              "date": "2026-08-20",
+              "posted": "2026-08-21",
               "folder": "Active",
               "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
             }
