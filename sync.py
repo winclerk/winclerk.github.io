@@ -981,7 +981,7 @@ def build_permits_data(rows):
         if end < start:
             start, end = end, start
 
-        pid_for_url = _ps(row.get("permit_id")) or f"P{len(permits)+1:04d}"
+        pid_for_url = row.get("_pdf_id") or _ps(row.get("permit_id")) or f"P{len(permits)+1:04d}"
         entry = {
             "id":           pid_for_url,
             "permitNumber": _ps(row.get("permit_number")),
@@ -1043,6 +1043,11 @@ def sync_permits(token):
     print("\n── Permits ──")
     rows = fetch_permit_rows(token)
     print(f"   {len(rows)} row(s) in tracker")
+
+    # Assign one stable ID per row up front so JSON, PDFs, and state files all agree.
+    for i, row in enumerate(rows, 1):
+        row["_pdf_id"] = _ps(row.get("permit_id")) or f"P{i:04d}"
+        row["__row"] = i + 2   # sheet row (header is row 2, data starts at row 3)
 
     data, skipped = build_permits_data(rows)
     print(f"   {len(data['permits'])} published")

@@ -80,8 +80,9 @@ def _valid_email(s):
 
 def _permit_key(row):
     """Stable identifier for a row across syncs.
-       permit_id when present, otherwise submitted-timestamp as fallback."""
-    pid = _s(row.get("permit_id"))
+       Uses the pre-assigned _pdf_id (from sync.py) so the same permit
+       tracks consistently across JSON, PDFs, and notifications."""
+    pid = _s(row.get("_pdf_id")) or _s(row.get("permit_id"))
     if pid:
         return pid
     sub = _s(row.get("submitted"))
