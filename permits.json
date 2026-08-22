@@ -1,8 +1,8 @@
 {
-  "updated": "2026-08-22T00:40:21Z",
+  "updated": "2026-08-22T07:30:49Z",
   "permits": [
     {
-      "id": "P0001",
+      "id": "P0002",
       "permitNumber": "",
       "title": "Xcel (Test)",
       "org": "Xcel Energy",
@@ -11,7 +11,7 @@
       "endDate": "2026-08-28",
       "status": "approved",
       "jurisdiction": "town",
-      "pdfUrl": "/public/permits/P0001.pdf",
+      "pdfUrl": "/public/permits/P0002.pdf",
       "traffic": "Single-lane alternating with flaggers",
       "contactName": "Marie",
       "contactPhone": "7157767777",
