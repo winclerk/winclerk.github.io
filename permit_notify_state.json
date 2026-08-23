@@ -1,8 +1,10 @@
 {
-  "updated": "2026-08-23T07:33:26Z",
+  "updated": "2026-08-23T17:57:16Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "received",
-    "P0002": "denied"
+    "P0002": "received",
+    "P0003": "received",
+    "P0004": "denied"
   }
 }
