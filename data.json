@@ -6,7 +6,7 @@
       "type": "regular",
       "status": "upcoming",
       "date": "2026-08-23",
-      "time": "6:00 PM",
+      "time": "8:00 AM",
       "location": "Winchester Town Hall",
       "documents": [],
       "subfolders": [
@@ -1250,6 +1250,69 @@
           "name": "Ordinances",
           "documents": [
             {
+              "label": "Ordinance 2017-01 Sex Offender",
+              "filename": "Ordinance_2017-01_Sex-Offender_20171127.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQAhCLX3a7rmSJKVzHpVslEiAWx224QeyLAS2w03NHoyb4k",
+              "date": "2017-11-27",
+              "posted": "2026-08-23",
+              "folder": "Active",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            },
+            {
+              "label": "Ordinance 2020-01 Dog Licensing",
+              "filename": "Ordinance_2020-01_Dog-Licensing_20200601.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQCs3j6b5T0WT4dl31IKx5DpATix_77B1SnX5husuQ1Rntk",
+              "date": "2020-06-01",
+              "posted": "2026-08-23",
+              "folder": "Active",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            },
+            {
+              "label": "Ordinance 2020-02 Finance",
+              "filename": "Ordinance_2020-02_Finance_20200706.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBSBBZG8x8iRZNm2pdfE4TNARR8bVQiOy3Q9jkGhB5TvOM",
+              "date": "2020-07-06",
+              "posted": "2026-08-23",
+              "folder": "Active",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            },
+            {
+              "label": "Ordinance 2020-03 Public Records",
+              "filename": "Ordinance_2020-03_Public-Records_20200706.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQCZxTxVYlWWT5GjmVnh3P-DAbNIlKxuENVJCj4DI6tCi3s",
+              "date": "2020-07-06",
+              "posted": "2026-08-23",
+              "folder": "Active",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            },
+            {
+              "label": "Ordinance 2021-01 Emergency Services",
+              "filename": "Ordinance_2021-01_Emergency-Services_20210301.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBth7Bjcqz3S72nPHionXxPAerJrq4RqmlUTeurUVSqDrs",
+              "date": "2021-03-01",
+              "posted": "2026-08-23",
+              "folder": "Active",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            },
+            {
+              "label": "Ordinance 2021-03 Land Use",
+              "filename": "Ordinance_2021-03_Land-Use_20210607.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBdx0UlXIZ7SYuKUONpiydKATaJCpj2skn7dxJkwmtipdw",
+              "date": "2021-06-07",
+              "posted": "2026-08-23",
+              "folder": "Active",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            },
+            {
+              "label": "Ordinance 2025-02 Refund of Tax Overpayments",
+              "filename": "Ordinance_2025-02_Refund-of-Tax-Overpayments_20251105.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBHXHo5EVWgQqwMIr5KxcbwAYLrz-1SGBYce1oV9A7Lo2c",
+              "date": "2025-11-05",
+              "posted": "2026-08-23",
+              "folder": "Active",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            },
+            {
               "label": "Ordinance 2026-01 Driveway",
               "filename": "Ordinance_2026-01_Driveway_20260820.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQAwJYJ3xa3ySpeQoYhTUMESAdLMBcYcjj5_Qs6pEMNyxwQ",
@@ -1257,6 +1320,24 @@
               "posted": "2026-08-21",
               "folder": "Active",
               "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgCbADQzpfW_T6iiDDujHbRKAVinjVoW783dkF9nkwEUdfM"
+            },
+            {
+              "label": "SUPERSEDED Ordinance 2022-06 Driveways",
+              "filename": "SUPERSEDED-Ordinance_2022-06_Driveways_20260822.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQA9mI9pcA9ASbjcufo1_qczAawHE2P83YmtMtdL0FY_Tng",
+              "date": "2026-08-22",
+              "posted": "2026-08-23",
+              "folder": "Superseded",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgDY4bqyAYUAQZ4ZpJITgrVoAdGLgmQJISVCHVUn2DKBJcY"
+            },
+            {
+              "label": "SUPERSEDED Ordinance 2024-04 Driveway",
+              "filename": "SUPERSEDED-Ordinance_2024-04_Driveway_20260822.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQDCg8rXllq0S5_l21dHpiqDASuQF-Qwx2yLfsofB0xJouU",
+              "date": "2026-08-22",
+              "posted": "2026-08-23",
+              "folder": "Superseded",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Governance/IgDY4bqyAYUAQZ4ZpJITgrVoAdGLgmQJISVCHVUn2DKBJcY"
             }
           ]
         },
