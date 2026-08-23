@@ -1,13 +1,19 @@
 """
-permit_notify.py — email applicants + Town Board on permit status changes.
+permit_notify.py — notify applicants (email) and the Town Board (Teams) on
+permit status changes.
 
 Called from sync.py's sync_permits() with the raw tracker rows and the token
 already obtained for Graph. Tracks last-notified status per permit in
-permit_notify_state.json (committed to the winclerk repo) and emails on any
-change to/among {proposed, approved, denied}.
+permit_notify_state.json (committed to the winclerk repo) and fires on any
+change to/among {received, approved, approved conditionally, denied}.
 
-Requires the Winchester Sync Azure app to have Mail.Send (application) granted
-by an admin. Emails are sent as clerk@winchester.wi.gov.
+Applicant email requires the Winchester Sync Azure app to have Mail.Send
+(application) granted by an admin. Emails are sent as clerk@winchester.wi.gov.
+
+Teams notification is delivered by POSTing a JSON payload to the Make.com
+webhook, which routes to the Permits group chat via the Teams connector.
+The same webhook receives form submissions; Make's router branches on the
+event_type field (status_change vs no event_type).
 """
 
 import io
@@ -22,12 +28,24 @@ import requests
 GRAPH_BASE = "https://graph.microsoft.com/v1.0"
 
 STATE_FILE = "permit_notify_state.json"
-BOARD_EMAIL = "townboard@winchester.wi.gov"
 CLERK_EMAIL = "clerk@winchester.wi.gov"
 SEND_FROM   = "clerk@winchester.wi.gov"
 
-# Only these three statuses trigger emails. "received" and "withdrawn" don't.
-NOTIFY_STATUSES = {"proposed", "approved", "denied"}
+# Make.com webhook for the Permit email workflow scenario. Same URL the form
+# submission uses; Make's router branches on event_type. sync.py POSTs with
+# event_type=status_change to trigger the Teams post; the form omits it.
+MAKE_WEBHOOK_URL = "https://hook.us2.make.com/gatf2jagb2qfxkmczko6gugq2qx80uxr"
+
+# Statuses that trigger notifications. Everything else (blank, "withdrawn",
+# stray values, etc.) is silently ignored.
+NOTIFY_STATUSES = {"received", "approved", "approved conditionally", "denied"}
+
+STATUS_LABELS = {
+    "received":               "Received",
+    "approved":               "Approved",
+    "approved conditionally": "Approved with conditions",
+    "denied":                 "Denied",
+}
 
 
 # ── State (last-notified status per permit) ──────────────────────────
@@ -103,14 +121,17 @@ def _applicant_body(row, new_status, old_status):
     applicant = _s(row.get("applicant")) or "Applicant"
     kind = _s(row.get("type")) or "permit"
 
-    if new_status == "proposed":
-        headline = "Your permit application is scheduled for Board review"
+    if new_status == "received":
+        headline = "We have received your permit application"
         lead = (
             f"Hello {escape(applicant)},<br><br>"
-            f"The Town Clerk has completed the initial review of your {escape(kind.lower())} "
-            f"application and forwarded it to the Town Board."
+            f"The Town Clerk has received your {escape(kind.lower())} application. "
+            f"It will be scheduled for review at the next Town Board meeting."
         )
-        next_step = "The Board will consider your application at their next regular meeting."
+        next_step = (
+            "You will receive another email once the Board acts on your application. "
+            "If you need to update any information in the meantime, contact the Town Clerk."
+        )
     elif new_status == "approved":
         headline = "Your permit application has been approved"
         lead = (
@@ -118,9 +139,20 @@ def _applicant_body(row, new_status, old_status):
             f"The Town Board has approved your {escape(kind.lower())} application."
         )
         next_step = (
-            "Please review any conditions of approval below before beginning work. "
-            "A certificate of insurance is required, and you must call Diggers Hotline at 811 "
-            "before excavating."
+            "A certificate of insurance is required before work begins, and you must "
+            "call Diggers Hotline at 811 before excavating."
+        )
+    elif new_status == "approved conditionally":
+        headline = "Your permit application has been approved with conditions"
+        lead = (
+            f"Hello {escape(applicant)},<br><br>"
+            f"The Town Board has approved your {escape(kind.lower())} application "
+            f"subject to the conditions listed below. Please review them carefully."
+        )
+        next_step = (
+            "You must satisfy all listed conditions to keep this permit in good standing. "
+            "A certificate of insurance is required before work begins, and you must "
+            "call Diggers Hotline at 811 before excavating. Contact the Town Clerk with any questions."
         )
     elif new_status == "denied":
         headline = "Your permit application was not approved"
@@ -135,6 +167,7 @@ def _applicant_body(row, new_status, old_status):
     else:
         return None  # shouldn't happen given NOTIFY_STATUSES filter
 
+    approved_like = new_status in ("approved", "approved conditionally")
     rows_html = _detail_rows([
         ("Project",       title),
         ("Location",      where),
@@ -142,52 +175,49 @@ def _applicant_body(row, new_status, old_status):
         ("Permit number", _s(row.get("permit_number"))),
         ("Board meeting", _fmt_date(row.get("board_date"))),
         ("Authorized",    _date_range(row.get("authorized_start"), row.get("authorized_end"))
-                          if new_status == "approved" else ""),
-        ("Conditions",    _s(row.get("conditions")) if new_status == "approved" else ""),
+                          if approved_like else ""),
+        ("Conditions",    _s(row.get("conditions")) if approved_like else ""),
     ])
 
     return _wrap_html(headline, lead, rows_html, next_step, footer_public=True)
 
 
-def _board_body(row, new_status, old_status):
-    title, where = _title_line(row)
-    kind = _s(row.get("type")) or "permit"
-    applicant = _s(row.get("applicant"))
-    org = _s(row.get("org"))
+def _build_teams_payload(row, new_status, old_status):
+    """Compact JSON payload for the Make webhook. Make's router branches on
+       event_type; its Teams module reads these fields into the message body."""
+    pdf_id = _s(row.get("_pdf_id")) or _s(row.get("permit_id"))
+    return {
+        "event_type":       "status_change",
+        "permit_id":        _s(row.get("permit_id")),
+        "permit_number":    _s(row.get("permit_number")),
+        "title":            _s(row.get("title")) or "Permit Application",
+        "type":             _s(row.get("type")),
+        "road":             _s(row.get("road")),
+        "address":          _s(row.get("address")),
+        "org":              _s(row.get("org")),
+        "status":           new_status,
+        "status_label":     STATUS_LABELS.get(new_status, new_status.capitalize()),
+        "old_status":       old_status,
+        "board_date":       _s(row.get("board_date")),
+        "authorized_start": _s(row.get("authorized_start")),
+        "authorized_end":   _s(row.get("authorized_end")),
+        "conditions":       _s(row.get("conditions")),
+        "public_pdf_url":   f"https://winclerk.github.io/public/permits/{pdf_id}.pdf" if pdf_id else "",
+    }
 
-    who = " / ".join([p for p in [applicant, org] if p]) or "Unspecified"
 
-    verb = {
-        "proposed": "forwarded to the Board",
-        "approved": "marked APPROVED by the Board",
-        "denied":   "marked DENIED by the Board",
-    }[new_status]
-
-    headline = f"Permit status update: {new_status.upper()}"
-    lead = (
-        f"A {escape(kind.lower())} permit application has been {verb}.<br><br>"
-        f"<em>Previous status: {escape(old_status or 'not yet tracked')}</em>"
-    )
-
-    rows_html = _detail_rows([
-        ("Project",         title),
-        ("Location",        where),
-        ("Applicant",       who),
-        ("Applicant phone", _s(row.get("phone"))),
-        ("Applicant email", _s(row.get("email"))),
-        ("Permit type",     kind),
-        ("Permit ID",       _s(row.get("permit_id"))),
-        ("Permit number",   _s(row.get("permit_number"))),
-        ("Requested dates", _date_range(row.get("start_date"), row.get("end_date"))),
-        ("Board meeting",   _fmt_date(row.get("board_date"))),
-        ("Authorized",      _date_range(row.get("authorized_start"), row.get("authorized_end"))
-                            if new_status == "approved" else ""),
-        ("Conditions",      _s(row.get("conditions")) if new_status == "approved" else ""),
-        ("Clerk notes",     _s(row.get("clerk_notes"))),
-    ])
-
-    next_step = "This message was sent automatically when the permit tracker was published."
-    return _wrap_html(headline, lead, rows_html, next_step, footer_public=False)
+def _send_teams_webhook(payload):
+    """POST the status-change payload to the Make.com webhook. Make routes
+       it to the Teams module for the Permits group chat."""
+    try:
+        r = requests.post(MAKE_WEBHOOK_URL, json=payload, timeout=30)
+    except Exception as e:
+        print(f"     ! Teams webhook failed: {e}")
+        return False
+    if 200 <= r.status_code < 300:
+        return True
+    print(f"     ! Teams webhook returned {r.status_code}: {r.text[:200]}")
+    return False
 
 
 def _date_range(a, b):
@@ -305,9 +335,10 @@ def notify_status_changes(token, rows):
 
         title, _ = _title_line(row)
         subj_prefix = {
-            "proposed": "Permit scheduled for Board review",
-            "approved": "Permit approved",
-            "denied":   "Permit not approved",
+            "received":               "Permit application received",
+            "approved":               "Permit approved",
+            "approved conditionally": "Permit approved with conditions",
+            "denied":                 "Permit not approved",
         }[new_status]
         subject = f"{subj_prefix}: {title}"
 
@@ -316,17 +347,15 @@ def notify_status_changes(token, rows):
         if _valid_email(applicant_addr):
             body = _applicant_body(row, new_status, old_status)
             if body and _send(token, applicant_addr, subject, body):
-                print(f"     \u2192 applicant: {applicant_addr}")
+                print(f"     \u2192 applicant email: {applicant_addr}")
                 sent += 1
         else:
             print(f"     ! no valid applicant email on {key} — applicant not notified")
             skipped += 1
 
-        # Board email
-        board_body = _board_body(row, new_status, old_status)
-        board_subj = f"[Permit {new_status}] {title}"
-        if _send(token, BOARD_EMAIL, board_subj, board_body):
-            print(f"     \u2192 board: {BOARD_EMAIL}")
+        # Board notification via Teams (Make.com webhook \u2192 Permits group chat)
+        if _send_teams_webhook(_build_teams_payload(row, new_status, old_status)):
+            print(f"     \u2192 board Teams post sent")
             sent += 1
 
     _save_state(new_state)
