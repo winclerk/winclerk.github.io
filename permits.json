@@ -1,4 +1,41 @@
 {
-  "updated": "2026-08-23T17:57:14Z",
-  "permits": []
+  "updated": "2026-08-23T17:59:57Z",
+  "permits": [
+    {
+      "id": "P0001",
+      "permitNumber": "",
+      "title": "Final Testination",
+      "org": "private owner",
+      "location": "Rock Lake Rd — 2345",
+      "startDate": "2026-08-25",
+      "endDate": "2026-09-10",
+      "status": "approved",
+      "jurisdiction": "town",
+      "pdfUrl": "/public/permits/P0001.pdf",
+      "traffic": "Full closure with posted detour",
+      "contactName": "marie curie",
+      "contactPhone": "8271827777",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.256724,
+          -89.874918
+        ],
+        [
+          46.257311,
+          -89.875583
+        ],
+        [
+          46.257392,
+          -89.874843
+        ],
+        [
+          46.257377,
+          -89.87406
+        ]
+      ],
+      "lat": 46.257392,
+      "lng": -89.874843
+    }
+  ]
 }
