@@ -1,11 +1,11 @@
 {
-  "updated": "2026-08-24T07:58:22Z",
+  "updated": "2026-08-25T03:01:40Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": {
       "public": "81eea9c61cafa84d7269cd417331a2942419c1d7730989d49e0b64426899f94a"
     },
     "P0001": {
-      "public": "62f962a93e09aa31925181e2c8239c4b444cdc57ab3e0022f87ba64d0f7369cc"
+      "public": "23de71450fe96a13cfae232e38a6d184b863a1d7a4cbe4e5e4d6ebc20b6ef837"
     },
     "P0002": {
       "public": "3f8e3034eb80b726980754292f69632e379ec3992aa73d6c6201c2e1269dab96"
