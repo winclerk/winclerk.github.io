@@ -1,8 +1,201 @@
 {
-  "updated": "2026-08-25T07:43:22Z",
+  "updated": "2026-08-25T16:36:56Z",
   "permits": [
     {
       "id": "P0001",
+      "permitNumber": "",
+      "title": "OPA WILDFIRE POLE REPLACEMENT",
+      "org": "Xcel Energy",
+      "location": "Other Town road — 53 S Owasso W.",
+      "startDate": "2026-08-30",
+      "endDate": "2026-12-31",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "pdfUrl": "/public/permits/P0001.pdf",
+      "contactName": "Tiona Varela",
+      "contactPhone": "763-357-5979",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.203853,
+          -89.896963
+        ],
+        [
+          46.20177,
+          -89.897228
+        ],
+        [
+          46.200693,
+          -89.897247
+        ],
+        [
+          46.19681,
+          -89.897856
+        ],
+        [
+          46.196423,
+          -89.89732
+        ],
+        [
+          46.195733,
+          -89.896311
+        ],
+        [
+          46.195644,
+          -89.894359
+        ],
+        [
+          46.195688,
+          -89.892202
+        ],
+        [
+          46.195607,
+          -89.889455
+        ],
+        [
+          46.195785,
+          -89.889123
+        ],
+        [
+          46.19571,
+          -89.888425
+        ],
+        [
+          46.195339,
+          -89.888007
+        ],
+        [
+          46.195109,
+          -89.887653
+        ],
+        [
+          46.19496,
+          -89.887514
+        ]
+      ],
+      "lat": 46.195688,
+      "lng": -89.892202
+    },
+    {
+      "id": "P0002",
+      "permitNumber": "",
+      "title": "OPA WILDFIRE POLE REPLACEMENT",
+      "org": "Xcel Energy",
+      "location": "Other Town road — 53 S Owasso W.",
+      "startDate": "2026-08-30",
+      "endDate": "2026-12-31",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "pdfUrl": "/public/permits/P0002.pdf",
+      "contactName": "Tiona Varela",
+      "contactPhone": "763-357-5979",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.214021,
+          -89.913402
+        ],
+        [
+          46.214014,
+          -89.910924
+        ],
+        [
+          46.213947,
+          -89.901327
+        ],
+        [
+          46.214971,
+          -89.89976
+        ],
+        [
+          46.214867,
+          -89.899074
+        ],
+        [
+          46.215343,
+          -89.898387
+        ],
+        [
+          46.216738,
+          -89.895877
+        ],
+        [
+          46.218639,
+          -89.895276
+        ],
+        [
+          46.219823,
+          -89.894951
+        ],
+        [
+          46.220272,
+          -89.895005
+        ],
+        [
+          46.219927,
+          -89.894452
+        ],
+        [
+          46.219455,
+          -89.893653
+        ],
+        [
+          46.219047,
+          -89.893417
+        ]
+      ],
+      "lat": 46.216738,
+      "lng": -89.895877
+    },
+    {
+      "id": "P0003",
+      "permitNumber": "",
+      "title": "OPA WILDFIRE POLE REPLACEMENT",
+      "org": "Xcel Energy",
+      "location": "Town easement — 53 S Owasso W.",
+      "startDate": "2026-08-30",
+      "endDate": "2026-12-31",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "pdfUrl": "/public/permits/P0003.pdf",
+      "contactName": "Tiona Varela",
+      "contactPhone": "763-357-5979",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.217676,
+          -89.890708
+        ],
+        [
+          46.21742,
+          -89.890252
+        ],
+        [
+          46.217101,
+          -89.889759
+        ],
+        [
+          46.216778,
+          -89.88926
+        ],
+        [
+          46.21667,
+          -89.888857
+        ],
+        [
+          46.216629,
+          -89.888439
+        ],
+        [
+          46.216626,
+          -89.888053
+        ]
+      ],
+      "lat": 46.216778,
+      "lng": -89.88926
+    },
+    {
+      "id": "P0004",
       "permitNumber": "",
       "title": "E Birch Lake Driveway",
       "org": "Jennifer Vozel",
@@ -11,7 +204,7 @@
       "endDate": "2026-09-22",
       "status": "proposed",
       "jurisdiction": "town",
-      "pdfUrl": "/public/permits/P0001.pdf",
+      "pdfUrl": "/public/permits/P0004.pdf",
       "contactName": "Harmon Excavations",
       "contactPhone": "715-892-2390",
       "geoType": "point",
