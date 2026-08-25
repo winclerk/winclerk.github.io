@@ -1,12 +1,12 @@
 {
-  "updated": "2026-08-25T03:01:37Z",
+  "updated": "2026-08-25T07:43:22Z",
   "permits": [
     {
       "id": "P0001",
       "permitNumber": "",
       "title": "E Birch Lake Driveway",
       "org": "Jennifer Vozel",
-      "location": "Other Town road — 7334 E Birch Lake Rd (number not yet assigned)",
+      "location": "Other Town road — 7334 E Birch Lake Rd (fire number not yet assigned by VC)",
       "startDate": "2026-09-15",
       "endDate": "2026-09-22",
       "status": "proposed",
