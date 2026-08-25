@@ -1,4 +1,22 @@
 {
-  "updated": "2026-08-24T07:58:20Z",
-  "permits": []
+  "updated": "2026-08-25T03:01:37Z",
+  "permits": [
+    {
+      "id": "P0001",
+      "permitNumber": "",
+      "title": "E Birch Lake Driveway",
+      "org": "Jennifer Vozel",
+      "location": "Other Town road — 7334 E Birch Lake Rd (number not yet assigned)",
+      "startDate": "2026-09-15",
+      "endDate": "2026-09-22",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "pdfUrl": "/public/permits/P0001.pdf",
+      "contactName": "Harmon Excavations",
+      "contactPhone": "715-892-2390",
+      "geoType": "point",
+      "lat": 46.207809,
+      "lng": -89.830785
+    }
+  ]
 }
