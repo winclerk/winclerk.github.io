@@ -2,21 +2,29 @@
 permit_notify.py — notify applicants (email) and the Town Board (Teams) on
 permit status changes.
 
-Called from sync.py's sync_permits() with the raw tracker rows and the token
-already obtained for Graph. Tracks last-notified status per permit in
-permit_notify_state.json (committed to the winclerk repo) and fires on any
-change to/among {received, approved, approved conditionally, denied}.
+Called from sync.py's hook AFTER sync_permits() returns, using the same rows
+already fetched (no re-download). Tracks last-notified status per permit in
+permit_notify_state.json (committed to the winclerk repo) and fires only on
+STATUS TRANSITIONS to {received, approved, approved conditionally, denied}.
+
+Send rules (all four notifications) — restrictive per Clerk's spec:
+  received                → only if permit_number AND board_date are set
+  approved                → fires on transition (no extra requirement)
+  approved conditionally  → only if conditions field is non-empty
+  denied                  → only if clerk_notes field is non-empty (denial reason)
+
+Multi-type — works for ROW, Driveway, and Road Construction. Email content
+adapts to each permit type. Driveway applicants keep their applicant/email in
+the internal record even though those fields aren't shown publicly.
 
 Applicant email requires the Winchester Sync Azure app to have Mail.Send
-(application) granted by an admin. Emails are sent as clerk@winchester.wi.gov.
+(application) granted by an admin. Emails send as clerk@winchester.wi.gov.
 
 Teams notification is delivered by POSTing a JSON payload to the Make.com
-webhook, which routes to the Permits group chat via the Teams connector.
-The same webhook receives form submissions; Make's router branches on the
-event_type field (status_change vs no event_type).
+webhook, which routes to the Permits group chat via the fallback (status_change)
+route on the router.
 """
 
-import io
 import json
 import os
 import re
@@ -31,13 +39,8 @@ STATE_FILE = "permit_notify_state.json"
 CLERK_EMAIL = "clerk@winchester.wi.gov"
 SEND_FROM   = "clerk@winchester.wi.gov"
 
-# Make.com webhook for the Permit email workflow scenario. Same URL the form
-# submission uses; Make's router branches on event_type. sync.py POSTs with
-# event_type=status_change to trigger the Teams post; the form omits it.
 MAKE_WEBHOOK_URL = "https://hook.us2.make.com/gatf2jagb2qfxkmczko6gugq2qx80uxr"
 
-# Statuses that trigger notifications. Everything else (blank, "withdrawn",
-# stray values, etc.) is silently ignored.
 NOTIFY_STATUSES = {"received", "approved", "approved conditionally", "denied"}
 
 STATUS_LABELS = {
@@ -47,8 +50,17 @@ STATUS_LABELS = {
     "denied":                 "Denied",
 }
 
+# Per-type display labels for use in email subjects and body copy.
+TYPE_DISPLAY = {
+    "row":               {"noun": "right-of-way permit",   "short": "ROW permit"},
+    "driveway":          {"noun": "driveway permit",       "short": "Driveway permit"},
+    "road_construction": {"noun": "road construction project", "short": "Road construction project"},
+}
 
-# ── State (last-notified status per permit) ──────────────────────────
+
+# ══════════════════════════════════════════════════════════════
+# State (last-notified status per permit)
+# ══════════════════════════════════════════════════════════════
 def _load_state():
     if not os.path.exists(STATE_FILE):
         return {}
@@ -70,7 +82,9 @@ def _save_state(state):
         json.dump(payload, f, indent=2, ensure_ascii=False)
 
 
-# ── Value helpers ────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════
+# Value helpers
+# ══════════════════════════════════════════════════════════════
 def _s(v):
     if v is None:
         return ""
@@ -83,12 +97,17 @@ def _fmt_date(v):
     t = _s(v)
     if not t:
         return ""
-    # Try ISO first, then M/D/YYYY (Excel serial-converted output)
-    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%Y-%m-%dT%H:%M:%S"):
+    for fmt in ("%Y-%m-%d", "%m/%d/%Y"):
         try:
-            return datetime.strptime(t[:len(fmt) + 6 if "T" in fmt else 10], fmt).strftime("%B %d, %Y")
+            return datetime.strptime(t[:10], fmt).strftime("%B %d, %Y")
         except ValueError:
             continue
+    m = re.match(r"^(\d{4}-\d{2}-\d{2})T", t)
+    if m:
+        try:
+            return datetime.strptime(m.group(1), "%Y-%m-%d").strftime("%B %d, %Y")
+        except ValueError:
+            pass
     return t
 
 
@@ -97,36 +116,89 @@ def _valid_email(s):
 
 
 def _permit_key(row):
-    """Stable identifier for a row across syncs.
-       Uses the pre-assigned _pdf_id (from sync.py) so the same permit
-       tracks consistently across JSON, PDFs, and notifications."""
-    pid = _s(row.get("_pdf_id")) or _s(row.get("permit_id"))
-    if pid:
-        return pid
+    """Stable identifier for a row across syncs. Uses permit_number since
+       we've dropped internal permit_id/project_id columns."""
+    pn = _s(row.get("permit_number"))
+    if pn:
+        return pn
+    # Fallback for pre-numbered rows: use submitted timestamp
     sub = _s(row.get("submitted"))
     return f"sub:{sub}" if sub else ""
 
 
-# ── Email body builders ─────────────────────────────────────────────
-def _title_line(row):
-    title = _s(row.get("title")) or "Permit Application"
-    road  = _s(row.get("road"))
-    where = _s(row.get("address"))
-    parts = [p for p in [road, where] if p]
-    return title, " — ".join(parts) if parts else ""
+# ══════════════════════════════════════════════════════════════
+# Send-rule gating — applied BEFORE emails/Teams post fires
+# ══════════════════════════════════════════════════════════════
+def _should_notify(row, new_status):
+    """Return (should_send, skip_reason). skip_reason is human-readable for logs."""
+    if new_status == "received":
+        if not _s(row.get("permit_number")):
+            return False, "no permit_number"
+        if not _s(row.get("board_date")):
+            return False, "no board_date"
+        return True, None
+    if new_status == "approved":
+        return True, None
+    if new_status == "approved conditionally":
+        if not _s(row.get("conditions")):
+            return False, "no conditions listed"
+        return True, None
+    if new_status == "denied":
+        if not _s(row.get("clerk_notes")):
+            return False, "no denial reason in clerk_notes"
+        return True, None
+    return False, "status not notified"
 
 
-def _applicant_body(row, new_status, old_status):
-    title, where = _title_line(row)
-    applicant = _s(row.get("applicant")) or "Applicant"
-    kind = _s(row.get("type")) or "permit"
+# ══════════════════════════════════════════════════════════════
+# Per-type title/location/applicant extraction
+# ══════════════════════════════════════════════════════════════
+def _row_title(row, permit_type):
+    if permit_type == "driveway":
+        return "Driveway permit application"
+    return _s(row.get("title")) or _s(row.get("type")) or "Permit application"
+
+
+def _row_location(row, permit_type):
+    if permit_type == "row":
+        road = _s(row.get("road"))
+        addr = _s(row.get("address"))
+        if road and addr:
+            return addr if road.lower() in addr.lower() else f"{road} \u2014 {addr}"
+        return road or addr or ""
+    if permit_type == "driveway":
+        road = _s(row.get("road"))
+        parcel = _s(row.get("parcel"))
+        if road and parcel:
+            return f"{road} \u2014 {parcel}"
+        return road or parcel or ""
+    # road_construction
+    return _s(row.get("road"))
+
+
+def _applicant_name(row, permit_type):
+    """Best-effort applicant display name for the email greeting."""
+    if permit_type == "driveway":
+        return _s(row.get("applicant")) or "there"
+    # ROW / RC: applicant is a name; org is the company
+    return _s(row.get("applicant")) or _s(row.get("org")) or "there"
+
+
+# ══════════════════════════════════════════════════════════════
+# Email body builder (multi-type)
+# ══════════════════════════════════════════════════════════════
+def _applicant_body(row, permit_type, new_status):
+    title = _row_title(row, permit_type)
+    location = _row_location(row, permit_type)
+    applicant = _applicant_name(row, permit_type)
+    noun = TYPE_DISPLAY.get(permit_type, {}).get("noun", "permit")
 
     if new_status == "received":
         headline = "We have received your permit application"
         lead = (
             f"Hello {escape(applicant)},<br><br>"
-            f"The Town Clerk has received your {escape(kind.lower())} application. "
-            f"It will be scheduled for review at the next Town Board meeting."
+            f"The Town Clerk has received your {escape(noun)} application. "
+            f"It has been assigned a permit number and scheduled for Board review."
         )
         next_step = (
             "You will receive another email once the Board acts on your application. "
@@ -136,65 +208,79 @@ def _applicant_body(row, new_status, old_status):
         headline = "Your permit application has been approved"
         lead = (
             f"Hello {escape(applicant)},<br><br>"
-            f"The Town Board has approved your {escape(kind.lower())} application."
+            f"The Town Board has approved your {escape(noun)} application."
         )
-        next_step = (
-            "A certificate of insurance is required before work begins, and you must "
-            "call Diggers Hotline at 811 before excavating."
-        )
+        if permit_type == "row":
+            next_step = (
+                "A certificate of insurance is required before work begins, and you must "
+                "call Diggers Hotline at 811 before excavating."
+            )
+        elif permit_type == "driveway":
+            next_step = (
+                "The $100 permit fee is due if it has not been paid. "
+                "Call Diggers Hotline at 811 before excavating. Contact the Town Clerk with any questions."
+            )
+        else:  # road_construction
+            next_step = (
+                "Confirm your traffic control plan with the Town before mobilizing. "
+                "Contact the Town Clerk with any questions."
+            )
     elif new_status == "approved conditionally":
         headline = "Your permit application has been approved with conditions"
         lead = (
             f"Hello {escape(applicant)},<br><br>"
-            f"The Town Board has approved your {escape(kind.lower())} application "
+            f"The Town Board has approved your {escape(noun)} application "
             f"subject to the conditions listed below. Please review them carefully."
         )
         next_step = (
             "You must satisfy all listed conditions to keep this permit in good standing. "
-            "A certificate of insurance is required before work begins, and you must "
-            "call Diggers Hotline at 811 before excavating. Contact the Town Clerk with any questions."
+            "Contact the Town Clerk with any questions."
         )
     elif new_status == "denied":
         headline = "Your permit application was not approved"
         lead = (
             f"Hello {escape(applicant)},<br><br>"
-            f"The Town Board reviewed your {escape(kind.lower())} application and did not approve it."
+            f"The Town Board reviewed your {escape(noun)} application and did not approve it. "
+            f"The reason for the decision is included below."
         )
         next_step = (
             "If you would like to discuss the decision or resubmit with changes, "
             "please contact the Town Clerk."
         )
     else:
-        return None  # shouldn't happen given NOTIFY_STATUSES filter
+        return None  # shouldn't happen; filtered upstream
 
     approved_like = new_status in ("approved", "approved conditionally")
-    rows_html = _detail_rows([
+    conditions_text = _s(row.get("conditions")) if approved_like else ""
+    denial_reason = _s(row.get("clerk_notes")) if new_status == "denied" else ""
+
+    detail_pairs = [
         ("Project",       title),
-        ("Location",      where),
-        ("Permit type",   kind),
+        ("Location",      location),
         ("Permit number", _s(row.get("permit_number"))),
         ("Board meeting", _fmt_date(row.get("board_date"))),
-        ("Authorized",    _date_range(row.get("authorized_start"), row.get("authorized_end"))
-                          if approved_like else ""),
-        ("Conditions",    _s(row.get("conditions")) if approved_like else ""),
-    ])
+    ]
+    if approved_like:
+        detail_pairs.append(("Authorized period", _date_range(row.get("authorized_start"), row.get("authorized_end"))))
+    if conditions_text:
+        detail_pairs.append(("Conditions", conditions_text))
+    if denial_reason:
+        detail_pairs.append(("Reason", denial_reason))
 
-    return _wrap_html(headline, lead, rows_html, next_step, footer_public=True)
+    return _wrap_html(headline, lead, _detail_rows(detail_pairs), next_step)
 
 
-def _build_teams_payload(row, new_status, old_status):
+def _build_teams_payload(row, permit_type, new_status, old_status):
     """Compact JSON payload for the Make webhook. Make's router branches on
-       event_type; its Teams module reads these fields into the message body."""
-    pdf_id = _s(row.get("_pdf_id")) or _s(row.get("permit_id"))
+       event_type=status_change to send it via the fallback Teams module."""
     return {
         "event_type":       "status_change",
-        "permit_id":        _s(row.get("permit_id")),
+        "permit_type":      permit_type,
         "permit_number":    _s(row.get("permit_number")),
-        "title":            _s(row.get("title")) or "Permit Application",
+        "title":            _row_title(row, permit_type),
         "type":             _s(row.get("type")),
-        "road":             _s(row.get("road")),
-        "address":          _s(row.get("address")),
-        "org":              _s(row.get("org")),
+        "location":         _row_location(row, permit_type),
+        "org":              _s(row.get("org")) or _s(row.get("applicant")),
         "status":           new_status,
         "status_label":     STATUS_LABELS.get(new_status, new_status.capitalize()),
         "old_status":       old_status,
@@ -202,13 +288,11 @@ def _build_teams_payload(row, new_status, old_status):
         "authorized_start": _s(row.get("authorized_start")),
         "authorized_end":   _s(row.get("authorized_end")),
         "conditions":       _s(row.get("conditions")),
-        "public_pdf_url":   f"https://winclerk.github.io/public/permits/{pdf_id}.pdf" if pdf_id else "",
+        "clerk_notes":      _s(row.get("clerk_notes")) if new_status == "denied" else "",
     }
 
 
 def _send_teams_webhook(payload):
-    """POST the status-change payload to the Make.com webhook. Make routes
-       it to the Teams module for the Permits group chat."""
     try:
         r = requests.post(MAKE_WEBHOOK_URL, json=payload, timeout=30)
     except Exception as e:
@@ -240,24 +324,14 @@ def _detail_rows(pairs):
             f'<td style="padding:6px 0;vertical-align:top;color:#222;font-size:14px;">{val_html}</td>'
             f'</tr>'
         )
-    return (
-        '<table style="border-collapse:collapse;margin:18px 0;width:100%;">'
-        + "".join(trs) +
-        "</table>"
-    )
+    return '<table style="border-collapse:collapse;margin:18px 0;width:100%;">' + "".join(trs) + "</table>"
 
 
-def _wrap_html(headline, lead_html, rows_html, next_step, footer_public):
+def _wrap_html(headline, lead_html, rows_html, next_step):
     footer_lines = [
         "Town of Winchester &middot; 7228 CTH W, Winchester, WI 54557",
         f'715-686-2123 &middot; <a href="mailto:{CLERK_EMAIL}" style="color:#00505A;">{CLERK_EMAIL}</a>',
     ]
-    if not footer_public:
-        footer_lines.append(
-            "This is an internal notification containing applicant contact information. "
-            "Not for public distribution without review under Wis. Stat. ch. 19."
-        )
-
     return (
         '<!DOCTYPE html><html><head><meta charset="utf-8"></head>'
         '<body style="margin:0;padding:0;background:#f5f5f5;font-family:Helvetica,Arial,sans-serif;">'
@@ -280,7 +354,9 @@ def _wrap_html(headline, lead_html, rows_html, next_step, footer_public):
     )
 
 
-# ── Send via Graph ──────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════
+# Send via Graph
+# ══════════════════════════════════════════════════════════════
 def _send(token, to_addr, subject, html_body):
     payload = {
         "message": {
@@ -306,57 +382,79 @@ def _send(token, to_addr, subject, html_body):
     return False
 
 
-# ── Entry point called from sync.py ─────────────────────────────────
-def notify_status_changes(token, rows):
-    """Compare current tracker rows against saved state, email on changes.
-       Returns (sent_count, skipped_count) for the run log."""
+# ══════════════════════════════════════════════════════════════
+# Entry point — called from sync.py
+# ══════════════════════════════════════════════════════════════
+def notify_status_changes(token, all_rows_by_source):
+    """Compare current tracker rows against saved state, send email + Teams post
+       on transitions that pass the restrictive send rules.
+
+       all_rows_by_source: list of (source_config, rows) tuples returned by
+       sync_permits.sync_permits(). Each row is a dict; each source_config has
+       a 'type' key ('row' / 'driveway' / 'road_construction').
+
+       Returns (sent_count, skipped_count) for the log."""
+    print("── Notifications ──")
     state = _load_state()
+    new_state = dict(state)
     sent = 0
     skipped = 0
-    new_state = dict(state)
 
-    for row in rows:
-        key = _permit_key(row)
-        if not key:
-            continue
+    for source, rows in all_rows_by_source:
+        permit_type = source["type"]
+        for row in rows:
+            key = _permit_key(row)
+            if not key:
+                continue
 
-        new_status = _s(row.get("map_status")).lower()
-        old_status = state.get(key, "")
+            new_status = _s(row.get("map_status")).lower()
+            old_status = state.get(key, "")
 
-        if new_status == old_status:
-            continue  # no change
+            if new_status == old_status:
+                continue  # no change
 
-        # Update tracked state for every change (so we don't re-notify next run)
-        new_state[key] = new_status
+            # Update tracked state for every change (so we don't re-notify next run
+            # even if a send-rule blocks us from actually notifying now).
+            new_state[key] = new_status
 
-        # But only actually send email for the three notification statuses
-        if new_status not in NOTIFY_STATUSES:
-            continue
+            if new_status not in NOTIFY_STATUSES:
+                continue
 
-        title, _ = _title_line(row)
-        subj_prefix = {
-            "received":               "Permit application received",
-            "approved":               "Permit approved",
-            "approved conditionally": "Permit approved with conditions",
-            "denied":                 "Permit not approved",
-        }[new_status]
-        subject = f"{subj_prefix}: {title}"
+            # Apply restrictive send rules
+            should_send, skip_reason = _should_notify(row, new_status)
+            if not should_send:
+                print(f"   {key} \u2192 {new_status}: waiting ({skip_reason})")
+                # Don't update state — leave it at old_status so next sync retries
+                new_state[key] = old_status
+                skipped += 1
+                continue
 
-        # Applicant email — only if we have a valid address on the row
-        applicant_addr = _s(row.get("email"))
-        if _valid_email(applicant_addr):
-            body = _applicant_body(row, new_status, old_status)
-            if body and _send(token, applicant_addr, subject, body):
-                print(f"     \u2192 applicant email: {applicant_addr}")
+            title = _row_title(row, permit_type)
+            short_type = TYPE_DISPLAY.get(permit_type, {}).get("short", "Permit")
+            subj_prefix = {
+                "received":               f"{short_type} application received",
+                "approved":               f"{short_type} approved",
+                "approved conditionally": f"{short_type} approved with conditions",
+                "denied":                 f"{short_type} not approved",
+            }[new_status]
+            subject = f"{subj_prefix}: {title}"
+
+            # Applicant email
+            applicant_addr = _s(row.get("email"))
+            if _valid_email(applicant_addr):
+                body = _applicant_body(row, permit_type, new_status)
+                if body and _send(token, applicant_addr, subject, body):
+                    print(f"   {key} \u2192 {new_status}: applicant email {applicant_addr}")
+                    sent += 1
+            else:
+                print(f"   {key} \u2192 {new_status}: no valid applicant email (skipping applicant email)")
+                skipped += 1
+
+            # Board Teams post
+            if _send_teams_webhook(_build_teams_payload(row, permit_type, new_status, old_status)):
+                print(f"   {key} \u2192 {new_status}: board Teams post sent")
                 sent += 1
-        else:
-            print(f"     ! no valid applicant email on {key} — applicant not notified")
-            skipped += 1
-
-        # Board notification via Teams (Make.com webhook \u2192 Permits group chat)
-        if _send_teams_webhook(_build_teams_payload(row, new_status, old_status)):
-            print(f"     \u2192 board Teams post sent")
-            sent += 1
 
     _save_state(new_state)
+    print(f"   done. sent={sent}, skipped={skipped}")
     return sent, skipped
