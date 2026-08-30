@@ -902,10 +902,12 @@ def main():
     # ── Permits (three-tracker sync) ──
     try:
         import sync_permits
-        sync_permits.sync_permits(token, write_github_file)
+        all_rows = sync_permits.sync_permits(token, write_github_file)
+        import permit_notify
+        permit_notify.notify_status_changes(token, all_rows)
     except Exception as e:
         import traceback
-        print(f"Permit sync failed: {e}")
+        print(f"Permit sync/notify failed: {e}")
         traceback.print_exc()
 if __name__ == "__main__":
     main()
