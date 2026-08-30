@@ -883,7 +883,17 @@ def main():
 
     print("Writing to GitHub...")
     write_github(data)
-    print("Done.")
+    print("Done.")    
+    # ── Permits (three-tracker sync) ──
+    try:
+        import sync_permits
+        sync_permits.sync_permits(token, write_github_file)
+    except Exception as e:
+        import traceback
+        print(f"Permit sync failed: {e}")
+        traceback.print_exc()
+if __name__ == "__main__":
+    main()
 def write_github_file(path, content):
     """Write arbitrary content to any file in the repo (not just data.json).
        Path is repo-relative, e.g. 'permits.json'. Content is a string."""
@@ -900,13 +910,4 @@ def write_github_file(path, content):
         payload["sha"] = sha
     r = requests.put(url, headers=headers, json=payload)
     r.raise_for_status()
-    # ── Permits (three-tracker sync) ──
-    try:
-        import sync_permits
-        sync_permits.sync_permits(token, write_github_file)
-    except Exception as e:
-        import traceback
-        print(f"Permit sync failed: {e}")
-        traceback.print_exc()
-if __name__ == "__main__":
-    main()
+
