@@ -1,70 +1,6 @@
 {
-  "updated": "2026-08-30T06:24:19Z",
+  "updated": "2026-08-30T06:32:52Z",
   "permits": [
-    {
-      "id": "2026-ROW-2",
-      "permitNumber": "2026-ROW-2",
-      "status": "proposed",
-      "jurisdiction": "town",
-      "permitType": "row",
-      "title": "test",
-      "org": "nonenone",
-      "location": "Townsite Rd — ettes",
-      "startDate": "2026-08-22",
-      "endDate": "2026-08-29",
-      "traffic": "none",
-      "contactName": "ne",
-      "contactPhone": "oneo",
-      "geoType": "line",
-      "coordinates": [
-        [
-          46.213878,
-          -89.886532
-        ],
-        [
-          46.226943,
-          -89.888592
-        ],
-        [
-          46.232643,
-          -89.899578
-        ]
-      ],
-      "lat": 46.226943,
-      "lng": -89.888592
-    },
-    {
-      "id": "2026-ROW-1",
-      "permitNumber": "2026-ROW-1",
-      "status": "proposed",
-      "jurisdiction": "town",
-      "permitType": "row",
-      "title": "noen",
-      "org": "oen",
-      "location": "Old County O — none",
-      "startDate": "2026-08-30",
-      "endDate": "2026-08-30",
-      "traffic": "Other: noen",
-      "contactName": "eon",
-      "contactPhone": "eon",
-      "geoType": "line",
-      "coordinates": [
-        [
-          46.22071,
-          -89.88945
-        ],
-        [
-          46.227123,
-          -89.887047
-        ],
-        [
-          46.23116,
-          -89.877434
-        ]
-      ],
-      "lat": 46.227123,
-      "lng": -89.887047
-    },
     {
       "id": "2026-ROW-3",
       "permitNumber": "2026-ROW-3",
@@ -257,21 +193,6 @@
       ],
       "lat": 46.216778,
       "lng": -89.88926
-    },
-    {
-      "id": "2026-DW-1",
-      "permitNumber": "2026-DW-1",
-      "status": "proposed",
-      "jurisdiction": "town",
-      "permitType": "driveway",
-      "title": "New driveway installation",
-      "org": "Property owner on file",
-      "location": "Rock Lake Rd",
-      "startDate": "2026-09-04",
-      "endDate": "2026-09-28",
-      "geoType": "point",
-      "lat": 46.233246,
-      "lng": -89.864559
     }
   ]
 }
