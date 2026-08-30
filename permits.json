@@ -1,8 +1,72 @@
 {
-  "updated": "2026-08-26T07:45:02Z",
+  "updated": "2026-08-30T03:14:58Z",
   "permits": [
     {
-      "id": "P0001",
+      "id": "",
+      "permitNumber": "",
+      "title": "test",
+      "org": "nonenone",
+      "location": "Townsite Rd — ettes",
+      "startDate": "2026-08-22",
+      "endDate": "2026-08-29",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "traffic": "none",
+      "contactName": "ne",
+      "contactPhone": "oneo",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.213878,
+          -89.886532
+        ],
+        [
+          46.226943,
+          -89.888592
+        ],
+        [
+          46.232643,
+          -89.899578
+        ]
+      ],
+      "lat": 46.226943,
+      "lng": -89.888592
+    },
+    {
+      "id": "",
+      "permitNumber": "",
+      "title": "noen",
+      "org": "oen",
+      "location": "Old County O — none",
+      "startDate": "2026-08-30",
+      "endDate": "2026-08-30",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "traffic": "Other: noen",
+      "contactName": "eon",
+      "contactPhone": "eon",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.22071,
+          -89.88945
+        ],
+        [
+          46.227123,
+          -89.887047
+        ],
+        [
+          46.23116,
+          -89.877434
+        ]
+      ],
+      "lat": 46.227123,
+      "lng": -89.887047
+    },
+    {
+      "id": "",
       "permitNumber": "",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
@@ -11,7 +75,7 @@
       "endDate": "2026-12-31",
       "status": "proposed",
       "jurisdiction": "town",
-      "pdfUrl": "/public/permits/P0001.pdf",
+      "permitType": "row",
       "contactName": "Tiona Varela",
       "contactPhone": "763-357-5979",
       "geoType": "line",
@@ -77,7 +141,7 @@
       "lng": -89.892202
     },
     {
-      "id": "P0002",
+      "id": "",
       "permitNumber": "",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
@@ -86,7 +150,7 @@
       "endDate": "2026-12-31",
       "status": "proposed",
       "jurisdiction": "town",
-      "pdfUrl": "/public/permits/P0002.pdf",
+      "permitType": "row",
       "contactName": "Tiona Varela",
       "contactPhone": "763-357-5979",
       "geoType": "line",
@@ -148,7 +212,7 @@
       "lng": -89.895877
     },
     {
-      "id": "P0003",
+      "id": "",
       "permitNumber": "",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
@@ -157,7 +221,7 @@
       "endDate": "2026-12-31",
       "status": "proposed",
       "jurisdiction": "town",
-      "pdfUrl": "/public/permits/P0003.pdf",
+      "permitType": "row",
       "contactName": "Tiona Varela",
       "contactPhone": "763-357-5979",
       "geoType": "line",
@@ -195,21 +259,19 @@
       "lng": -89.88926
     },
     {
-      "id": "P0004",
+      "id": "",
       "permitNumber": "",
-      "title": "E Birch Lake Driveway",
-      "org": "Jennifer Vozel",
-      "location": "Other Town road — 7334 E Birch Lake Rd (fire number not yet assigned by VC)",
-      "startDate": "2026-09-15",
-      "endDate": "2026-09-22",
+      "title": "New driveway installation",
+      "org": "Property owner on file",
+      "location": "Rock Lake Rd",
+      "startDate": "2026-09-04",
+      "endDate": "2026-09-28",
       "status": "proposed",
       "jurisdiction": "town",
-      "pdfUrl": "/public/permits/P0004.pdf",
-      "contactName": "Harmon Excavations",
-      "contactPhone": "715-892-2390",
+      "permitType": "driveway",
       "geoType": "point",
-      "lat": 46.207809,
-      "lng": -89.830785
+      "lat": 46.233246,
+      "lng": -89.864559
     }
   ]
 }
