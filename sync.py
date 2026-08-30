@@ -884,7 +884,29 @@ def main():
     print("Writing to GitHub...")
     write_github(data)
     print("Done.")
-
-
+def write_github_file(path, content):
+    """Write arbitrary content to any file in the repo (not just data.json).
+       Path is repo-relative, e.g. 'permits.json'. Content is a string."""
+    headers = {"Authorization": f"Bearer {GH_PAT}", "Accept": "application/vnd.github+json"}
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{path}"
+    r = requests.get(url, headers=headers)
+    sha = r.json().get("sha") if r.status_code == 200 else None
+    import base64
+    payload = {
+        "message": f"Auto-sync {path} from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
+        "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
+    }
+    if sha:
+        payload["sha"] = sha
+    r = requests.put(url, headers=headers, json=payload)
+    r.raise_for_status()
+    # ── Permits (three-tracker sync) ──
+    try:
+        import sync_permits
+        sync_permits.sync_permits(token, write_github_file)
+    except Exception as e:
+        import traceback
+        print(f"Permit sync failed: {e}")
+        traceback.print_exc()
 if __name__ == "__main__":
     main()
