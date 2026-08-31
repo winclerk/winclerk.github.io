@@ -511,12 +511,11 @@ def _build(row, sections, variant, header_footer_fn, subtitle_suffix=""):
         if blk:
             story.extend(blk)
 
-    # Project location map goes on its own page (page 2), after all detail sections.
-    # Only insert the page break if we actually have geometry to render — otherwise
-    # we'd leave a blank second page.
+    # Project location map flows in after all detail sections. No forced page break —
+    # the map lands wherever content naturally ends, keeping the whole record to two pages
+    # when possible.
     rb = _route_block(row)
     if rb:
-        story.append(PageBreak())
         story.extend(rb)
 
     stamp = datetime.now(timezone.utc).strftime("%B %d, %Y at %H:%M UTC")
