@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-31T04:09:29Z",
+  "updated": "2026-08-31T05:44:25Z",
   "permits": [
     {
       "id": "2026-ROW-1",
@@ -7,6 +7,7 @@
       "status": "proposed",
       "jurisdiction": "town",
       "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-1.pdf",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
       "location": "Other Town road — 53 S Owasso W.",
@@ -82,6 +83,7 @@
       "status": "proposed",
       "jurisdiction": "town",
       "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-2.pdf",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
       "location": "Other Town road — 53 S Owasso W.",
@@ -153,6 +155,7 @@
       "status": "proposed",
       "jurisdiction": "town",
       "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-3.pdf",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
       "location": "Town easement — 53 S Owasso W.",
