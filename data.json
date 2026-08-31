@@ -6,10 +6,56 @@
       "type": "special",
       "status": "upcoming",
       "date": "2026-09-01",
-      "time": "8:00 AM",
+      "time": "10:00 AM",
       "location": "Winchester Town Hall",
-      "documents": [],
+      "documents": [
+        {
+          "label": "Special Meeting Agenda",
+          "filename": "Agenda_STBM_20260901.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCS3LuRPO2ASJyXHsQiH53pAWMu3GcniXDuSWIc52PWW14",
+          "date": "2026-09-01",
+          "posted": "2026-08-31",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "Fee Schedule 20260717",
+          "filename": "Fee-Schedule_20260717.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB0xP6OOmbTRISKPWp7FXTBAQgPJtzGUaD-AZy0OIC_XLI",
+          "date": "2026-07-17",
+          "posted": "2026-08-31",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "Proposal Papoose Lease 20260821",
+          "filename": "Proposal_Papoose-Lease_20260821.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQCrzcHtDmGyRpjFtfyRm9h8AeGeRFcpG9uPh5j4eXIMC6A",
+          "date": "2026-08-21",
+          "posted": "2026-08-31",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        }
+      ],
       "subfolders": [
+        {
+          "name": "Financial",
+          "documents": [
+            {
+              "label": "2026 Budget Worksheet",
+              "filename": "2026 Budget Worksheet.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQDHbkjcUHteQ5X4il-sdoS_Aepgz6X5Vucc18O5eSbw35o",
+              "date": "2026-08-31",
+              "posted": "2026-08-31"
+            },
+            {
+              "label": "2027 Budget Worksheet DRAFT",
+              "filename": "2027 Budget Worksheet DRAFT.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQDBAhUK8RuQToyRuljts2ujAbHUex7WVZAc8tTthKwsyko",
+              "date": "2026-08-31",
+              "posted": "2026-08-31",
+              "draft": true
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgANq8nq44b0SK7ybtS1X-rQAejihQlTvAqE70G8RAAopFQ"
+        },
         {
           "name": "Room Tax",
           "documents": [
