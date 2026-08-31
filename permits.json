@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-31T16:49:59Z",
+  "updated": "2026-08-31T17:28:24Z",
   "permits": [
     {
       "id": "2026-ROW-1",
@@ -196,108 +196,6 @@
       ],
       "lat": 46.216778,
       "lng": -89.88926
-    },
-    {
-      "id": "2026-ROW-5",
-      "permitNumber": "2026-ROW-5",
-      "status": "proposed",
-      "jurisdiction": "town",
-      "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-5.pdf",
-      "title": "none",
-      "org": "one",
-      "location": "Old County O — neo",
-      "startDate": "2026-09-01",
-      "endDate": "2026-09-05",
-      "traffic": "Other: one",
-      "contactName": "neo",
-      "contactPhone": "neo",
-      "geoType": "line",
-      "coordinates": [
-        [
-          46.209153,
-          -89.886789
-        ],
-        [
-          46.188122,
-          -89.887133
-        ],
-        [
-          46.175523,
-          -89.868937
-        ],
-        [
-          46.177069,
-          -89.834433
-        ],
-        [
-          46.189192,
-          -89.830141
-        ],
-        [
-          46.190618,
-          -89.852629
-        ],
-        [
-          46.184676,
-          -89.854517
-        ],
-        [
-          46.184913,
-          -89.845762
-        ],
-        [
-          46.187765,
-          -89.845934
-        ]
-      ],
-      "lat": 46.189192,
-      "lng": -89.830141
-    },
-    {
-      "id": "2026-ROW-4",
-      "permitNumber": "2026-ROW-4",
-      "status": "proposed",
-      "jurisdiction": "town",
-      "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-4.pdf",
-      "title": "noen",
-      "org": "neon",
-      "location": "Old County O — neo",
-      "startDate": "2026-09-02",
-      "endDate": "2026-09-04",
-      "traffic": "Other: oneo",
-      "contactName": "oneo",
-      "contactPhone": "neo",
-      "geoType": "line",
-      "coordinates": [
-        [
-          46.217083,
-          -89.887905
-        ],
-        [
-          46.210432,
-          -89.861813
-        ],
-        [
-          46.213758,
-          -89.813404
-        ],
-        [
-          46.228485,
-          -89.814777
-        ],
-        [
-          46.227772,
-          -89.84602
-        ],
-        [
-          46.221359,
-          -89.837093
-        ]
-      ],
-      "lat": 46.228485,
-      "lng": -89.814777
     }
   ]
 }
