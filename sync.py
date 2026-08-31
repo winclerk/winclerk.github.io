@@ -905,9 +905,15 @@ def main():
         all_rows = sync_permits.sync_permits(token, write_github_file)
         import permit_notify
         permit_notify.notify_status_changes(token, all_rows)
+        # PDF generation — brief delay so permit_number PATCHes propagate before generating
+        import time
+        time.sleep(3)
+        import permit_pdf
+        flat_rows = [row for _, rows in all_rows for row in rows]
+        permit_pdf.generate_for_rows(flat_rows, token=token)
     except Exception as e:
         import traceback
-        print(f"Permit sync/notify failed: {e}")
+        print(f"Permit sync/notify/pdf failed: {e}")
         traceback.print_exc()
 if __name__ == "__main__":
     main()

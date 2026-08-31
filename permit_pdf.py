@@ -520,7 +520,7 @@ def _save_state(state):
 
 
 def _permit_key(row):
-    pid = _s(row.get("_pdf_id")) or _s(row.get("permit_id"))
+    pid = _s(row.get("permit_number")) or _s(row.get("_pdf_id")) or _s(row.get("permit_id"))
     if pid:
         return pid
     sub = _s(row.get("submitted"))
@@ -560,7 +560,8 @@ def generate_for_rows(rows, token=None, force=False):
             skipped += 1
             continue
 
-        ident_pub = (_s(row.get("_pdf_id"))
+        ident_pub = (_s(row.get("permit_number"))
+                     or _s(row.get("_pdf_id"))
                      or _s(row.get("permit_id"))
                      or f"row{row.get('__row', '')}")
         road = _s(row.get("road")) or _s(row.get("title")) or "Permit"
