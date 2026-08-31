@@ -32,7 +32,7 @@ from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.platypus import (
-    BaseDocTemplate, Frame, PageTemplate, Paragraph, Spacer,
+    BaseDocTemplate, Frame, PageTemplate, PageBreak, Paragraph, Spacer,
     Table, TableStyle, Image,
 )
 
@@ -69,7 +69,6 @@ RULE      = colors.HexColor("#D8D8D8")
 # ── Field layouts — one for public, one for internal ────────────────
 
 _APPLICATION = ("Application Record", [
-    ("permit_id",        "Permit ID"),
     ("permit_number",    "Permit number"),
     ("submitted",        "Submitted"),
     ("map_status",       "Status"),
@@ -188,7 +187,7 @@ INTERNAL_SECTIONS = [
 
 # Fields whose columns feed the content-change hash.
 _HASHED_COLUMNS = [
-    "permit_id", "permit_number", "submitted", "map_status",
+    "permit_number", "submitted", "map_status",
     "board_date", "authorized_start", "authorized_end",
     "conditions", "clerk_notes", "fee_paid",
     "type", "title", "description", "traffic",
@@ -224,10 +223,35 @@ def _pretty(col, v):
         if m:
             y, mo, d, hh, mm = m.groups()
             try:
-                dt = datetime(int(y), int(mo), int(d), int(hh), int(mm), tzinfo=timezone.utc)
-                return f"{dt.strftime('%B')} {dt.day}, {dt.year} at {dt.strftime('%H:%M')} UTC"
-            except ValueError:
+                from zoneinfo import ZoneInfo
+                dt_utc = datetime(int(y), int(mo), int(d), int(hh), int(mm), tzinfo=timezone.utc)
+                dt_ct = dt_utc.astimezone(ZoneInfo("America/Chicago"))
+                # %-I not portable to all systems; use %I and strip leading zero
+                hour = int(dt_ct.strftime("%I"))
+                minute = dt_ct.strftime("%M")
+                ampm = dt_ct.strftime("%p")
+                tz_label = dt_ct.strftime("%Z")  # "CST" or "CDT" auto-adjusts
+                return f"{dt_ct.strftime('%B')} {dt_ct.day}, {dt_ct.year} at {hour}:{minute} {ampm} {tz_label}"
+            except Exception:
                 return t
+    if col in ("board_date", "authorized_start", "authorized_end",
+               "start_date", "end_date", "signature_date"):
+        # Parse common date formats and format as "Month D, YYYY"
+        for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y"):
+            try:
+                parsed = datetime.strptime(t[:10], fmt)
+                return f"{parsed.strftime('%B')} {parsed.day}, {parsed.year}"
+            except ValueError:
+                continue
+        # Also handle ISO with time
+        m = re.match(r"^(\d{4})-(\d{2})-(\d{2})", t)
+        if m:
+            try:
+                parsed = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+                return f"{parsed.strftime('%B')} {parsed.day}, {parsed.year}"
+            except ValueError:
+                pass
+        return t
     if col in ("map_status", "geo_type"):
         return t.capitalize()
     if col in ("insurance", "diggers_ticket", "culvert_exists", "fee_paid"):
@@ -455,7 +479,7 @@ def _build(row, sections, variant, header_footer_fn, subtitle_suffix=""):
         buf, pagesize=LETTER,
         leftMargin=0.75 * inch, rightMargin=0.75 * inch,
         topMargin=0.85 * inch, bottomMargin=0.85 * inch,
-        title=f"Permit Record {_s(row.get('permit_id')) or row.get('__row')}",
+        title=f"Permit Record {_s(row.get('permit_number')) or row.get('__row')}",
         author="Town of Winchester",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="f")
@@ -486,10 +510,14 @@ def _build(row, sections, variant, header_footer_fn, subtitle_suffix=""):
         blk = _section_block(title, pairs, row)
         if blk:
             story.extend(blk)
-        if title == "Location":
-            rb = _route_block(row)
-            if rb:
-                story.extend(rb)
+
+    # Project location map goes on its own page (page 2), after all detail sections.
+    # Only insert the page break if we actually have geometry to render — otherwise
+    # we'd leave a blank second page.
+    rb = _route_block(row)
+    if rb:
+        story.append(PageBreak())
+        story.extend(rb)
 
     stamp = datetime.now(timezone.utc).strftime("%B %d, %Y at %H:%M UTC")
     variant_note = "Public summary" if variant == "public" else "Complete internal record"
