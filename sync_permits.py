@@ -390,13 +390,21 @@ def _dw_location(row):
 
 
 def _base_entry(row, permit_type):
-    return {
-        "id": _s(row.get("permit_number")),
-        "permitNumber": _s(row.get("permit_number")),
+    permit_number = _s(row.get("permit_number"))
+    entry = {
+        "id": permit_number,
+        "permitNumber": permit_number,
         "status": _s(row.get("map_status")).lower(),
         "jurisdiction": "town",
         "permitType": permit_type,
     }
+    # permit_pdf.py publishes to /public/permits/{permit_number}.pdf, keyed off the same
+    # value. Emit the URL so the front-end "View permit record (PDF)" link renders.
+    # If the PDF doesn't exist yet on the first sync after permit_number assignment,
+    # the link will 404 briefly until the next sync completes permit_pdf generation.
+    if permit_number:
+        entry["pdfUrl"] = "/public/permits/" + permit_number + ".pdf"
+    return entry
 
 
 def _build_row_entry(row, source):
