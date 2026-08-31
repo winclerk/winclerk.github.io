@@ -305,32 +305,110 @@ def _section_block(title, pairs, row, accent=TEAL_MID):
 
 
 def _route_block(row):
-    coords_raw = _s(row.get("route_coords"))
-    if not coords_raw:
-        return None
-    try:
-        pts = json.loads(coords_raw)
+    """Render the permit's geometry as a static map image, overlaid on OSM tiles.
+       Handles line (route_coords), single point (lat/lng), and multipoint (project_pins).
+       Falls back to a text list of coordinates if the staticmap library isn't installed
+       or the map render fails, so PDFs still generate."""
+    from io import BytesIO
+
+    geo_type = _s(row.get("geo_type")).lower()
+
+    # Extract geometry — staticmap uses (lng, lat) order (opposite of leaflet's [lat, lng])
+    line_coords = None      # list of (lng, lat) for polyline
+    multi_points = None     # list of (lng, lat) for multipoint markers
+    single_point = None     # (lng, lat) for single pin
+
+    def _pairs(raw):
+        try:
+            pts = json.loads(raw)
+        except Exception:
+            return None
         if not isinstance(pts, list) or not pts:
             return None
-        lines = [f"{i + 1}.&nbsp;&nbsp;{float(p[0]):.6f}, {float(p[1]):.6f}"
-                 for i, p in enumerate(pts) if isinstance(p, (list, tuple)) and len(p) >= 2]
-    except Exception:
-        return None
-    if not lines:
+        out = []
+        for p in pts:
+            if isinstance(p, (list, tuple)) and len(p) >= 2:
+                try:
+                    out.append((float(p[1]), float(p[0])))  # swap to (lng, lat)
+                except (TypeError, ValueError):
+                    continue
+        return out or None
+
+    if geo_type == "line":
+        line_coords = _pairs(_s(row.get("route_coords")))
+    elif geo_type == "multipoint":
+        multi_points = _pairs(_s(row.get("project_pins")))
+    elif geo_type == "point":
+        try:
+            single_point = (float(row.get("lng")), float(row.get("lat")))
+        except (TypeError, ValueError):
+            pass
+
+    # If we have no usable geometry at all, emit nothing
+    if not (line_coords or multi_points or single_point):
         return None
 
-    data = [[Paragraph("ROUTE VERTICES", SECTION)],
-            [Paragraph("&nbsp;&nbsp;&nbsp;".join(lines), BODY)]]
-    tbl = Table(data, colWidths=[6.9 * inch], repeatRows=1)
-    tbl.setStyle(TableStyle([
+    # Try to render the static map. If staticmap isn't installed, fall back to a text list.
+    map_img = None
+    try:
+        from staticmap import StaticMap, CircleMarker, Line as SMLine
+        # Map size — targets ~6.9in wide at 150dpi (matches other blocks' width)
+        m = StaticMap(1200, 600, url_template="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
+
+        if line_coords and len(line_coords) >= 2:
+            m.add_line(SMLine(line_coords, "#00505A", 5))
+            # Endpoint markers for orientation
+            m.add_marker(CircleMarker(line_coords[0], "#193C3C", 12))
+            m.add_marker(CircleMarker(line_coords[-1], "#193C3C", 12))
+        elif multi_points:
+            for c in multi_points:
+                m.add_marker(CircleMarker(c, "#00505A", 14))
+        elif single_point:
+            m.add_marker(CircleMarker(single_point, "#00505A", 16))
+            m.add_marker(CircleMarker(single_point, "#ffffff", 6))  # white center for visibility
+
+        image = m.render()
+        buf = BytesIO()
+        image.save(buf, format="PNG")
+        buf.seek(0)
+        map_img = Image(buf, width=6.9 * inch, height=3.45 * inch)
+    except ImportError:
+        print("     ! staticmap library not installed; falling back to coordinate list")
+    except Exception as e:
+        print(f"     ! map render failed ({e}); falling back to coordinate list")
+
+    # Build the block header
+    header_label = ("PROJECT LOCATION MAP" if map_img else "PROJECT LOCATION")
+    header_data = [[Paragraph(header_label, SECTION)]]
+    header_tbl = Table(header_data, colWidths=[6.9 * inch])
+    header_tbl.setStyle(TableStyle([
         ("BACKGROUND",    (0, 0), (-1, 0), TEAL_MID),
-        ("BACKGROUND",    (0, 1), (-1, -1), colors.white),
         ("LEFTPADDING",   (0, 0), (-1, -1), 8),
         ("RIGHTPADDING",  (0, 0), (-1, -1), 8),
         ("TOPPADDING",    (0, 0), (-1, -1), 5),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
     ]))
-    return [tbl, Spacer(1, 9)]
+
+    # If the map rendered, include it. Otherwise, fall back to a text list of coordinates.
+    if map_img:
+        return [header_tbl, map_img, Spacer(1, 9)]
+
+    # Text fallback (original behavior)
+    text_coords = line_coords or multi_points or ([single_point] if single_point else [])
+    if not text_coords:
+        return [header_tbl, Spacer(1, 9)]
+    lines = [f"{i + 1}.&nbsp;&nbsp;{lat:.6f}, {lng:.6f}"
+             for i, (lng, lat) in enumerate(text_coords)]
+    body_data = [[Paragraph("&nbsp;&nbsp;&nbsp;".join(lines), BODY)]]
+    body_tbl = Table(body_data, colWidths=[6.9 * inch])
+    body_tbl.setStyle(TableStyle([
+        ("BACKGROUND",    (0, 0), (-1, -1), colors.white),
+        ("LEFTPADDING",   (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING",  (0, 0), (-1, -1), 8),
+        ("TOPPADDING",    (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]))
+    return [header_tbl, body_tbl, Spacer(1, 9)]
 
 
 def _header_footer_public(canvas, doc):
