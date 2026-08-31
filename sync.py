@@ -1,566 +1,914 @@
-"""
-Winchester Permit Sync
-──────────────────────
-Reads the three permit tracker workbooks from SharePoint (Records Archive → Permits),
-auto-assigns permit numbers to any new (blank-permit_number) rows, and writes
-permits.json to the winclerk.github.io repo.
-
-  ROW  ->  Right-of-Way.xlsx          (sheet: ROW)
-  DW   ->  Driveway.xlsx              (sheet: DW)
-  RC   ->  Road Construction.xlsx     (sheet: RC)
-
-Called from sync.py. Reuses get_token() and a write_github_file(path, content)
-helper from the existing sync pipeline.
-
-Permit numbering: YYYY-TYPE-N, sequence per type per year, resets January 1.
-  Examples: 2026-ROW-1, 2026-DW-3, 2026-RC-2
-
-Privacy — Driveway permits are treated more carefully than ROW/RC:
-  - No applicant name, no parcel address in the public payload
-  - Location shown as road-level only ("New driveway installation on <road>")
-  - Full record still available on request under Wis. Stat. ch. 19
-
-Requires: openpyxl (already in the GitHub Actions workflow)
-"""
-
-import io
+import os
 import json
-import re
-from datetime import datetime, date
-
+import base64
+import io
 import requests
-from openpyxl import load_workbook
+from datetime import datetime, timezone
+import re
+from pypdf import PdfReader
 
-# ══════════════════════════════════════════════════════════════
-# CONFIG — three trackers, all on the same drive
-# ══════════════════════════════════════════════════════════════
-PERMITS_DRIVE_ID = "b!c95LT9gy6kqiItDGFto7RFnHF7mxITJGsCZJt01CCvi1TQvoZoFtT7YMKBgrUG67"
 
-PERMIT_SOURCES = [
+TENANT_ID     = os.environ["AZURE_TENANT_ID"]
+CLIENT_ID     = os.environ["AZURE_CLIENT_ID"]
+CLIENT_SECRET = os.environ["AZURE_CLIENT_SECRET"]
+GH_PAT        = os.environ["GH_PAT"]
+
+GITHUB_REPO = "winclerk/winclerk.github.io"
+GITHUB_FILE = "data.json"
+
+SITE_HOSTNAME = "townofwinchester54557.sharepoint.com"
+SITE_PATH     = "/sites/TownBoard"
+LIBRARY_NAME  = "Documents"
+
+NEXT_MEETING_PATH = "All Town Board Files/Next Meeting"
+PREV_REGULAR_PATH = "All Town Board Files/Previous Regular Meetings"
+PREV_SPECIAL_PATH = "All Town Board Files/Previous Special Meetings"
+
+SKIP_FOLDER_NAME = "Internal Only"
+
+# Non-meeting sites: flat document libraries, not meeting folders.
+# Each library is scanned recursively up to MAX_SCAN_DEPTH subfolder levels.
+MAX_SCAN_DEPTH = 1
+
+FLAT_SITES = [
     {
-        "type": "row",
-        "label": "Right-of-Way",
-        "item_id": "01UVO6XCSTSHOVIGOYBJE3ZIQJYCZ3YSTV",
-        "sheet_hint": "ROW",
-        "type_code": "ROW",
+        "key": "boardsCommissions",
+        "path": "/sites/BoardsCommitteesCommissions",
+        "libraries": [
+            "Planning Commission",
+            "Intermunicipal Committees",
+            "NEMSD Shared Services",
+        ],
     },
     {
-        "type": "driveway",
-        "label": "Driveway",
-        "item_id": "01UVO6XCXZ4OT5KA376BBJUTCPENRSMERP",
-        "sheet_hint": "DW",
-        "type_code": "DW",
+        "key": "governance",
+        "path": "/sites/Governance",
+        "libraries": [
+            "Ordinances",
+            "Resolutions",
+            "Notices",
+            "Policies",
+            "Fee Schedule",
+        ],
     },
     {
-        "type": "road_construction",
-        "label": "Road Construction",
-        "item_id": "01UVO6XCWGHFSBESJDKVGZZBHO2XHQBZDR",
-        "sheet_hint": "RC",
-        "type_code": "RC",
+        "key": "elections",
+        "path": "/sites/Elections",
+        "libraries": [
+            "Election Notices",
+            "Canvass Results & Certifications",
+            "Voters",
+            "Election Inspectors",
+        ],
     },
 ]
 
-PUBLISHED_STATUSES = {"proposed", "approved"}
-EXAMPLE_TOKENS = ("EXAMPLE", "TEMPLATE", "SAMPLE")
-GRAPH = "https://graph.microsoft.com/v1.0"
+ICAL_URL = "https://winchesterwi.com/?post_type=tribe_events&ical=1&eventDisplay=list"
+MEETING_KEYWORDS = ["regular town board meeting", "special town board meeting"]
 
 
-# ══════════════════════════════════════════════════════════════
-# HELPERS
-# ══════════════════════════════════════════════════════════════
-def _s(v):
-    if v is None:
-        return ""
-    if isinstance(v, (datetime, date)):
-        return v.strftime("%Y-%m-%d")
-    return str(v).strip()
+def get_token():
+    url = f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token"
+    data = {
+        "client_id":     CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "grant_type":    "client_credentials",
+        "scope":         "https://graph.microsoft.com/.default",
+    }
+    r = requests.post(url, data=data)
+    if not r.ok:
+        print(f"Token error: {r.text}")
+    r.raise_for_status()
+    return r.json()["access_token"]
 
 
-def _date(v):
-    if v is None:
-        return ""
-    if isinstance(v, (datetime, date)):
-        return v.strftime("%Y-%m-%d")
-    t = str(v).strip()
-    if not t:
-        return ""
-    if re.match(r"^\d{4}-\d{2}-\d{2}$", t):
-        return t
-    m = re.match(r"^(\d{4}-\d{2}-\d{2})T", t)
-    if m:
-        return m.group(1)
-    for fmt in ("%m/%d/%Y", "%m/%d/%y", "%m-%d-%Y"):
+def graph_get(token, url):
+    r = requests.get(url, headers={"Authorization": f"Bearer {token}"})
+    r.raise_for_status()
+    return r.json()
+
+
+def get_site_id(token, site_path=SITE_PATH):
+    url = f"https://graph.microsoft.com/v1.0/sites/{SITE_HOSTNAME}:{site_path}"
+    return graph_get(token, url)["id"]
+
+
+def get_drive_id(token, site_id, library_name=LIBRARY_NAME):
+    url = f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives"
+    for d in graph_get(token, url)["value"]:
+        if d["name"] == library_name:
+            return d["id"]
+    raise ValueError(f"Drive '{library_name}' not found")
+
+
+def list_root(token, drive_id):
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root/children"
+    items = []
+    while url:
+        data = graph_get(token, url)
+        items.extend(data.get("value", []))
+        url = data.get("@odata.nextLink")
+    return items
+
+
+def list_children(token, drive_id, folder_path):
+    encoded = requests.utils.quote(folder_path)
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{encoded}:/children"
+    items = []
+    while url:
+        data = graph_get(token, url)
+        items.extend(data.get("value", []))
+        url = data.get("@odata.nextLink")
+    return items
+
+
+def get_item(token, drive_id, item_path):
+    encoded = requests.utils.quote(item_path)
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{encoded}"
+    return graph_get(token, url)
+
+
+def get_root_item(token, drive_id):
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root"
+    return graph_get(token, url)
+
+
+def make_folder_link(token, drive_id, folder_path=None):
+    """Create (or fetch) a public view link for a folder itself, not a file
+    inside it. folder_path=None means the library root. Returns None on
+    failure (e.g. anonymous sharing blocked for this site) rather than
+    raising, so callers can degrade gracefully."""
+    try:
+        item = get_item(token, drive_id, folder_path) if folder_path else get_root_item(token, drive_id)
+        return make_link(token, drive_id, item["id"])
+    except Exception as e:
+        print(f"    Warning: could not create folder link for '{folder_path or '(root)'}': {e}")
+        return None
+
+
+def make_link(token, drive_id, item_id):
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/createLink"
+    r = requests.post(url,
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        json={"type": "view", "scope": "anonymous"})
+    r.raise_for_status()
+    return r.json()["link"]["webUrl"]
+
+
+def download_file(token, drive_id, item_id):
+    """Download a file's content from SharePoint via Graph API.
+    Returns raw bytes, or None on failure."""
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/content"
+    try:
+        r = requests.get(url, headers={"Authorization": f"Bearer {token}"})
+        r.raise_for_status()
+        return r.content
+    except Exception as e:
+        print(f"    Warning: could not download file: {e}")
+        return None
+
+
+def extract_meeting_details_from_pdf(pdf_bytes):
+    """Extract meeting time and location from a PDF agenda's header text.
+
+    Looks for patterns like:
+      'Wednesday, August 5 at 10:00 AM'
+      'Winchester Town Hall - 7228 CTH W, Winchester, WI 54557'
+
+    Returns a dict with 'time' and/or 'location' keys, or empty dict."""
+    try:
+        reader = PdfReader(io.BytesIO(pdf_bytes))
+        text = reader.pages[0].extract_text() or ""
+    except Exception as e:
+        print(f"    Warning: could not read PDF: {e}")
+        return {}
+
+    result = {}
+
+    time_match = re.search(
+        r'(?:at\s+)?(\d{1,2}:\d{2}\s*[AaPp]\.?[Mm]\.?)',
+        text
+    )
+    if time_match:
+        raw_time = time_match.group(1).strip()
+        raw_time = raw_time.replace(".", "")
+        raw_time = re.sub(r'(\d)([AaPp])', r'\1 \2', raw_time)
+        raw_time = raw_time.upper()
+        result["time"] = raw_time
+
+    loc_match = re.search(
+        r'(Winchester\s+Town\s+Hall)',
+        text,
+        re.IGNORECASE
+    )
+    if loc_match:
+        result["location"] = "Winchester Town Hall"
+
+    return result
+
+
+def extract_details_from_next_meeting(token, drive_id, docs):
+    """Try to extract time/location from the first agenda PDF in the Next Meeting folder.
+    Returns a dict with 'time' and/or 'location' keys, or empty dict."""
+    for doc in docs:
+        fn = doc["filename"]
+        if not fn.lower().startswith("agenda") or not fn.lower().endswith(".pdf"):
+            continue
         try:
-            return datetime.strptime(t, fmt).strftime("%Y-%m-%d")
-        except ValueError:
-            pass
-    return ""
+            encoded = requests.utils.quote(f"{NEXT_MEETING_PATH}/{fn}")
+            url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{encoded}"
+            item = graph_get(token, url)
+            pdf_bytes = download_file(token, drive_id, item["id"])
+            if pdf_bytes:
+                details = extract_meeting_details_from_pdf(pdf_bytes)
+                if details:
+                    print(f"    Parsed from PDF: {details}")
+                    return details
+        except Exception as e:
+            print(f"    Warning: could not parse {fn}: {e}")
+            continue
+    return {}
 
 
-def _float(v):
+def _fetch_ical_events():
+    """Fetch and parse all events from the WordPress iCal feed.
+    Returns a list of dicts with summary, dtstart_raw, location."""
     try:
-        return round(float(str(v).strip()), 6)
-    except (TypeError, ValueError):
-        return None
-
-
-def _coords(v):
-    t = _s(v)
-    if not t:
-        return None
-    try:
-        parsed = json.loads(t)
-    except json.JSONDecodeError:
-        return None
-    if not isinstance(parsed, list) or len(parsed) < 1:
-        return None
-    out = []
-    for pt in parsed:
-        if isinstance(pt, (list, tuple)) and len(pt) >= 2:
-            lat, lng = _float(pt[0]), _float(pt[1])
-            if lat is not None and lng is not None:
-                out.append([lat, lng])
-    return out or None
-
-
-def _col_letter(n):
-    """1-indexed column number to Excel letter. 1 -> A, 2 -> B, 27 -> AA."""
-    letters = ""
-    while n > 0:
-        n, rem = divmod(n - 1, 26)
-        letters = chr(65 + rem) + letters
-    return letters
-
-
-# ══════════════════════════════════════════════════════════════
-# FETCH WORKBOOK — auto-detect header row
-# ══════════════════════════════════════════════════════════════
-_HEADER_TOKENS = {
-    "permit_number", "submitted", "map_status", "board_date",
-    "type", "title", "road", "applicant", "geo_type",
-}
-
-
-def _detect_header_row(rows, max_scan=5):
-    best_row = 1
-    best_score = 0
-    for i in range(min(max_scan, len(rows))):
-        score = sum(1 for cell in rows[i] if _s(cell).lower() in _HEADER_TOKENS)
-        if score > best_score:
-            best_score = score
-            best_row = i + 1
-    return best_row if best_score > 0 else None
-
-
-def _pick_sheet(wb, sheet_hint):
-    if sheet_hint:
-        for name in wb.sheetnames:
-            if name.lower() == sheet_hint.lower():
-                return name
-    return wb.sheetnames[0] if wb.sheetnames else None
-
-
-def fetch_source(token, source):
-    """Download one workbook and return (rows_as_dicts, meta_dict).
-       rows_as_dicts includes a '_excel_row' key on each row for PATCH targeting.
-       meta_dict has: header_row, sheet_name, permit_num_col_idx.
-       Returns (None, None) on error."""
-    url = f"{GRAPH}/drives/{PERMITS_DRIVE_ID}/items/{source['item_id']}/content"
-    try:
-        r = requests.get(url, headers={"Authorization": f"Bearer {token}"}, timeout=60)
+        r = requests.get(ICAL_URL, timeout=10,
+            headers={"User-Agent": "Winchester-Sync/1.0"})
         r.raise_for_status()
     except Exception as e:
-        print(f"   ! {source['label']}: could not download workbook ({e})")
-        return None, None
+        print(f"  Warning: could not fetch iCal feed: {e}")
+        return []
 
+    events = []
+    current = {}
+    in_event = False
+
+    for line in r.text.splitlines():
+        line = line.strip()
+        if line == "BEGIN:VEVENT":
+            in_event = True
+            current = {}
+        elif line == "END:VEVENT":
+            if current:
+                events.append(current)
+            in_event = False
+            current = {}
+        elif in_event:
+            if line.startswith("SUMMARY:"):
+                current["summary"] = line[8:].strip()
+            elif line.startswith("DTSTART"):
+                current["dtstart_raw"] = line.split(":", 1)[-1].strip()
+            elif line.startswith("LOCATION:"):
+                current["location"] = line[9:].strip()
+
+    return events
+
+
+def _parse_event_dt(raw):
+    """Parse an iCal DTSTART value into a datetime. Returns None on failure."""
     try:
-        wb = load_workbook(io.BytesIO(r.content), data_only=True, read_only=True)
-    except Exception as e:
-        print(f"   ! {source['label']}: could not open workbook ({e})")
-        return None, None
+        if "T" in raw:
+            raw_clean = re.sub(r"[:-]", "", raw.replace("Z", ""))
+            dt = datetime.strptime(raw_clean[:15], "%Y%m%dT%H%M%S")
+            return dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = datetime.strptime(raw[:8], "%Y%m%d")
+            return dt.replace(tzinfo=timezone.utc)
+    except Exception:
+        return None
 
-    sheet_name = _pick_sheet(wb, source.get("sheet_hint"))
-    if not sheet_name:
-        print(f"   ! {source['label']}: no sheets in workbook")
-        wb.close()
-        return None, None
-    if source.get("sheet_hint") and sheet_name.lower() != source["sheet_hint"].lower():
-        print(f"   ! {source['label']}: sheet '{source['sheet_hint']}' not found, using '{sheet_name}'")
 
-    ws = wb[sheet_name]
-    rows = list(ws.iter_rows(values_only=True))
-    if not rows:
-        wb.close()
-        return [], {"header_row": None, "sheet_name": sheet_name, "permit_num_col_idx": None}
+def _event_to_result(dt, ev):
+    """Convert a parsed event into a result dict with title, date, time, location."""
+    raw_location = ev.get("location", "") or ""
+    location = raw_location.split("\\,")[0].split(",")[0].strip()
+    if not location:
+        location = "Winchester Town Hall"
+    if dt.hour or dt.minute:
+        time_str = dt.strftime("%-I:%M %p")
+    else:
+        time_str = "6:00 PM"
+    return {
+        "title":    ev.get("summary", ""),
+        "date":     dt.strftime("%Y-%m-%d"),
+        "time":     time_str,
+        "location": location,
+    }
 
-    header_row = _detect_header_row(rows)
-    if header_row is None:
-        print(f"   ! {source['label']}: could not identify a header row")
-        wb.close()
-        return None, None
 
-    headers = [_s(h) for h in rows[header_row - 1]]
-    out = []
-    for row_i, raw in enumerate(rows[header_row:], start=header_row + 1):
-        rec = {"_excel_row": row_i}
-        for i, h in enumerate(headers):
-            if h and i < len(raw):
-                rec[h] = raw[i]
-        if any(_s(v) for k, v in rec.items() if k != "_excel_row"):
-            out.append(rec)
+def get_next_meeting_from_ical(ical_events=None, match_date=None):
+    """Find the next meeting from the iCal feed.
 
-    permit_num_col_idx = None
-    for i, h in enumerate(headers):
-        if h.lower() == "permit_number":
-            permit_num_col_idx = i + 1
+    Strategy:
+    1. Try keyword match (MEETING_KEYWORDS) — finds standard regular/special meetings.
+    2. If that fails and match_date is provided, find any event on that date.
+    This handles non-standard meetings like budget meetings that aren't named
+    with the standard keywords but are still in the Events Calendar."""
+    if ical_events is None:
+        ical_events = _fetch_ical_events()
+
+    now = datetime.now(timezone.utc)
+
+    # Pass 1: keyword match (standard meeting names)
+    candidates = []
+    for ev in ical_events:
+        summary = ev.get("summary", "")
+        if not any(kw in summary.lower() for kw in MEETING_KEYWORDS):
+            continue
+        dt = _parse_event_dt(ev.get("dtstart_raw", ""))
+        if dt and dt >= now:
+            candidates.append((dt, ev))
+
+    if candidates:
+        candidates.sort(key=lambda x: x[0])
+        dt, ev = candidates[0]
+        return _event_to_result(dt, ev)
+
+    # Pass 2: date match (any event on the meeting date from SharePoint)
+    if match_date:
+        for ev in ical_events:
+            dt = _parse_event_dt(ev.get("dtstart_raw", ""))
+            if dt and dt.strftime("%Y-%m-%d") == match_date:
+                print(f"  Found calendar event by date match: {ev.get('summary', '')}")
+                return _event_to_result(dt, ev)
+
+    print("  Warning: no matching town board meetings found in iCal feed.")
+    return None
+
+
+def clean_name(s):
+    s = re.sub(r"_\d{8}$", "", s)
+    s = re.sub(r"_\d{6}$", "", s)
+    s = s.replace("-", " ").replace("_", " ").strip()
+    s = re.sub(r"(\d{4}) (\d{2})\b", r"\1-\2", s)
+    return s
+
+
+def infer_label(filename):
+    name = filename
+    for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
+        if name.lower().endswith(ext):
+            name = name[:-len(ext)]
             break
 
-    meta = {"header_row": header_row, "sheet_name": sheet_name, "permit_num_col_idx": permit_num_col_idx}
-    wb.close()
-    return out, meta
+    if re.search(r"NEMSD.{0,5}[Ii]ntermunicipal", name):
+        return "NEMSD Intermunicipal Agreement - Current Signed Agreement"
+
+    m = re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_\d{8}", name)
+    if m:
+        type_map = {"RTBM": "Regular Meeting Agenda", "STBM": "Special Meeting Agenda",
+                    "TBSM": "Special Meeting Agenda", "BOR": "Board of Review Agenda"}
+        return type_map[m.group(1)]
+
+    m = re.match(r"Agenda_\d{8}", name)
+    if m:
+        return "Agenda"
+
+    # Agenda with descriptive slug: Agenda_Some-Description_YYYYMMDD
+    # e.g. Agenda_2027-Initial-Budget-Meeting_20260805 -> "2027 Initial Budget Meeting Agenda"
+    m = re.match(r"Agenda_(.+?)_(\d{8})$", name)
+    if m:
+        slug = m.group(1).replace("-", " ").replace("_", " ").strip()
+        return f"{slug} Agenda"
+
+    m = re.match(r"Minutes_(BOR_)?\d{8}(_DRAFT)?", name)
+    if m:
+        is_bor = bool(m.group(1))
+        is_draft = bool(m.group(2))
+        base = "Board of Review Minutes" if is_bor else "Minutes"
+        return f"{base} (Draft)" if is_draft else base
+
+    m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)\d{8}(_DRAFT)?", name)
+    if m:
+        return "Minutes (Draft)" if m.group(1) else "Minutes"
+
+    m = re.match(r"Report_Clerk_\d{8}", name)
+    if m:
+        return "Clerk's Report"
+
+    m = re.match(r"Clerks?_Report_\d{8}", name, re.IGNORECASE)
+    if m:
+        return "Clerk's Report"
+
+    m = re.match(r"Report_Treasurer_\d{6}", name)
+    if m:
+        return "Treasurer's Report"
+
+    m = re.match(r"Report_NEMSD_\d{6}", name)
+    if m:
+        return "NEMSD Report"
+
+    m = re.match(r"Report_Pedalers_\d{6}", name)
+    if m:
+        return "Pedalers Report"
+
+    m = re.match(r"(?:Report_)?Disbursements_(\d{6})$", name)
+    if m:
+        dt = datetime.strptime(m.group(1), "%Y%m")
+        return f"{dt.strftime('%B')} Disbursements"
+
+    m = re.match(r"Report_(.+?)_\d{6}$", name)
+    if m:
+        return f"{m.group(1).replace('-', ' ').replace('_', ' ')} Report"
+
+    m = re.match(r"Report_(.+?)_\d{8}$", name)
+    if m:
+        return f"{m.group(1).replace('-', ' ').replace('_', ' ')} Report"
+
+    m = re.match(r"Policy_(\d{4}-\d{2})_(.+)", name)
+    if m:
+        return f"{m.group(1)} {clean_name(m.group(2))} Policy"
+
+    m = re.match(r"Resolution_(\d{4}-\d{2})_(.+)", name)
+    if m:
+        return f"{m.group(1)} {clean_name(m.group(2))} Resolution"
+
+    m = re.match(r"Ordinance_(\d{4}-\d{2})_(.+)", name)
+    if m:
+        return f"{m.group(1)} {clean_name(m.group(2))} Ordinance"
+
+    m = re.match(r"Permit_(.+?)(?:_\d{8})?$", name)
+    if m:
+        return f"{m.group(1).replace('-', ' ').replace('_', ' ').strip()} Permit"
+
+    m = re.match(r"Form_([A-Z0-9\-]+)_(.+?)(?:_\d{8})?$", name)
+    if m:
+        num = m.group(1).replace("-", " ")
+        desc = m.group(2).replace("-", " ").replace("_", " ").strip()
+        return f"{desc} Form {num}"
+
+    m = re.match(r"Handbook_(.+?)(?:_\d{8})?$", name)
+    if m:
+        rest = re.sub(r"^TOW-?", "", m.group(1))
+        rest = rest.replace("-", " ").replace("_", " ").strip()
+        has_date = bool(re.search(r"_\d{8}$", name))
+        return f"{rest} Handbook" + (" (revised)" if has_date else "")
+
+    m = re.match(r"Comm_(.+?)_\d{6,8}$", name)
+    if m:
+        desc = m.group(1).replace("-", " ").replace("_", " ").strip()
+        return f"{desc} Communication"
+
+    return name.replace("_", " ").replace("-", " ").strip()
 
 
-# ══════════════════════════════════════════════════════════════
-# ASSIGN permit_number to blank rows
-# ══════════════════════════════════════════════════════════════
-def assign_permit_numbers(token, source, rows, meta):
-    """Fill in permit_number on any row where it's blank.
-       Format: YYYY-TYPE-N (e.g. 2026-ROW-3).
-       Writes updates back to SharePoint via Graph API cell PATCH.
-       Mutates in-memory rows so downstream code sees new numbers immediately.
-       Returns count of numbers assigned."""
-    if not rows or not meta or not meta.get("permit_num_col_idx") or not meta.get("sheet_name"):
-        return 0
-
-    type_code = source["type_code"]
-    year = datetime.utcnow().strftime("%Y")
-    prefix = f"{year}-{type_code}-"
-    pattern = re.compile(re.escape(prefix) + r"(\d+)$")
-
-    # Find max existing sequence for this year + type
-    max_seq = 0
-    for r in rows:
-        pn = _s(r.get("permit_number"))
-        if not pn:
-            continue
-        m = pattern.match(pn)
-        if m:
-            try:
-                seq = int(m.group(1))
-                if seq > max_seq:
-                    max_seq = seq
-            except ValueError:
-                pass
-
-    col_letter = _col_letter(meta["permit_num_col_idx"])
-    sheet_name = meta["sheet_name"]
-    assigned = 0
-
-    for r in rows:
-        pn = _s(r.get("permit_number"))
-        if pn:
-            continue
-        # A completely blank row shouldn't get a number
-        if not any(_s(v) for k, v in r.items() if k not in ("_excel_row", "permit_number")):
-            continue
-
-        max_seq += 1
-        new_number = f"{prefix}{max_seq}"
-        excel_row = r["_excel_row"]
-        cell_address = f"{col_letter}{excel_row}"
-
-        if _patch_cell(token, source, sheet_name, cell_address, new_number):
-            r["permit_number"] = new_number
-            assigned += 1
-            print(f"     {source['label']}: assigned {new_number} to row {excel_row}")
-        else:
-            max_seq -= 1
-
-    return assigned
+def parse_date(filename):
+    m = re.search(r"(\d{8})", filename)
+    if m:
+        d = m.group(1)
+        return f"{d[:4]}-{d[4:6]}-{d[6:]}"
+    # Try YYMMDD format (e.g. 260715 = 2026-07-15)
+    m = re.search(r"_(\d{6})(?:\.|$)", filename)
+    if m:
+        d = m.group(1)
+        yy, mm, dd = d[:2], d[2:4], d[4:6]
+        if 1 <= int(mm) <= 12 and 1 <= int(dd) <= 31:
+            return f"20{yy}-{mm}-{dd}"
+    return None
 
 
-def _patch_cell(token, source, sheet_name, cell_address, value):
-    """PATCH a single worksheet cell via Graph API. Returns True on success."""
-    from urllib.parse import quote
-    sheet_encoded = quote(sheet_name, safe="")
-    url = (
-        f"{GRAPH}/drives/{PERMITS_DRIVE_ID}/items/{source['item_id']}"
-        f"/workbook/worksheets/{sheet_encoded}/range(address='{cell_address}')"
-    )
-    body = {"values": [[value]]}
+def extract_meeting_slug(filename):
+    """Extract a descriptive meeting title from a non-standard filename.
+    e.g. Agenda_2027-Initial-Budget-Meeting_20260805.pdf -> '2027 Initial Budget Meeting'
+    Returns None if the filename matches standard RTBM/STBM/TBSM patterns."""
+    name = filename
+    for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
+        if name.lower().endswith(ext):
+            name = name[:-len(ext)]
+            break
+    if not name.startswith("Agenda_"):
+        return None
+    if re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_", name):
+        return None
+    if re.match(r"Agenda_\d{8}$", name):
+        return None
+    slug = re.sub(r"^Agenda_", "", name)
+    slug = re.sub(r"_?\d{8}$", "", slug)
+    slug = re.sub(r"_?DRAFT$", "", slug, flags=re.IGNORECASE)
+    slug = slug.replace("_", " ").replace("-", " ").strip()
+    return slug if slug else None
+
+
+def collect_all_next_meeting_filenames(token, drive_id):
+    """List ALL filenames in the Next Meeting folder, including inside
+    Internal Only. Used only for date/title extraction — not for publishing.
+    Returns a list of filename strings."""
+    filenames = []
     try:
-        r = requests.patch(
-            url,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-            },
-            json=body,
-            timeout=30,
-        )
-        if r.status_code >= 400:
-            print(f"     ! PATCH {cell_address} failed ({r.status_code}): {r.text[:200]}")
-            return False
-        return True
+        children = list_children(token, drive_id, NEXT_MEETING_PATH)
     except Exception as e:
-        print(f"     ! PATCH {cell_address} error: {e}")
-        return False
+        print(f"  Warning: could not list Next Meeting folder: {e}")
+        return filenames
+
+    for item in children:
+        name = item["name"]
+        if "folder" in item:
+            # Recurse into ALL subfolders including Internal Only
+            sub_path = f"{NEXT_MEETING_PATH}/{name}"
+            try:
+                sub_children = list_children(token, drive_id, sub_path)
+                for sub in sub_children:
+                    if "folder" not in sub:
+                        filenames.append(sub["name"])
+            except Exception:
+                pass
+        else:
+            filenames.append(name)
+    return filenames
 
 
-# ══════════════════════════════════════════════════════════════
-# TRANSFORM — per-type entry builders
-# ══════════════════════════════════════════════════════════════
-def _example_row(row):
-    ident = _s(row.get("permit_number")).upper()
-    return any(ident.startswith(t) for t in EXAMPLE_TOKENS)
-
-
-def _dates(row, use_authorized_only=False):
-    if use_authorized_only:
-        start = _date(row.get("authorized_start"))
-        end = _date(row.get("authorized_end"))
-    else:
-        start = _date(row.get("authorized_start")) or _date(row.get("start_date"))
-        end = _date(row.get("authorized_end")) or _date(row.get("end_date"))
-    if start and end and end < start:
-        start, end = end, start
-    return start, end
-
-
-def _attach_geo(entry, row, allow_multipoint=False):
-    geo_type = _s(row.get("geo_type")).lower()
-    route_coords = _coords(row.get("route_coords"))
-    project_pins = _coords(row.get("project_pins")) if allow_multipoint else None
-    lat = _float(row.get("lat"))
-    lng = _float(row.get("lng"))
-
-    if geo_type == "line" and route_coords and len(route_coords) >= 2:
-        entry["geoType"] = "line"
-        entry["coordinates"] = route_coords
-        mid = route_coords[len(route_coords) // 2]
-        entry["lat"], entry["lng"] = mid[0], mid[1]
-        return True
-
-    if allow_multipoint and geo_type == "multipoint" and project_pins:
-        entry["geoType"] = "multipoint"
-        entry["points"] = project_pins
-        centroid_lat = sum(p[0] for p in project_pins) / len(project_pins)
-        centroid_lng = sum(p[1] for p in project_pins) / len(project_pins)
-        entry["lat"], entry["lng"] = round(centroid_lat, 6), round(centroid_lng, 6)
-        return True
-
-    if lat is not None and lng is not None:
-        entry["geoType"] = "point"
-        entry["lat"], entry["lng"] = lat, lng
-        return True
-
-    if route_coords and len(route_coords) >= 2:
-        entry["geoType"] = "line"
-        entry["coordinates"] = route_coords
-        mid = route_coords[len(route_coords) // 2]
-        entry["lat"], entry["lng"] = mid[0], mid[1]
-        return True
-    if allow_multipoint and project_pins:
-        entry["geoType"] = "multipoint"
-        entry["points"] = project_pins
-        centroid_lat = sum(p[0] for p in project_pins) / len(project_pins)
-        centroid_lng = sum(p[1] for p in project_pins) / len(project_pins)
-        entry["lat"], entry["lng"] = round(centroid_lat, 6), round(centroid_lng, 6)
-        return True
-
-    return False
-
-
-def _row_location(row):
-    road = _s(row.get("road"))
-    addr = _s(row.get("address"))
-    if road and addr:
-        if road.lower() in addr.lower():
-            return addr
-        return f"{road} \u2014 {addr}"
-    return road or addr or "Location on file with the Town Clerk"
-
-
-def _rc_location(row):
-    return _s(row.get("road")) or "Location on file with the Town Clerk"
-
-
-def _dw_location(row):
-    return _s(row.get("road")) or "Location on file with the Town Clerk"
-
-
-def _base_entry(row, permit_type):
-    permit_number = _s(row.get("permit_number"))
-    entry = {
-        "id": permit_number,
-        "permitNumber": permit_number,
-        "status": _s(row.get("map_status")).lower(),
-        "jurisdiction": "town",
-        "permitType": permit_type,
-    }
-    # permit_pdf.py publishes to /public/permits/{permit_number}.pdf, keyed off the same
-    # value. Emit the URL so the front-end "View permit record (PDF)" link renders.
-    # If the PDF doesn't exist yet on the first sync after permit_number assignment,
-    # the link will 404 briefly until the next sync completes permit_pdf generation.
-    if permit_number:
-        entry["pdfUrl"] = "/public/permits/" + permit_number + ".pdf"
-    return entry
-
-
-def _build_row_entry(row, source):
-    start, end = _dates(row, use_authorized_only=False)
-    if not start or not end:
-        return None, "dates"
-    entry = _base_entry(row, "row")
-    entry["title"] = _s(row.get("title")) or _s(row.get("type")) or "Permitted work"
-    entry["org"] = _s(row.get("org")) or "Applicant on file"
-    entry["location"] = _row_location(row)
-    entry["startDate"] = start
-    entry["endDate"] = end
-    if _s(row.get("traffic")):
-        entry["traffic"] = _s(row.get("traffic"))
-    if _s(row.get("public_contact_name")):
-        entry["contactName"] = _s(row.get("public_contact_name"))
-    if _s(row.get("public_contact_phone")):
-        entry["contactPhone"] = _s(row.get("public_contact_phone"))
-    if not _attach_geo(entry, row, allow_multipoint=False):
-        return None, "geo"
-    return entry, None
-
-
-def _build_rc_entry(row, source):
-    start, end = _dates(row, use_authorized_only=False)
-    if not start or not end:
-        return None, "dates"
-    entry = _base_entry(row, "road_construction")
-    entry["title"] = _s(row.get("title")) or _s(row.get("type")) or "Road construction project"
-    entry["org"] = _s(row.get("org")) or "Applicant on file"
-    entry["location"] = _rc_location(row)
-    entry["startDate"] = start
-    entry["endDate"] = end
-    if _s(row.get("traffic")):
-        entry["traffic"] = _s(row.get("traffic"))
-    if _s(row.get("public_contact_name")):
-        entry["contactName"] = _s(row.get("public_contact_name"))
-    if _s(row.get("public_contact_phone")):
-        entry["contactPhone"] = _s(row.get("public_contact_phone"))
-    if not _attach_geo(entry, row, allow_multipoint=True):
-        return None, "geo"
-    return entry, None
-
-
-def _build_dw_entry(row, source):
-    start, end = _dates(row, use_authorized_only=True)
-    if not start or not end:
-        return None, "dates"
-    entry = _base_entry(row, "driveway")
-    entry["title"] = "New driveway installation"
-    entry["org"] = "Property owner on file"
-    entry["location"] = _dw_location(row)
-    entry["startDate"] = start
-    entry["endDate"] = end
-    if not _attach_geo(entry, row, allow_multipoint=False):
-        return None, "geo"
-    return entry, None
-
-
-_BUILDERS = {
-    "row": _build_row_entry,
-    "driveway": _build_dw_entry,
-    "road_construction": _build_rc_entry,
-}
-
-
-# ══════════════════════════════════════════════════════════════
-# BUILD permits.json
-# ══════════════════════════════════════════════════════════════
-def build_permits_data(all_rows_by_source):
-    permits = []
-    per_source_stats = {}
-
-    for source, rows in all_rows_by_source:
-        stats = {"total": len(rows), "published": 0, "status": 0, "dates": 0, "geo": 0, "example": 0}
-        builder = _BUILDERS.get(source["type"])
-        if not builder:
-            print(f"   ! no builder for type '{source['type']}'; skipping")
-            continue
-
-        for row in rows:
-            if _example_row(row):
-                stats["example"] += 1
-                continue
-
-            status = _s(row.get("map_status")).lower()
-            if status not in PUBLISHED_STATUSES:
-                stats["status"] += 1
-                continue
-
-            entry, skip_reason = builder(row, source)
-            if entry is None:
-                stats[skip_reason] = stats.get(skip_reason, 0) + 1
-                continue
-            permits.append(entry)
-            stats["published"] += 1
-
-        per_source_stats[source["label"]] = stats
-
-    order = {"approved": 0, "proposed": 1}
-    permits.sort(key=lambda p: (order.get(p["status"], 2), p["startDate"]))
-
-    return {
-        "updated": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "permits": permits,
-    }, per_source_stats
-
-
-# ══════════════════════════════════════════════════════════════
-# ENTRY POINT — call from sync.py
-# ══════════════════════════════════════════════════════════════
-def sync_permits(token, write_github_fn):
-    """Fetch every tracker, assign permit numbers to new rows, publish permits.json.
-       Returns list of (source_config, rows) tuples for downstream (permit_notify)."""
-    print("── Permits ──")
-
-    all_rows = []
-    for source in PERMIT_SOURCES:
-        rows, meta = fetch_source(token, source)
-        if rows is None:
-            all_rows.append((source, []))
-            continue
-        print(f"   {source['label']}: {len(rows)} row(s) in tracker")
-
-        assigned = assign_permit_numbers(token, source, rows, meta)
-        if assigned:
-            print(f"   {source['label']}: {assigned} new permit number(s) assigned")
-
-        all_rows.append((source, rows))
-
-    data, per_source_stats = build_permits_data(all_rows)
-
-    print(f"   {len(data['permits'])} total published")
-    for label, s in per_source_stats.items():
-        parts = [f"{s['published']} published"]
-        if s.get("status"):   parts.append(f"{s['status']} withheld (status)")
-        if s.get("dates"):    parts.append(f"{s['dates']} skipped (dates)")
-        if s.get("geo"):      parts.append(f"{s['geo']} skipped (no map location)")
-        if s.get("example"):  parts.append(f"{s['example']} example row(s)")
-        print(f"     {label}: " + ", ".join(parts))
-
-    payload = json.dumps(data, indent=2, ensure_ascii=False)
-    write_github_fn("permits.json", payload)
-    print("   permits.json written")
-
-    return all_rows
-
-
-# ══════════════════════════════════════════════════════════════
-# STANDALONE
-# ══════════════════════════════════════════════════════════════
-if __name__ == "__main__":
-    import sys
+def scan_folder(token, drive_id, folder_path):
+    """Scan a meeting folder for documents and subfolders.
+    Returns (docs, subfolders) where subfolders is a list of
+    {"name": ..., "url": ..., "documents": [...]} dicts.
+    Skips any subfolder named 'Internal Only'."""
     try:
-        from sync import get_token, write_github_file
-    except ImportError:
-        print("Run from the repo root so sync.py is importable.", file=sys.stderr)
-        sys.exit(1)
-    sync_permits(get_token(), write_github_file)
+        children = list_children(token, drive_id, folder_path)
+    except Exception as e:
+        print(f"  Warning: could not read {folder_path}: {e}")
+        return [], []
+
+    docs = []
+    subfolders = []
+    folder_url = None
+    folder_url_fetched = False
+
+    for item in children:
+        name = item["name"]
+
+        if "folder" in item:
+            if name.strip().lower() == SKIP_FOLDER_NAME.lower():
+                continue
+            sub_path = f"{folder_path}/{name}"
+            print(f"    Scanning subfolder: {name}...")
+            sub_docs = scan_subfolder(token, drive_id, sub_path)
+            if sub_docs:
+                sub_folder_url = make_folder_link(token, drive_id, sub_path)
+                subfolder_entry = {
+                    "name": name,
+                    "documents": sub_docs,
+                }
+                if sub_folder_url:
+                    subfolder_entry["url"] = sub_folder_url
+                subfolders.append(subfolder_entry)
+            continue
+
+        try:
+            link = make_link(token, drive_id, item["id"])
+        except Exception as e:
+            print(f"  Warning: skipping {name}: {e}")
+            continue
+
+        if not folder_url_fetched:
+            folder_url = make_folder_link(token, drive_id, folder_path)
+            folder_url_fetched = True
+
+        date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
+        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
+        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date, "posted": posted}
+        if "DRAFT" in name.upper():
+            doc["draft"] = True
+        if folder_url:
+            doc["folderUrl"] = folder_url
+        docs.append(doc)
+
+    def key(d):
+        l = d["label"].lower()
+        if "agenda" in l: return (0, l)
+        if "minutes" in l: return (1, l)
+        return (2, l)
+    docs.sort(key=key)
+    return docs, subfolders
+
+
+def scan_subfolder(token, drive_id, folder_path):
+    """Scan a subfolder inside a meeting folder for files only.
+    Returns a list of document dicts. Skips any nested subfolders."""
+    try:
+        children = list_children(token, drive_id, folder_path)
+    except Exception as e:
+        print(f"    Warning: could not read subfolder {folder_path}: {e}")
+        return []
+
+    docs = []
+    for item in children:
+        name = item["name"]
+        if "folder" in item:
+            continue
+
+        try:
+            link = make_link(token, drive_id, item["id"])
+        except Exception as e:
+            print(f"    Warning: skipping {name}: {e}")
+            continue
+
+        date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
+        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
+        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date, "posted": posted}
+        if "DRAFT" in name.upper():
+            doc["draft"] = True
+        docs.append(doc)
+
+    docs.sort(key=lambda d: d["label"].lower())
+    return docs
+
+
+def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
+    """Recursively scan a document library (not meeting-folder-shaped).
+    Skips any folder named SKIP_FOLDER_NAME at any depth. Recurses into
+    other subfolders up to MAX_SCAN_DEPTH levels below the library root.
+    Each doc gets a folderUrl pointing at its own parent folder (fetched
+    once per folder, not once per file)."""
+    try:
+        items = list_children(token, drive_id, folder_path) if folder_path else list_root(token, drive_id)
+    except Exception as e:
+        print(f"  Warning: could not read {folder_path or '(root)'}: {e}")
+        return []
+
+    docs = []
+    folder_url = None
+    folder_url_fetched = False
+
+    for item in items:
+        name = item["name"]
+
+        if "folder" in item:
+            if name.strip().lower() == SKIP_FOLDER_NAME.lower():
+                continue
+            if depth < MAX_SCAN_DEPTH:
+                sub_path = f"{folder_path}/{name}" if folder_path else name
+                docs.extend(scan_library(token, drive_id, sub_path, name, depth + 1))
+            continue
+
+        try:
+            link = make_link(token, drive_id, item["id"])
+        except Exception as e:
+            print(f"    Warning: skipping {name}: {e}")
+            continue
+
+        if not folder_url_fetched:
+            folder_url = make_folder_link(token, drive_id, folder_path)
+            folder_url_fetched = True
+
+        base = re.sub(r"\.(pdf|docx?|xlsx?|pptx?)$", "", name, flags=re.IGNORECASE)
+        date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
+        posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
+        doc = {"label": clean_name(base), "filename": name, "url": link, "date": date, "posted": posted}
+        if folder_label:
+            doc["folder"] = folder_label
+        if folder_url:
+            doc["folderUrl"] = folder_url
+        docs.append(doc)
+
+    return docs
+
+
+def build_flat_site_data(token, site_config):
+    print(f"Locating site: {site_config['key']} ({site_config['path']})...")
+    try:
+        site_id = get_site_id(token, site_config["path"])
+    except Exception as e:
+        print(f"  Warning: could not find site {site_config['path']}: {e}")
+        return {"libraries": [{"name": lib, "documents": []} for lib in site_config["libraries"]]}
+
+    libraries_out = []
+    for lib_name in site_config["libraries"]:
+        print(f"  Scanning library: {lib_name}...")
+        try:
+            drive_id = get_drive_id(token, site_id, lib_name)
+        except Exception as e:
+            print(f"    Warning: {e}")
+            libraries_out.append({"name": lib_name, "documents": []})
+            continue
+        docs = scan_library(token, drive_id)
+        docs.sort(key=lambda d: d["label"].lower())
+        print(f"    Found {len(docs)} document(s).")
+        libraries_out.append({"name": lib_name, "documents": docs})
+
+    return {"libraries": libraries_out}
+
+
+def parse_folder_name(name, mtype):
+    m = re.search(r"(\d{8})$", name)
+    if not m:
+        return None
+    raw = m.group(1)
+    date_str = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    if mtype == "regular":
+        return {"id": f"regular-{date_str}",
+                "title": f"Regular Town Board Meeting - {dt.strftime('%B %Y')}",
+                "date": date_str}
+    else:
+        return {"id": f"special-{date_str}",
+                "title": f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}",
+                "date": date_str}
+
+
+def build_data(token, drive_id):
+    meetings = []
+
+    print("Fetching Events Calendar...")
+    ical_events = _fetch_ical_events()
+
+    print("Scanning Next Meeting...")
+    next_docs, next_subfolders = scan_folder(token, drive_id, NEXT_MEETING_PATH)
+
+    # Collect ALL filenames (including Internal Only) for date/title extraction.
+    # scan_folder skips Internal Only for publishing, but we still need those
+    # filenames to determine the meeting date and title.
+    print("  Collecting all filenames for date extraction...")
+    all_next_filenames = collect_all_next_meeting_filenames(token, drive_id)
+    print(f"  Found {len(all_next_filenames)} total file(s) (including internal)")
+
+    next_date = None
+    next_type = "regular"
+    next_title = "Upcoming Town Board Meeting"
+    next_time = "6:00 PM"
+    next_location = "Winchester Town Hall"
+
+    # First try published docs, then fall back to all filenames (including internal)
+    all_sources = [d["filename"] for d in next_docs] + [
+        fn for fn in all_next_filenames
+        if fn not in [d["filename"] for d in next_docs]
+    ]
+
+    for fn in all_sources:
+        m = re.search(r"(\d{8})", fn)
+        if m:
+            raw = m.group(1)
+            next_date = f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
+            dt = datetime.strptime(next_date, "%Y-%m-%d")
+            if "RTBM" in fn:
+                next_type = "regular"
+                next_title = f"Regular Town Board Meeting - {dt.strftime('%B %Y')}"
+            elif "STBM" in fn or "TBSM" in fn:
+                next_type = "special"
+                next_title = f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
+            else:
+                slug = extract_meeting_slug(fn)
+                if slug:
+                    next_title = slug
+                else:
+                    next_title = f"Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
+                next_type = "special"
+            print(f"  Determined next meeting from filename: {fn}")
+            print(f"    Date: {next_date}, Title: {next_title}, Type: {next_type}")
+            break
+
+    # Resolve time & location: PDF content is most reliable, iCal is fallback.
+    print("  Extracting meeting details from agenda PDF...")
+    pdf_details = extract_details_from_next_meeting(token, drive_id, next_docs)
+    if pdf_details.get("time"):
+        next_time = pdf_details["time"]
+    if pdf_details.get("location"):
+        next_location = pdf_details["location"]
+
+    # If PDF didn't yield time, try iCal
+    if not pdf_details.get("time"):
+        ical_event = get_next_meeting_from_ical(ical_events, match_date=next_date)
+        if ical_event:
+            next_time = ical_event["time"]
+            if not pdf_details.get("location"):
+                next_location = ical_event["location"]
+            print(f"  iCal fallback: {ical_event['title']} at {ical_event['time']} @ {ical_event['location']}")
+
+    if not next_date:
+        next_date = datetime.today().strftime("%Y-%m-%d")
+
+    next_meeting = {
+        "id": f"{next_type}-{next_date}", "title": next_title,
+        "type": next_type, "status": "upcoming", "date": next_date,
+        "time": next_time, "location": next_location,
+        "documents": next_docs,
+    }
+    if next_subfolders:
+        next_meeting["subfolders"] = next_subfolders
+    meetings.append(next_meeting)
+
+    print("Scanning Previous Regular Meetings...")
+    try:
+        reg_folders = list_children(token, drive_id, PREV_REGULAR_PATH)
+    except Exception as e:
+        print(f"  Warning: {e}")
+        reg_folders = []
+    reg = []
+    for item in reg_folders:
+        if "folder" not in item:
+            continue
+        p = parse_folder_name(item["name"], "regular")
+        if not p:
+            continue
+        print(f"  Scanning {item['name']}...")
+        docs, subfolders = scan_folder(token, drive_id, f"{PREV_REGULAR_PATH}/{item['name']}")
+        entry = {"id": p["id"], "title": p["title"], "type": "regular",
+                 "status": "complete", "date": p["date"], "documents": docs}
+        if subfolders:
+            entry["subfolders"] = subfolders
+        reg.append(entry)
+    reg.sort(key=lambda x: x["date"], reverse=True)
+    meetings.extend(reg)
+
+    print("Scanning Previous Special Meetings...")
+    try:
+        spec_folders = list_children(token, drive_id, PREV_SPECIAL_PATH)
+    except Exception as e:
+        print(f"  Warning: {e}")
+        spec_folders = []
+    spec = []
+    for item in spec_folders:
+        if "folder" not in item:
+            continue
+        p = parse_folder_name(item["name"], "special")
+        if not p:
+            continue
+        print(f"  Scanning {item['name']}...")
+        docs, subfolders = scan_folder(token, drive_id, f"{PREV_SPECIAL_PATH}/{item['name']}")
+        entry = {"id": p["id"], "title": p["title"], "type": "special",
+                 "status": "complete", "date": p["date"], "documents": docs}
+        if subfolders:
+            entry["subfolders"] = subfolders
+        spec.append(entry)
+    spec.sort(key=lambda x: x["date"], reverse=True)
+    meetings.extend(spec)
+
+    return {"meetings": meetings}
+
+
+def write_github(data):
+    headers = {"Authorization": f"Bearer {GH_PAT}", "Accept": "application/vnd.github+json"}
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE}"
+    r = requests.get(url, headers=headers)
+    sha = r.json().get("sha") if r.status_code == 200 else None
+    content = base64.b64encode(json.dumps(data, indent=2, ensure_ascii=False).encode()).decode()
+    payload = {
+        "message": f"Auto-sync from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
+        "content": content
+    }
+    if sha:
+        payload["sha"] = sha
+    r = requests.put(url, headers=headers, json=payload)
+    r.raise_for_status()
+    print("data.json updated successfully.")
+
+def write_github_file(path, content):
+    """Write arbitrary content to any file in the repo (not just data.json).
+       Path is repo-relative, e.g. 'permits.json'. Content is a string."""
+    headers = {"Authorization": f"Bearer {GH_PAT}", "Accept": "application/vnd.github+json"}
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{path}"
+    r = requests.get(url, headers=headers)
+    sha = r.json().get("sha") if r.status_code == 200 else None
+    import base64
+    payload = {
+        "message": f"Auto-sync {path} from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
+        "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
+    }
+    if sha:
+        payload["sha"] = sha
+    r = requests.put(url, headers=headers, json=payload)
+    r.raise_for_status()
+def main():
+    print("Authenticating with Microsoft Graph...")
+    token = get_token()
+    print("Locating SharePoint site and drive...")
+    site_id = get_site_id(token)
+    drive_id = get_drive_id(token, site_id)
+    print("Building data.json from SharePoint...")
+    data = build_data(token, drive_id)
+    total = sum(len(m["documents"]) for m in data["meetings"])
+    sub_total = sum(
+        sum(len(sf["documents"]) for sf in m.get("subfolders", []))
+        for m in data["meetings"]
+    )
+    print(f"Found {len(data['meetings'])} meetings, {total} documents + {sub_total} subfolder documents.")
+
+    print("Scanning additional sites...")
+    sites_data = {}
+    for site_config in FLAT_SITES:
+        sites_data[site_config["key"]] = build_flat_site_data(token, site_config)
+    data["sites"] = sites_data
+    sites_total = sum(
+        len(lib["documents"])
+        for site in sites_data.values()
+        for lib in site["libraries"]
+    )
+    print(f"Found {sites_total} document(s) across {len(FLAT_SITES)} additional site(s).")
+
+    print("Writing to GitHub...")
+    write_github(data)
+    print("Done.")    
+    # ── Permits (three-tracker sync) ──
+    try:
+        import sync_permits
+        all_rows = sync_permits.sync_permits(token, write_github_file)
+        import permit_notify
+        permit_notify.notify_status_changes(token, all_rows)
+    except Exception as e:
+        import traceback
+        print(f"Permit sync/notify failed: {e}")
+        traceback.print_exc()
+if __name__ == "__main__":
+    main()
+
