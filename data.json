@@ -50,6 +50,14 @@
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         },
         {
+          "label": "2026-05 Permits Ordinance",
+          "filename": "Ordinance_2026-05_Permits_20260830.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQBJBOCq9NxsRJvlCPbqGFGEAXgFyy4AW0qmbscjZBDGzC8",
+          "date": "2026-08-30",
+          "posted": "2026-09-01",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
           "label": "Fee Schedule 20260717",
           "filename": "Fee-Schedule_20260717.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/s/TownBoard/IQB0xP6OOmbTRISKPWp7FXTBAQgPJtzGUaD-AZy0OIC_XLI",
@@ -81,7 +89,7 @@
               "label": "2027 Budget Worksheet DRAFT",
               "filename": "2027 Budget Worksheet DRAFT.xlsx",
               "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQDBAhUK8RuQToyRuljts2ujAbHUex7WVZAc8tTthKwsyko",
-              "date": "2026-08-31",
+              "date": "2026-09-01",
               "posted": "2026-08-31",
               "draft": true
             }
@@ -142,6 +150,19 @@
             }
           ],
           "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgA5I_lUMeq3TK84UYU-ghBYAeHxFuC7PDz3kfWsHKhzck0"
+        },
+        {
+          "name": "Transfer Site",
+          "documents": [
+            {
+              "label": "Town Transfer Site Record",
+              "filename": "Town Transfer Site Record.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/s/TownBoard/IQCSdBpQYXtZTqyEyU6jaDoiAZOSIRMaQUpXcP0ZiUbqSpw",
+              "date": "2026-09-01",
+              "posted": "2026-09-01"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/s/TownBoard/IgDL2tpHPvrWQbaIP1H5UZQqAWhSOn2NEbbfxMVR2fZX1Tk"
         }
       ]
     },
