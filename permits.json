@@ -1,10 +1,10 @@
 {
-  "updated": "2026-09-01T16:08:49Z",
+  "updated": "2026-09-02T07:10:31Z",
   "permits": [
     {
       "id": "2026-ROW-1",
       "permitNumber": "2026-ROW-1",
-      "status": "proposed",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
       "pdfUrl": "/public/permits/2026-ROW-1.pdf",
@@ -80,7 +80,7 @@
     {
       "id": "2026-ROW-2",
       "permitNumber": "2026-ROW-2",
-      "status": "proposed",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
       "pdfUrl": "/public/permits/2026-ROW-2.pdf",
@@ -152,7 +152,7 @@
     {
       "id": "2026-ROW-3",
       "permitNumber": "2026-ROW-3",
-      "status": "proposed",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
       "pdfUrl": "/public/permits/2026-ROW-3.pdf",
