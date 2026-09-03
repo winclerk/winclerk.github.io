@@ -655,11 +655,15 @@ def generate_for_rows(rows, token=None, force=False):
             continue
 
         pub_hash = _content_hash(row, "public")
-        int_hash = _content_hash(row, "internal")
+        # Internal SharePoint archive disabled — the Excel trackers hold the full
+        # applicant record already, so the public GitHub Pages PDF is the only
+        # published artifact. Leaves need_int always False; internal branch below
+        # never fires. Re-enable by restoring the two lines below and adjusting
+        # the code that follows if a proper Records Archive workflow is wanted.
         prev = state.get(key, {})
 
         need_pub = force or prev.get("public") != pub_hash
-        need_int = force or prev.get("internal") != int_hash
+        need_int = False  # internal archive disabled — see comment above
 
         if not need_pub and not need_int:
             skipped += 1

@@ -37,7 +37,11 @@ GRAPH_BASE = "https://graph.microsoft.com/v1.0"
 
 STATE_FILE = "permit_notify_state.json"
 CLERK_EMAIL = "clerk@winchester.wi.gov"
-SEND_FROM   = "clerk@winchester.wi.gov"
+# clerk@ is not a valid Graph user mailbox in the tenant right now (returns 404
+# ErrorInvalidUser). Send from luke@ instead — that's a real user mailbox. Footer
+# and reply-to still reference clerk@ so the applicant knows where to reach the
+# office. Revisit if/when clerk@ is set up as a proper shared mailbox in M365.
+SEND_FROM   = "luke@winchester.wi.gov"
 
 MAKE_WEBHOOK_URL = "https://hook.us2.make.com/gatf2jagb2qfxkmczko6gugq2qx80uxr"
 
@@ -62,6 +66,8 @@ TYPE_DISPLAY = {
 # State (last-notified status per permit)
 # ══════════════════════════════════════════════════════════════
 def _load_state():
+    """Load state from local file (populated by actions/checkout from the repo).
+       Falls back to empty dict if unreadable."""
     if not os.path.exists(STATE_FILE):
         return {}
     try:
@@ -73,13 +79,23 @@ def _load_state():
         return {}
 
 
-def _save_state(state):
+def _save_state(state, write_github_fn=None):
+    """Persist state. If write_github_fn is provided, commit the state file
+       back to the repo so it survives across GitHub Actions runs. Otherwise
+       write to a local file (standalone/dev use only)."""
     payload = {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "permits": state,
     }
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2, ensure_ascii=False)
+    body = json.dumps(payload, indent=2, ensure_ascii=False)
+    if write_github_fn is not None:
+        try:
+            write_github_fn(STATE_FILE, body)
+        except Exception as e:
+            print(f"   ! could not persist notify state to repo ({e})")
+    else:
+        with open(STATE_FILE, "w", encoding="utf-8") as f:
+            f.write(body)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -385,13 +401,17 @@ def _send(token, to_addr, subject, html_body):
 # ══════════════════════════════════════════════════════════════
 # Entry point — called from sync.py
 # ══════════════════════════════════════════════════════════════
-def notify_status_changes(token, all_rows_by_source):
+def notify_status_changes(token, all_rows_by_source, write_github_fn=None):
     """Compare current tracker rows against saved state, send email + Teams post
        on transitions that pass the restrictive send rules.
 
        all_rows_by_source: list of (source_config, rows) tuples returned by
        sync_permits.sync_permits(). Each row is a dict; each source_config has
        a 'type' key ('row' / 'driveway' / 'road_construction').
+
+       write_github_fn: optional (path, content) writer. When provided, the
+       state file is committed back to the repo so state persists across GitHub
+       Actions runs. Without it, state writes are local only (dev/standalone).
 
        Returns (sent_count, skipped_count) for the log."""
     print("── Notifications ──")
@@ -455,6 +475,6 @@ def notify_status_changes(token, all_rows_by_source):
                 print(f"   {key} \u2192 {new_status}: board Teams post sent")
                 sent += 1
 
-    _save_state(new_state)
+    _save_state(new_state, write_github_fn)
     print(f"   done. sent={sent}, skipped={skipped}")
     return sent, skipped

@@ -904,7 +904,7 @@ def main():
         import sync_permits
         all_rows = sync_permits.sync_permits(token, write_github_file)
         import permit_notify
-        permit_notify.notify_status_changes(token, all_rows)
+        permit_notify.notify_status_changes(token, all_rows, write_github_file)
         # PDF generation — brief delay so permit_number PATCHes propagate before generating
         import time
         time.sleep(3)
