@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T03:30:04Z",
+  "updated": "2026-09-03T11:57:17Z",
   "permits": [
     {
       "id": "2026-ROW-3",
@@ -196,47 +196,6 @@
       ],
       "lat": 46.195688,
       "lng": -89.892202
-    },
-    {
-      "id": "2026-RC-1",
-      "permitNumber": "2026-RC-1",
-      "status": "approved",
-      "jurisdiction": "town",
-      "permitType": "road_construction",
-      "pdfUrl": "/public/permits/2026-RC-1.pdf",
-      "title": "test5",
-      "org": "none",
-      "location": "old o",
-      "startDate": "2026-09-20",
-      "endDate": "2026-12-31",
-      "traffic": "No traffic impact",
-      "contactName": "oen",
-      "contactPhone": "oen",
-      "geoType": "multipoint",
-      "points": [
-        [
-          46.241067,
-          -89.874859
-        ],
-        [
-          46.228719,
-          -89.824047
-        ],
-        [
-          46.232281,
-          -89.856319
-        ],
-        [
-          46.223968,
-          -89.886875
-        ],
-        [
-          46.190942,
-          -89.923611
-        ]
-      ],
-      "lat": 46.223395,
-      "lng": -89.873142
     }
   ]
 }
