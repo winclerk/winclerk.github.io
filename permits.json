@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T03:26:18Z",
+  "updated": "2026-09-03T03:30:04Z",
   "permits": [
     {
       "id": "2026-ROW-3",
@@ -200,7 +200,7 @@
     {
       "id": "2026-RC-1",
       "permitNumber": "2026-RC-1",
-      "status": "proposed",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "road_construction",
       "pdfUrl": "/public/permits/2026-RC-1.pdf",
