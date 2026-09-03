@@ -1,6 +1,126 @@
 {
-  "updated": "2026-09-02T23:09:45Z",
+  "updated": "2026-09-03T01:57:43Z",
   "permits": [
+    {
+      "id": "2026-ROW-3",
+      "permitNumber": "2026-ROW-3",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-3.pdf",
+      "title": "OPA WILDFIRE POLE REPLACEMENT",
+      "org": "Xcel Energy",
+      "location": "Town easement — 53 S Owasso W.",
+      "startDate": "2026-08-30",
+      "endDate": "2026-12-31",
+      "contactName": "Tiona Varela",
+      "contactPhone": "763-357-5979",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.217676,
+          -89.890708
+        ],
+        [
+          46.21742,
+          -89.890252
+        ],
+        [
+          46.217101,
+          -89.889759
+        ],
+        [
+          46.216778,
+          -89.88926
+        ],
+        [
+          46.21667,
+          -89.888857
+        ],
+        [
+          46.216629,
+          -89.888439
+        ],
+        [
+          46.216626,
+          -89.888053
+        ]
+      ],
+      "lat": 46.216778,
+      "lng": -89.88926
+    },
+    {
+      "id": "2026-ROW-2",
+      "permitNumber": "2026-ROW-2",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-2.pdf",
+      "title": "OPA WILDFIRE POLE REPLACEMENT",
+      "org": "Xcel Energy",
+      "location": "Other Town road — 53 S Owasso W.",
+      "startDate": "2026-08-30",
+      "endDate": "2026-12-31",
+      "contactName": "Tiona Varela",
+      "contactPhone": "763-357-5979",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.214021,
+          -89.913402
+        ],
+        [
+          46.214014,
+          -89.910924
+        ],
+        [
+          46.213947,
+          -89.901327
+        ],
+        [
+          46.214971,
+          -89.89976
+        ],
+        [
+          46.214867,
+          -89.899074
+        ],
+        [
+          46.215343,
+          -89.898387
+        ],
+        [
+          46.216738,
+          -89.895877
+        ],
+        [
+          46.218639,
+          -89.895276
+        ],
+        [
+          46.219823,
+          -89.894951
+        ],
+        [
+          46.220272,
+          -89.895005
+        ],
+        [
+          46.219927,
+          -89.894452
+        ],
+        [
+          46.219455,
+          -89.893653
+        ],
+        [
+          46.219047,
+          -89.893417
+        ]
+      ],
+      "lat": 46.216738,
+      "lng": -89.895877
+    },
     {
       "id": "2026-ROW-1",
       "permitNumber": "2026-ROW-1",
@@ -78,124 +198,86 @@
       "lng": -89.892202
     },
     {
-      "id": "2026-ROW-2",
-      "permitNumber": "2026-ROW-2",
-      "status": "approved",
+      "id": "2026-ROW-4",
+      "permitNumber": "2026-ROW-4",
+      "status": "proposed",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-2.pdf",
-      "title": "OPA WILDFIRE POLE REPLACEMENT",
-      "org": "Xcel Energy",
-      "location": "Other Town road — 53 S Owasso W.",
-      "startDate": "2026-08-30",
-      "endDate": "2026-12-31",
-      "contactName": "Tiona Varela",
-      "contactPhone": "763-357-5979",
+      "pdfUrl": "/public/permits/2026-ROW-4.pdf",
+      "title": "noneo",
+      "org": "neo",
+      "location": "Old County O — one",
+      "startDate": "2026-09-04",
+      "endDate": "2026-09-07",
+      "traffic": "No traffic impact",
+      "contactName": "neo",
+      "contactPhone": "one",
       "geoType": "line",
       "coordinates": [
         [
-          46.214021,
-          -89.913402
+          46.231357,
+          -89.875889
         ],
         [
-          46.214014,
-          -89.910924
+          46.23302,
+          -89.855289
         ],
         [
-          46.213947,
-          -89.901327
+          46.226845,
+          -89.846706
         ],
         [
-          46.214971,
-          -89.89976
+          46.219006,
+          -89.854946
         ],
         [
-          46.214867,
-          -89.899074
+          46.221382,
+          -89.860783
         ],
         [
-          46.215343,
-          -89.898387
-        ],
-        [
-          46.216738,
-          -89.895877
-        ],
-        [
-          46.218639,
-          -89.895276
-        ],
-        [
-          46.219823,
-          -89.894951
-        ],
-        [
-          46.220272,
-          -89.895005
-        ],
-        [
-          46.219927,
-          -89.894452
-        ],
-        [
-          46.219455,
-          -89.893653
-        ],
-        [
-          46.219047,
-          -89.893417
+          46.226845,
+          -89.855633
         ]
       ],
-      "lat": 46.216738,
-      "lng": -89.895877
+      "lat": 46.219006,
+      "lng": -89.854946
     },
     {
-      "id": "2026-ROW-3",
-      "permitNumber": "2026-ROW-3",
-      "status": "approved",
+      "id": "2026-RC-1",
+      "permitNumber": "2026-RC-1",
+      "status": "proposed",
       "jurisdiction": "town",
-      "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-3.pdf",
-      "title": "OPA WILDFIRE POLE REPLACEMENT",
-      "org": "Xcel Energy",
-      "location": "Town easement — 53 S Owasso W.",
-      "startDate": "2026-08-30",
-      "endDate": "2026-12-31",
-      "contactName": "Tiona Varela",
-      "contactPhone": "763-357-5979",
-      "geoType": "line",
-      "coordinates": [
+      "permitType": "road_construction",
+      "pdfUrl": "/public/permits/2026-RC-1.pdf",
+      "title": "test3",
+      "org": "neon",
+      "location": "noeno",
+      "startDate": "2026-09-04",
+      "endDate": "2026-09-05",
+      "traffic": "No traffic impact",
+      "contactName": "oneo",
+      "contactPhone": "ne",
+      "geoType": "multipoint",
+      "points": [
         [
-          46.217676,
-          -89.890708
+          46.245019,
+          -89.872112
         ],
         [
-          46.21742,
-          -89.890252
+          46.229821,
+          -89.824734
         ],
         [
-          46.217101,
-          -89.889759
+          46.197987,
+          -89.885502
         ],
         [
-          46.216778,
-          -89.88926
-        ],
-        [
-          46.21667,
-          -89.888857
-        ],
-        [
-          46.216629,
-          -89.888439
-        ],
-        [
-          46.216626,
-          -89.888053
+          46.189431,
+          -89.912624
         ]
       ],
-      "lat": 46.216778,
-      "lng": -89.88926
+      "lat": 46.215564,
+      "lng": -89.873743
     }
   ]
 }
