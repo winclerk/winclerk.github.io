@@ -56,9 +56,9 @@ STATUS_LABELS = {
 
 # Per-type display labels for use in email subjects and body copy.
 TYPE_DISPLAY = {
-    "row":               {"noun": "right-of-way permit",   "short": "ROW permit"},
-    "driveway":          {"noun": "driveway permit",       "short": "Driveway permit"},
-    "road_construction": {"noun": "road construction project", "short": "Road construction project"},
+    "row":               {"noun": "right-of-way permit",   "short": "Right-of-Way Permit"},
+    "driveway":          {"noun": "driveway permit",       "short": "Driveway Permit"},
+    "road_construction": {"noun": "road construction permit", "short": "Road Construction Permit"},
 }
 
 
@@ -452,10 +452,10 @@ def notify_status_changes(token, all_rows_by_source, write_github_fn=None):
             title = _row_title(row, permit_type)
             short_type = TYPE_DISPLAY.get(permit_type, {}).get("short", "Permit")
             subj_prefix = {
-                "received":               f"{short_type} application received",
-                "approved":               f"{short_type} approved",
-                "approved conditionally": f"{short_type} approved with conditions",
-                "denied":                 f"{short_type} not approved",
+                "received":               f"{short_type} Application Received",
+                "approved":               f"{short_type} Approved",
+                "approved conditionally": f"{short_type} Approved with Conditions",
+                "denied":                 f"{short_type} Not Approved",
             }[new_status]
             subject = f"{subj_prefix}: {title}"
 
