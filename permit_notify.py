@@ -63,11 +63,63 @@ TYPE_DISPLAY = {
 
 
 # ══════════════════════════════════════════════════════════════
-# State (last-notified status per permit)
+# State (last-notified status + tracked-field snapshot per permit)
 # ══════════════════════════════════════════════════════════════
+
+# Fields that trigger a "*" indicator in the Board Teams post when they change
+# between one notification and the next. Order = display order in the message.
+# The label is what appears in the Teams message; the fields tuple is the row
+# keys whose values we combine to produce the tracked value.
+_TRACKED_FIELDS = [
+    ("Location",         ("road", "address")),
+    ("Board meeting",    ("board_date",)),
+    ("Authorized start", ("authorized_start",)),
+    ("Authorized end",   ("authorized_end",)),
+    ("Conditions",       ("conditions",)),
+    ("Traffic impact",   ("traffic",)),
+    ("Public contact",   ("public_contact_name", "public_contact_phone")),
+]
+
+
+def _snapshot(row):
+    """Return a dict of tracked field values for change comparison.
+       Keys are the human labels; values are normalized strings ready to compare."""
+    snap = {}
+    for label, keys in _TRACKED_FIELDS:
+        parts = [_s(row.get(k)) for k in keys]
+        # Join multi-field labels with a separator so "road, address" collapses
+        # to one comparable string. Empty parts still get compared as "".
+        snap[label] = " \u2014 ".join(p for p in parts if p)
+    return snap
+
+
+def _changed_labels(prev_snap, curr_snap):
+    """Return list of labels whose value changed between two snapshots.
+       If prev_snap is None or empty, returns [] (no asterisks on first-ever
+       notification for a permit)."""
+    if not prev_snap:
+        return []
+    changed = []
+    for label, _ in _TRACKED_FIELDS:
+        if _s(prev_snap.get(label)) != _s(curr_snap.get(label)):
+            changed.append(label)
+    return changed
+
+
+def _normalize_state_entry(entry):
+    """Handle both old-format (string = status) and new-format (dict with
+       'status' + 'snapshot' keys) state entries. Returns (status, snapshot)."""
+    if isinstance(entry, str):
+        return entry, None
+    if isinstance(entry, dict):
+        return _s(entry.get("status")), entry.get("snapshot") if isinstance(entry.get("snapshot"), dict) else None
+    return "", None
+
+
 def _load_state():
     """Load state from local file (populated by actions/checkout from the repo).
-       Falls back to empty dict if unreadable."""
+       Falls back to empty dict if unreadable. Preserves both old and new entry
+       formats — normalization happens per-lookup via _normalize_state_entry."""
     if not os.path.exists(STATE_FILE):
         return {}
     try:
@@ -286,9 +338,16 @@ def _applicant_body(row, permit_type, new_status):
     return _wrap_html(headline, lead, _detail_rows(detail_pairs), next_step)
 
 
-def _build_teams_payload(row, permit_type, new_status, old_status):
+def _build_teams_payload(row, permit_type, new_status, old_status, changed_labels=None):
     """Compact JSON payload for the Make webhook. Make's router branches on
-       event_type=status_change to send it via the fallback Teams module."""
+       event_type=status_change to send it via the fallback Teams module.
+
+       changed_labels: list of field labels (from _TRACKED_FIELDS) whose values
+       differ from the last notification. Used to render '*' indicators in the
+       Teams message and a footer note '* indicates update since last notice'."""
+    changed_labels = changed_labels or []
+    def _star(label):
+        return "*" if label in changed_labels else ""
     return {
         "event_type":       "status_change",
         "permit_type":      permit_type,
@@ -305,6 +364,18 @@ def _build_teams_payload(row, permit_type, new_status, old_status):
         "authorized_end":   _s(row.get("authorized_end")),
         "conditions":       _s(row.get("conditions")),
         "clerk_notes":      _s(row.get("clerk_notes")) if new_status == "denied" else "",
+        # Per-field star indicators — the Make Teams template can append these
+        # to each line (e.g. "Location: {{location}}{{star_location}}").
+        "star_location":         _star("Location"),
+        "star_board_date":       _star("Board meeting"),
+        "star_authorized_start": _star("Authorized start"),
+        "star_authorized_end":   _star("Authorized end"),
+        "star_conditions":       _star("Conditions"),
+        "star_traffic":          _star("Traffic impact"),
+        "star_public_contact":   _star("Public contact"),
+        # Ready-to-render footer: empty when nothing changed, else the reminder line.
+        "changes_footer":   "* indicates update since last notice" if changed_labels else "",
+        "has_changes":      bool(changed_labels),
     }
 
 
@@ -428,14 +499,18 @@ def notify_status_changes(token, all_rows_by_source, write_github_fn=None):
                 continue
 
             new_status = _s(row.get("map_status")).lower()
-            old_status = state.get(key, "")
+            prev_entry = state.get(key)
+            old_status, prev_snapshot = _normalize_state_entry(prev_entry)
 
             if new_status == old_status:
                 continue  # no change
 
+            # Build current snapshot BEFORE we potentially skip — used for state update
+            curr_snapshot = _snapshot(row)
+
             # Update tracked state for every change (so we don't re-notify next run
             # even if a send-rule blocks us from actually notifying now).
-            new_state[key] = new_status
+            new_state[key] = {"status": new_status, "snapshot": curr_snapshot}
 
             if new_status not in NOTIFY_STATUSES:
                 continue
@@ -444,8 +519,11 @@ def notify_status_changes(token, all_rows_by_source, write_github_fn=None):
             should_send, skip_reason = _should_notify(row, new_status)
             if not should_send:
                 print(f"   {key} \u2192 {new_status}: waiting ({skip_reason})")
-                # Don't update state — leave it at old_status so next sync retries
-                new_state[key] = old_status
+                # Don't advance state — restore prior so next sync retries
+                if prev_entry is None:
+                    new_state.pop(key, None)
+                else:
+                    new_state[key] = prev_entry
                 skipped += 1
                 continue
 
@@ -470,8 +548,12 @@ def notify_status_changes(token, all_rows_by_source, write_github_fn=None):
                 print(f"   {key} \u2192 {new_status}: no valid applicant email (skipping applicant email)")
                 skipped += 1
 
+            # Compute what changed vs prior snapshot — Board Teams post only
+            # (per Clerk's spec: applicants don't see change indicators).
+            changed = _changed_labels(prev_snapshot, curr_snapshot)
+
             # Board Teams post
-            if _send_teams_webhook(_build_teams_payload(row, permit_type, new_status, old_status)):
+            if _send_teams_webhook(_build_teams_payload(row, permit_type, new_status, old_status, changed)):
                 print(f"   {key} \u2192 {new_status}: board Teams post sent")
                 sent += 1
 
