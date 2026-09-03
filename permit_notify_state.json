@@ -1,10 +1,16 @@
 {
-  "updated": "2026-08-26T07:45:03Z",
+  "updated": "2026-09-03T01:57:47Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
     "P0002": "proposed",
     "P0003": "proposed",
-    "P0004": "proposed"
+    "P0004": "proposed",
+    "2026-ROW-4": "proposed",
+    "2026-ROW-3": "approved",
+    "2026-ROW-2": "approved",
+    "2026-ROW-1": "approved",
+    "2026-DW-1": "proposed",
+    "2026-RC-1": "proposed"
   }
 }
