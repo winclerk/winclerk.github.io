@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T11:57:17Z",
+  "updated": "2026-09-03T16:25:01Z",
   "permits": [
     {
       "id": "2026-ROW-3",
@@ -196,6 +196,22 @@
       ],
       "lat": 46.195688,
       "lng": -89.892202
+    },
+    {
+      "id": "2026-DW-003",
+      "permitNumber": "2026-DW-003",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "permitType": "driveway",
+      "pdfUrl": "/public/permits/2026-DW-003.pdf",
+      "title": "New driveway installation",
+      "org": "Property owner on file",
+      "location": "Other Town road",
+      "startDate": "2026-09-01",
+      "endDate": "2026-12-31",
+      "geoType": "point",
+      "lat": 46.207781,
+      "lng": -89.830734
     }
   ]
 }
