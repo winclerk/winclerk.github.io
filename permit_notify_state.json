@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T03:26:19Z",
+  "updated": "2026-09-03T03:30:06Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -11,6 +11,17 @@
     "2026-ROW-2": "approved",
     "2026-ROW-1": "approved",
     "2026-DW-1": "proposed",
-    "2026-RC-1": "proposed"
+    "2026-RC-1": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "old o",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "2026-09-20",
+        "Authorized end": "2026-12-31",
+        "Conditions": "none",
+        "Traffic impact": "No traffic impact",
+        "Public contact": "oen — oen"
+      }
+    }
   }
 }
