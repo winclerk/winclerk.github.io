@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T16:25:02Z",
+  "updated": "2026-09-04T02:56:57Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -24,7 +24,7 @@
       }
     },
     "2026-DW-003": {
-      "status": "proposed",
+      "status": "approved",
       "snapshot": {
         "Location": "Other Town road",
         "Board meeting": "2026-09-01",
