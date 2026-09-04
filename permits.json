@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T16:25:01Z",
+  "updated": "2026-09-04T02:56:56Z",
   "permits": [
     {
       "id": "2026-ROW-3",
@@ -200,7 +200,7 @@
     {
       "id": "2026-DW-003",
       "permitNumber": "2026-DW-003",
-      "status": "proposed",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "driveway",
       "pdfUrl": "/public/permits/2026-DW-003.pdf",
