@@ -8,7 +8,7 @@ permit_notify_state.json (committed to the winclerk repo) and fires only on
 STATUS TRANSITIONS to {received, approved, approved conditionally, denied}.
 
 Send rules (all four notifications) — restrictive per Clerk's spec:
-  received                → only if permit_number AND board_date are set
+  received                → only if permit_number is set (board_date optional)
   approved                → fires on transition (no extra requirement)
   approved conditionally  → only if conditions field is non-empty
   denied                  → only if clerk_notes field is non-empty (denial reason)
@@ -200,10 +200,10 @@ def _permit_key(row):
 def _should_notify(row, new_status):
     """Return (should_send, skip_reason). skip_reason is human-readable for logs."""
     if new_status == "received":
+        # Fires as soon as permit_number is assigned (board_date is optional —
+        # body text is conditional on whether it's filled).
         if not _s(row.get("permit_number")):
             return False, "no permit_number"
-        if not _s(row.get("board_date")):
-            return False, "no board_date"
         return True, None
     if new_status == "approved":
         return True, None
@@ -262,12 +262,21 @@ def _applicant_body(row, permit_type, new_status):
     noun = TYPE_DISPLAY.get(permit_type, {}).get("noun", "permit")
 
     if new_status == "received":
-        headline = "We have received your permit application"
-        lead = (
-            f"Hello {escape(applicant)},<br><br>"
-            f"The Town Clerk has received your {escape(noun)} application. "
-            f"It has been assigned a permit number and scheduled for Board review."
-        )
+        headline = "Your application has been received"
+        board_date = _s(row.get("board_date"))
+        if board_date:
+            lead = (
+                f"Hello {escape(applicant)},<br><br>"
+                f"Your {escape(noun)} application has been received. "
+                f"It has been assigned a permit number and scheduled for Board review."
+            )
+        else:
+            lead = (
+                f"Hello {escape(applicant)},<br><br>"
+                f"Your {escape(noun)} application has been received. "
+                f"It has been assigned a permit number. "
+                f"You will be notified of the Board's decision after the next meeting."
+            )
         next_step = (
             "You will receive another email once the Board acts on your application. "
             "If you need to update any information in the meantime, contact the Town Clerk."
@@ -335,7 +344,7 @@ def _applicant_body(row, permit_type, new_status):
     if denial_reason:
         detail_pairs.append(("Reason", denial_reason))
 
-    return _wrap_html(headline, lead, _detail_rows(detail_pairs), next_step)
+    return _wrap_html(headline, lead, _detail_rows(detail_pairs), next_step, _s(row.get("permit_number")))
 
 
 def _build_teams_payload(row, permit_type, new_status, old_status, changed_labels=None):
@@ -414,18 +423,23 @@ def _detail_rows(pairs):
     return '<table style="border-collapse:collapse;margin:18px 0;width:100%;">' + "".join(trs) + "</table>"
 
 
-def _wrap_html(headline, lead_html, rows_html, next_step):
+def _wrap_html(headline, lead_html, rows_html, next_step, permit_number=""):
     footer_lines = [
         "Town of Winchester &middot; 7228 CTH W, Winchester, WI 54557",
         f'715-686-2123 &middot; <a href="mailto:{CLERK_EMAIL}" style="color:#00505A;">{CLERK_EMAIL}</a>',
     ]
+    subtitle = (
+        f"Town of Winchester: Permit {escape(permit_number)} Status Update"
+        if permit_number else
+        "Town of Winchester: Permit Status Update"
+    )
     return (
         '<!DOCTYPE html><html><head><meta charset="utf-8"></head>'
         '<body style="margin:0;padding:0;background:#f5f5f5;font-family:Helvetica,Arial,sans-serif;">'
         '<div style="max-width:640px;margin:0 auto;background:#fff;">'
         '<div style="background:#193C3C;padding:18px 26px;border-bottom:4px solid #A59664;">'
         '<div style="color:#A59664;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;font-weight:700;">Town of Winchester, Wisconsin</div>'
-        '<div style="color:#fff;font-size:16px;margin-top:2px;">Permit tracker notification</div>'
+        f'<div style="color:#fff;font-size:16px;margin-top:2px;">{subtitle}</div>'
         '</div>'
         '<div style="padding:28px 26px;">'
         f'<h1 style="margin:0 0 14px 0;color:#193C3C;font-size:22px;line-height:1.25;">{escape(headline)}</h1>'
