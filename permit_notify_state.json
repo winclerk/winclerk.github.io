@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-05T11:09:23Z",
+  "updated": "2026-09-05T22:30:33Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -24,6 +24,54 @@
       }
     },
     "2026-DW-003": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "2026-09-01",
+        "Authorized end": "2026-12-31",
+        "Conditions": "none",
+        "Traffic impact": "",
+        "Public contact": ""
+      }
+    },
+    "2026-ROW-03": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Town easement — 53 S Owasso W.",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "",
+        "Public contact": "Tiona Varela — 763-357-5979"
+      }
+    },
+    "2026-ROW-02": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road — 53 S Owasso W.",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "",
+        "Public contact": "Tiona Varela — 763-357-5979"
+      }
+    },
+    "2026-ROW-01": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road — 53 S Owasso W.",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "",
+        "Public contact": "Tiona Varela — 763-357-5979"
+      }
+    },
+    "2026-DW-03": {
       "status": "approved",
       "snapshot": {
         "Location": "Other Town road",
