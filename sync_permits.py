@@ -237,6 +237,12 @@ def assign_permit_numbers(token, source, rows, meta):
     prefix = f"{year}-{type_code}-"
     pattern = re.compile(re.escape(prefix) + r"(\d+)$")
 
+    # Zero-pad the sequence to 2 digits minimum starting in 2027 (e.g. 2027-DW-01,
+    # 2027-DW-09, 2027-DW-10, 2027-DW-99, 2027-DW-100). 2026 permits stay in the
+    # legacy single-digit format to avoid retroactive renames. Numbers naturally
+    # widen past 2 digits when the sequence exceeds 99.
+    pad_width = 2 if int(year) >= 2027 else 1
+
     # Find max existing sequence for this year + type
     max_seq = 0
     for r in rows:
@@ -265,7 +271,7 @@ def assign_permit_numbers(token, source, rows, meta):
             continue
 
         max_seq += 1
-        new_number = f"{prefix}{max_seq}"
+        new_number = f"{prefix}{max_seq:0{pad_width}d}"
         excel_row = r["_excel_row"]
         cell_address = f"{col_letter}{excel_row}"
 
@@ -495,6 +501,21 @@ def build_permits_data(all_rows_by_source):
                 stats["status"] += 1
                 continue
 
+            # 6-month drop-off: hide completed permits whose authorized_end is
+            # more than 6 months in the past. Keeps the map focused on current
+            # and recent work without accumulating years of history.
+            if status in ("approved", "approved conditionally"):
+                auth_end = _s(row.get("authorized_end"))
+                if auth_end:
+                    try:
+                        end_dt = datetime.strptime(auth_end[:10], "%Y-%m-%d")
+                        # ~6 months = 183 days
+                        if (datetime.utcnow() - end_dt).days > 183:
+                            stats["expired"] = stats.get("expired", 0) + 1
+                            continue
+                    except ValueError:
+                        pass
+
             entry, skip_reason = builder(row, source)
             if entry is None:
                 stats[skip_reason] = stats.get(skip_reason, 0) + 1
@@ -541,6 +562,7 @@ def sync_permits(token, write_github_fn):
     for label, s in per_source_stats.items():
         parts = [f"{s['published']} published"]
         if s.get("status"):   parts.append(f"{s['status']} withheld (status)")
+        if s.get("expired"):  parts.append(f"{s['expired']} expired (6mo+ past authorized_end)")
         if s.get("dates"):    parts.append(f"{s['dates']} skipped (dates)")
         if s.get("geo"):      parts.append(f"{s['geo']} skipped (no map location)")
         if s.get("example"):  parts.append(f"{s['example']} example row(s)")
