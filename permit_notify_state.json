@@ -1,17 +1,17 @@
 {
-  "updated": "2026-09-05T22:30:33Z",
+  "updated": "2026-09-05T11:09:23Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
     "P0002": "proposed",
     "P0003": "proposed",
     "P0004": "proposed",
-    "2026-ROW-4": "proposed",
-    "2026-ROW-3": "approved",
-    "2026-ROW-2": "approved",
-    "2026-ROW-1": "approved",
-    "2026-DW-1": "proposed",
-    "2026-RC-1": {
+    "2026-ROW-04": "proposed",
+    "2026-ROW-03": "approved",
+    "2026-ROW-02": "approved",
+    "2026-ROW-01": "approved",
+    "2026-DW-01": "proposed",
+    "2026-RC-01": {
       "status": "approved",
       "snapshot": {
         "Location": "old o",
@@ -24,54 +24,6 @@
       }
     },
     "2026-DW-003": {
-      "status": "approved",
-      "snapshot": {
-        "Location": "Other Town road",
-        "Board meeting": "2026-09-01",
-        "Authorized start": "2026-09-01",
-        "Authorized end": "2026-12-31",
-        "Conditions": "none",
-        "Traffic impact": "",
-        "Public contact": ""
-      }
-    },
-    "2026-ROW-03": {
-      "status": "approved",
-      "snapshot": {
-        "Location": "Town easement — 53 S Owasso W.",
-        "Board meeting": "2026-09-01",
-        "Authorized start": "",
-        "Authorized end": "",
-        "Conditions": "",
-        "Traffic impact": "",
-        "Public contact": "Tiona Varela — 763-357-5979"
-      }
-    },
-    "2026-ROW-02": {
-      "status": "approved",
-      "snapshot": {
-        "Location": "Other Town road — 53 S Owasso W.",
-        "Board meeting": "2026-09-01",
-        "Authorized start": "",
-        "Authorized end": "",
-        "Conditions": "",
-        "Traffic impact": "",
-        "Public contact": "Tiona Varela — 763-357-5979"
-      }
-    },
-    "2026-ROW-01": {
-      "status": "approved",
-      "snapshot": {
-        "Location": "Other Town road — 53 S Owasso W.",
-        "Board meeting": "2026-09-01",
-        "Authorized start": "",
-        "Authorized end": "",
-        "Conditions": "",
-        "Traffic impact": "",
-        "Public contact": "Tiona Varela — 763-357-5979"
-      }
-    },
-    "2026-DW-03": {
       "status": "approved",
       "snapshot": {
         "Location": "Other Town road",
