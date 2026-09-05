@@ -1,0 +1,35 @@
+name: Assign permit number and notify
+
+# Triggered by Make.com immediately after a form submission is written to Excel.
+# Runs assign_only.py which is a slim version of sync.py — just assigns
+# permit_numbers to new rows and fires notifications. Skips meeting sync,
+# site sync, and PDF generation (those stay in the 7am daily sync).
+
+on:
+  workflow_dispatch:
+
+jobs:
+  assign_and_notify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pypdf openpyxl reportlab staticmap Pillow
+
+      - name: Run assign_only.py
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          GH_PAT:              ${{ secrets.GH_PAT }}
+        run: python assign_only.py
