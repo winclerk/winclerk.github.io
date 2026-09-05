@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-05T11:09:23Z",
+  "updated": "2026-09-05T22:59:22Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -24,6 +24,18 @@
       }
     },
     "2026-DW-003": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "2026-09-01",
+        "Authorized end": "2026-12-31",
+        "Conditions": "none",
+        "Traffic impact": "",
+        "Public contact": ""
+      }
+    },
+    "2026-DW-03": {
       "status": "approved",
       "snapshot": {
         "Location": "Other Town road",
