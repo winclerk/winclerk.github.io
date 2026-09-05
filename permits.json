@@ -1,13 +1,13 @@
 {
-  "updated": "2026-09-05T11:09:22Z",
+  "updated": "2026-09-05T22:30:30Z",
   "permits": [
     {
-      "id": "2026-ROW-3",
-      "permitNumber": "2026-ROW-3",
+      "id": "2026-ROW-03",
+      "permitNumber": "2026-ROW-03",
       "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-3.pdf",
+      "pdfUrl": "/public/permits/2026-ROW-03.pdf",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
       "location": "Town easement — 53 S Owasso W.",
@@ -50,12 +50,12 @@
       "lng": -89.88926
     },
     {
-      "id": "2026-ROW-2",
-      "permitNumber": "2026-ROW-2",
+      "id": "2026-ROW-02",
+      "permitNumber": "2026-ROW-02",
       "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-2.pdf",
+      "pdfUrl": "/public/permits/2026-ROW-02.pdf",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
       "location": "Other Town road — 53 S Owasso W.",
@@ -122,12 +122,12 @@
       "lng": -89.895877
     },
     {
-      "id": "2026-ROW-1",
-      "permitNumber": "2026-ROW-1",
+      "id": "2026-ROW-01",
+      "permitNumber": "2026-ROW-01",
       "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-1.pdf",
+      "pdfUrl": "/public/permits/2026-ROW-01.pdf",
       "title": "OPA WILDFIRE POLE REPLACEMENT",
       "org": "Xcel Energy",
       "location": "Other Town road — 53 S Owasso W.",
@@ -198,12 +198,12 @@
       "lng": -89.892202
     },
     {
-      "id": "2026-DW-003",
-      "permitNumber": "2026-DW-003",
+      "id": "2026-DW-03",
+      "permitNumber": "2026-DW-03",
       "status": "approved",
       "jurisdiction": "town",
       "permitType": "driveway",
-      "pdfUrl": "/public/permits/2026-DW-003.pdf",
+      "pdfUrl": "/public/permits/2026-DW-03.pdf",
       "title": "New driveway installation",
       "org": "Property owner on file",
       "location": "Other Town road",
