@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T08:43:08Z",
+  "updated": "2026-09-06T08:44:41Z",
   "permits": [
     {
       "id": "2026-ROW-03",
@@ -212,6 +212,47 @@
       "geoType": "point",
       "lat": 46.207781,
       "lng": -89.830734
+    },
+    {
+      "id": "2026-ROW-5",
+      "permitNumber": "2026-ROW-5",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-5.pdf",
+      "title": "Norvado - prior",
+      "org": "Norvado",
+      "location": "Other Town road — n",
+      "startDate": "2026-08-01",
+      "endDate": "2026-09-01",
+      "traffic": "Flaggers",
+      "contactName": "adf",
+      "contactPhone": "a",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.229498,
+          -89.843735
+        ],
+        [
+          46.228697,
+          -89.842962
+        ],
+        [
+          46.228029,
+          -89.842941
+        ],
+        [
+          46.227004,
+          -89.842683
+        ],
+        [
+          46.225861,
+          -89.842104
+        ]
+      ],
+      "lat": 46.228029,
+      "lng": -89.842941
     },
     {
       "id": "2026-ROW-4",
