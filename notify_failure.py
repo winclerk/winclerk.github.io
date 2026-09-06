@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 import requests
 
 
-ALERT_TO = "lukster97@gmail.com"
+ALERT_TO = "luke@winchester.wi.gov"
 SEND_FROM = "luke@winchester.wi.gov"
 GRAPH_BASE = "https://graph.microsoft.com/v1.0"
 
