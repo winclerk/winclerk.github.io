@@ -1,0 +1,40 @@
+name: TEST failure alert
+
+# TEMPORARY test workflow — deliberately fails so we can verify the
+# failure-email path works end-to-end. Delete this file (and its
+# .github/workflows entry) after verification.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test_failure:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Deliberately fail
+        run: |
+          echo "This step will fail on purpose to test the alert."
+          exit 1
+
+      - name: Send failure email
+        if: failure()
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          GH_PAT:              ${{ secrets.GH_PAT }}
+        run: python notify_failure.py "TEST failure alert" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
