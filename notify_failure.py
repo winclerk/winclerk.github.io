@@ -5,21 +5,19 @@ Called from GitHub Actions' `if: failure()` step. Takes workflow name and
 run URL as arguments, sends a short email to the on-call Clerk so failures
 don't sit silently until someone notices missing permit updates.
 
+Deliberately self-contained — does NOT import from sync.py so it works even
+when the failure was at the "Install dependencies" step (missing pypdf etc.).
+Only requires `requests`, which every workflow installs first.
+
 Usage:
     python notify_failure.py "workflow name" "https://github.com/.../runs/12345"
 
-Requires the same AZURE_* env vars that sync.py uses.
+Requires: AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET env vars.
 """
 
 import os
 import sys
 from datetime import datetime, timezone
-
-try:
-    from sync import get_token
-except ImportError as e:
-    print(f"Run from the winclerk.github.io repo root (missing import: {e})", file=sys.stderr)
-    sys.exit(1)
 
 import requests
 
@@ -27,6 +25,26 @@ import requests
 ALERT_TO = "lukster97@gmail.com"
 SEND_FROM = "luke@winchester.wi.gov"
 GRAPH_BASE = "https://graph.microsoft.com/v1.0"
+
+
+def _fetch_token():
+    """Fetch a Graph API token via client credentials flow.
+       Duplicated from sync.py's get_token() so this file has no local deps."""
+    tenant = os.environ.get("AZURE_TENANT_ID", "")
+    client = os.environ.get("AZURE_CLIENT_ID", "")
+    secret = os.environ.get("AZURE_CLIENT_SECRET", "")
+    if not all([tenant, client, secret]):
+        raise RuntimeError("missing AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET env vars")
+    url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+    data = {
+        "client_id": client,
+        "client_secret": secret,
+        "scope": "https://graph.microsoft.com/.default",
+        "grant_type": "client_credentials",
+    }
+    r = requests.post(url, data=data, timeout=15)
+    r.raise_for_status()
+    return r.json()["access_token"]
 
 
 def main():
@@ -38,7 +56,7 @@ def main():
     run_url = sys.argv[2]
 
     try:
-        token = get_token()
+        token = _fetch_token()
     except Exception as e:
         # If we can't even auth to Graph, log and give up. Don't want the
         # failure notifier to itself fail loudly and mask the original error.
