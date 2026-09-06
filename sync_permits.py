@@ -237,11 +237,10 @@ def assign_permit_numbers(token, source, rows, meta):
     prefix = f"{year}-{type_code}-"
     pattern = re.compile(re.escape(prefix) + r"(\d+)$")
 
-    # Zero-pad the sequence to 2 digits minimum starting in 2027 (e.g. 2027-DW-01,
-    # 2027-DW-09, 2027-DW-10, 2027-DW-99, 2027-DW-100). 2026 permits stay in the
-    # legacy single-digit format to avoid retroactive renames. Numbers naturally
-    # widen past 2 digits when the sequence exceeds 99.
-    pad_width = 2 if int(year) >= 2027 else 1
+    # Zero-pad the sequence to 2 digits minimum year-round (e.g. 2026-DW-01,
+    # 2026-DW-09, 2026-DW-10, 2026-DW-99, 2026-DW-100). Numbers naturally widen
+    # past 2 digits when the sequence exceeds 99.
+    pad_width = 2
 
     # Find max existing sequence for this year + type
     max_seq = 0
