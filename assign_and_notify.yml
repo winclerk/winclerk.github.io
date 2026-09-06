@@ -1,12 +1,15 @@
-name: Sync SharePoint to data.json
+name: Assign permit number and notify
+
+# Triggered by Make.com immediately after a form submission is written to Excel.
+# Runs assign_only.py which is a slim version of sync.py — just assigns
+# permit_numbers to new rows and fires notifications. Skips meeting sync,
+# site sync, and PDF generation (those stay in the 7am daily sync).
 
 on:
-  schedule:
-    - cron: '0 7 * * *'
   workflow_dispatch:
 
 jobs:
-  sync:
+  assign_and_notify:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,13 +26,13 @@ jobs:
       - name: Install dependencies
         run: pip install requests pypdf openpyxl reportlab staticmap Pillow
 
-      - name: Run SharePoint sync
+      - name: Run assign_only.py
         env:
           AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           GH_PAT:              ${{ secrets.GH_PAT }}
-        run: python sync.py
+        run: python assign_only.py
 
       - name: Send failure email
         if: failure()
@@ -38,4 +41,4 @@ jobs:
           AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           GH_PAT:              ${{ secrets.GH_PAT }}
-        run: python notify_failure.py "Sync SharePoint to data.json" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        run: python notify_failure.py "Assign permit number and notify" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
