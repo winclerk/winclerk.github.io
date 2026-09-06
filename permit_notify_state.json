@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T08:43:09Z",
+  "updated": "2026-09-06T08:44:42Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -57,6 +57,18 @@
         "Conditions": "",
         "Traffic impact": "No traffic impact",
         "Public contact": "oen — oen"
+      }
+    },
+    "2026-ROW-5": {
+      "status": "proposed",
+      "snapshot": {
+        "Location": "Other Town road — n",
+        "Board meeting": "",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "adf — a"
       }
     }
   }
