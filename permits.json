@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T05:51:22Z",
+  "updated": "2026-09-06T05:53:56Z",
   "permits": [
     {
       "id": "2026-ROW-03",
@@ -212,6 +212,47 @@
       "geoType": "point",
       "lat": 46.207781,
       "lng": -89.830734
+    },
+    {
+      "id": "2026-ROW-4",
+      "permitNumber": "2026-ROW-4",
+      "status": "proposed",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-4.pdf",
+      "title": "notiftest",
+      "org": "neo",
+      "location": "Old County O — neonen",
+      "startDate": "2026-09-01",
+      "endDate": "2026-09-04",
+      "traffic": "No traffic impact",
+      "contactName": "oen",
+      "contactPhone": "oen",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.225736,
+          -89.887047
+        ],
+        [
+          46.22829,
+          -89.889793
+        ],
+        [
+          46.229477,
+          -89.894686
+        ],
+        [
+          46.231436,
+          -89.901381
+        ],
+        [
+          46.235771,
+          -89.904385
+        ]
+      ],
+      "lat": 46.229477,
+      "lng": -89.894686
     }
   ]
 }
