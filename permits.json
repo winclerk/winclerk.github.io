@@ -1,233 +1,21 @@
 {
-  "updated": "2026-09-06T08:57:26Z",
+  "updated": "2026-09-06T09:02:29Z",
   "permits": [
     {
-      "id": "2026-ROW-03",
-      "permitNumber": "2026-ROW-03",
+      "id": "2026-ROW-08",
+      "permitNumber": "2026-ROW-08",
       "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-03.pdf",
-      "title": "OPA WILDFIRE POLE REPLACEMENT",
-      "org": "Xcel Energy",
-      "location": "Town easement — 53 S Owasso W.",
-      "startDate": "2026-08-30",
-      "endDate": "2026-12-31",
-      "contactName": "Tiona Varela",
-      "contactPhone": "763-357-5979",
-      "geoType": "line",
-      "coordinates": [
-        [
-          46.217676,
-          -89.890708
-        ],
-        [
-          46.21742,
-          -89.890252
-        ],
-        [
-          46.217101,
-          -89.889759
-        ],
-        [
-          46.216778,
-          -89.88926
-        ],
-        [
-          46.21667,
-          -89.888857
-        ],
-        [
-          46.216629,
-          -89.888439
-        ],
-        [
-          46.216626,
-          -89.888053
-        ]
-      ],
-      "lat": 46.216778,
-      "lng": -89.88926
-    },
-    {
-      "id": "2026-ROW-02",
-      "permitNumber": "2026-ROW-02",
-      "status": "approved",
-      "jurisdiction": "town",
-      "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-02.pdf",
-      "title": "OPA WILDFIRE POLE REPLACEMENT",
-      "org": "Xcel Energy",
-      "location": "Other Town road — 53 S Owasso W.",
-      "startDate": "2026-08-30",
-      "endDate": "2026-12-31",
-      "contactName": "Tiona Varela",
-      "contactPhone": "763-357-5979",
-      "geoType": "line",
-      "coordinates": [
-        [
-          46.214021,
-          -89.913402
-        ],
-        [
-          46.214014,
-          -89.910924
-        ],
-        [
-          46.213947,
-          -89.901327
-        ],
-        [
-          46.214971,
-          -89.89976
-        ],
-        [
-          46.214867,
-          -89.899074
-        ],
-        [
-          46.215343,
-          -89.898387
-        ],
-        [
-          46.216738,
-          -89.895877
-        ],
-        [
-          46.218639,
-          -89.895276
-        ],
-        [
-          46.219823,
-          -89.894951
-        ],
-        [
-          46.220272,
-          -89.895005
-        ],
-        [
-          46.219927,
-          -89.894452
-        ],
-        [
-          46.219455,
-          -89.893653
-        ],
-        [
-          46.219047,
-          -89.893417
-        ]
-      ],
-      "lat": 46.216738,
-      "lng": -89.895877
-    },
-    {
-      "id": "2026-ROW-01",
-      "permitNumber": "2026-ROW-01",
-      "status": "approved",
-      "jurisdiction": "town",
-      "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-01.pdf",
-      "title": "OPA WILDFIRE POLE REPLACEMENT",
-      "org": "Xcel Energy",
-      "location": "Other Town road — 53 S Owasso W.",
-      "startDate": "2026-08-30",
-      "endDate": "2026-12-31",
-      "contactName": "Tiona Varela",
-      "contactPhone": "763-357-5979",
-      "geoType": "line",
-      "coordinates": [
-        [
-          46.203853,
-          -89.896963
-        ],
-        [
-          46.20177,
-          -89.897228
-        ],
-        [
-          46.200693,
-          -89.897247
-        ],
-        [
-          46.19681,
-          -89.897856
-        ],
-        [
-          46.196423,
-          -89.89732
-        ],
-        [
-          46.195733,
-          -89.896311
-        ],
-        [
-          46.195644,
-          -89.894359
-        ],
-        [
-          46.195688,
-          -89.892202
-        ],
-        [
-          46.195607,
-          -89.889455
-        ],
-        [
-          46.195785,
-          -89.889123
-        ],
-        [
-          46.19571,
-          -89.888425
-        ],
-        [
-          46.195339,
-          -89.888007
-        ],
-        [
-          46.195109,
-          -89.887653
-        ],
-        [
-          46.19496,
-          -89.887514
-        ]
-      ],
-      "lat": 46.195688,
-      "lng": -89.892202
-    },
-    {
-      "id": "2026-DW-03",
-      "permitNumber": "2026-DW-03",
-      "status": "approved",
-      "jurisdiction": "town",
-      "permitType": "driveway",
-      "pdfUrl": "/public/permits/2026-DW-03.pdf",
-      "title": "New driveway installation",
-      "org": "Property owner on file",
-      "location": "Other Town road",
-      "startDate": "2026-09-01",
-      "endDate": "2026-12-31",
-      "geoType": "point",
-      "lat": 46.207781,
-      "lng": -89.830734
-    },
-    {
-      "id": "2026-ROW-8",
-      "permitNumber": "2026-ROW-8",
-      "status": "proposed",
-      "jurisdiction": "town",
-      "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-8.pdf",
-      "title": "Norvado - Prior",
-      "org": "n",
-      "location": "Other Town road — n",
+      "pdfUrl": "/public/permits/2026-ROW-08.pdf",
+      "title": "Norvado - Prior work",
+      "org": "Norvado",
+      "location": "Other Town road — multiple",
       "startDate": "2026-08-01",
       "endDate": "2026-08-01",
       "traffic": "Flaggers",
-      "contactName": "n",
-      "contactPhone": "n",
+      "contactName": "n/a",
+      "contactPhone": "n/a",
       "geoType": "line",
       "coordinates": [
         [
@@ -475,20 +263,20 @@
       "lng": -89.839531
     },
     {
-      "id": "2026-ROW-7",
-      "permitNumber": "2026-ROW-7",
-      "status": "proposed",
+      "id": "2026-ROW-07",
+      "permitNumber": "2026-ROW-07",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-7.pdf",
-      "title": "Norvado - Prior",
+      "pdfUrl": "/public/permits/2026-ROW-07.pdf",
+      "title": "Norvado - Prior work",
       "org": "Norvado",
-      "location": "Other Town road — n",
+      "location": "Other Town road — multiple",
       "startDate": "2026-08-01",
       "endDate": "2026-08-01",
       "traffic": "Flaggers",
-      "contactName": "n",
-      "contactPhone": "n",
+      "contactName": "n/a",
+      "contactPhone": "n/a",
       "geoType": "line",
       "coordinates": [
         [
@@ -672,20 +460,20 @@
       "lng": -89.851143
     },
     {
-      "id": "2026-ROW-6",
-      "permitNumber": "2026-ROW-6",
-      "status": "proposed",
+      "id": "2026-ROW-06",
+      "permitNumber": "2026-ROW-06",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-6.pdf",
-      "title": "Norvado - Prior",
+      "pdfUrl": "/public/permits/2026-ROW-06.pdf",
+      "title": "Norvado - Prior work",
       "org": "Norvado",
-      "location": "Other Town road — a",
+      "location": "Other Town road — multiple",
       "startDate": "2026-08-01",
       "endDate": "2026-08-01",
       "traffic": "Flaggers",
-      "contactName": "n",
-      "contactPhone": "n",
+      "contactName": "n/a",
+      "contactPhone": "n/a",
       "geoType": "line",
       "coordinates": [
         [
@@ -705,20 +493,20 @@
       "lng": -89.847162
     },
     {
-      "id": "2026-ROW-5",
-      "permitNumber": "2026-ROW-5",
-      "status": "proposed",
+      "id": "2026-ROW-05",
+      "permitNumber": "2026-ROW-05",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-5.pdf",
-      "title": "Norvado - prior",
+      "pdfUrl": "/public/permits/2026-ROW-05.pdf",
+      "title": "Norvado - Prior work",
       "org": "Norvado",
-      "location": "Other Town road — n",
+      "location": "Other Town road — multiple",
       "startDate": "2026-08-01",
-      "endDate": "2026-09-01",
+      "endDate": "2026-08-01",
       "traffic": "Flaggers",
-      "contactName": "adf",
-      "contactPhone": "a",
+      "contactName": "n/a",
+      "contactPhone": "n/a",
       "geoType": "line",
       "coordinates": [
         [
@@ -746,12 +534,12 @@
       "lng": -89.842941
     },
     {
-      "id": "2026-ROW-4",
-      "permitNumber": "2026-ROW-4",
-      "status": "proposed",
+      "id": "2026-ROW-04",
+      "permitNumber": "2026-ROW-04",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-4.pdf",
+      "pdfUrl": "/public/permits/2026-ROW-04.pdf",
       "title": "Norvado - Prior work",
       "org": "Norvado",
       "location": "Other Town road — multiple",
@@ -881,6 +669,218 @@
       ],
       "lat": 46.217601,
       "lng": -89.82637
+    },
+    {
+      "id": "2026-ROW-03",
+      "permitNumber": "2026-ROW-03",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-03.pdf",
+      "title": "OPA WILDFIRE POLE REPLACEMENT",
+      "org": "Xcel Energy",
+      "location": "Town easement — 53 S Owasso W.",
+      "startDate": "2026-08-30",
+      "endDate": "2026-12-31",
+      "contactName": "Tiona Varela",
+      "contactPhone": "763-357-5979",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.217676,
+          -89.890708
+        ],
+        [
+          46.21742,
+          -89.890252
+        ],
+        [
+          46.217101,
+          -89.889759
+        ],
+        [
+          46.216778,
+          -89.88926
+        ],
+        [
+          46.21667,
+          -89.888857
+        ],
+        [
+          46.216629,
+          -89.888439
+        ],
+        [
+          46.216626,
+          -89.888053
+        ]
+      ],
+      "lat": 46.216778,
+      "lng": -89.88926
+    },
+    {
+      "id": "2026-ROW-02",
+      "permitNumber": "2026-ROW-02",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-02.pdf",
+      "title": "OPA WILDFIRE POLE REPLACEMENT",
+      "org": "Xcel Energy",
+      "location": "Other Town road — 53 S Owasso W.",
+      "startDate": "2026-08-30",
+      "endDate": "2026-12-31",
+      "contactName": "Tiona Varela",
+      "contactPhone": "763-357-5979",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.214021,
+          -89.913402
+        ],
+        [
+          46.214014,
+          -89.910924
+        ],
+        [
+          46.213947,
+          -89.901327
+        ],
+        [
+          46.214971,
+          -89.89976
+        ],
+        [
+          46.214867,
+          -89.899074
+        ],
+        [
+          46.215343,
+          -89.898387
+        ],
+        [
+          46.216738,
+          -89.895877
+        ],
+        [
+          46.218639,
+          -89.895276
+        ],
+        [
+          46.219823,
+          -89.894951
+        ],
+        [
+          46.220272,
+          -89.895005
+        ],
+        [
+          46.219927,
+          -89.894452
+        ],
+        [
+          46.219455,
+          -89.893653
+        ],
+        [
+          46.219047,
+          -89.893417
+        ]
+      ],
+      "lat": 46.216738,
+      "lng": -89.895877
+    },
+    {
+      "id": "2026-ROW-01",
+      "permitNumber": "2026-ROW-01",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-01.pdf",
+      "title": "OPA WILDFIRE POLE REPLACEMENT",
+      "org": "Xcel Energy",
+      "location": "Other Town road — 53 S Owasso W.",
+      "startDate": "2026-08-30",
+      "endDate": "2026-12-31",
+      "contactName": "Tiona Varela",
+      "contactPhone": "763-357-5979",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.203853,
+          -89.896963
+        ],
+        [
+          46.20177,
+          -89.897228
+        ],
+        [
+          46.200693,
+          -89.897247
+        ],
+        [
+          46.19681,
+          -89.897856
+        ],
+        [
+          46.196423,
+          -89.89732
+        ],
+        [
+          46.195733,
+          -89.896311
+        ],
+        [
+          46.195644,
+          -89.894359
+        ],
+        [
+          46.195688,
+          -89.892202
+        ],
+        [
+          46.195607,
+          -89.889455
+        ],
+        [
+          46.195785,
+          -89.889123
+        ],
+        [
+          46.19571,
+          -89.888425
+        ],
+        [
+          46.195339,
+          -89.888007
+        ],
+        [
+          46.195109,
+          -89.887653
+        ],
+        [
+          46.19496,
+          -89.887514
+        ]
+      ],
+      "lat": 46.195688,
+      "lng": -89.892202
+    },
+    {
+      "id": "2026-DW-03",
+      "permitNumber": "2026-DW-03",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "driveway",
+      "pdfUrl": "/public/permits/2026-DW-03.pdf",
+      "title": "New driveway installation",
+      "org": "Property owner on file",
+      "location": "Other Town road",
+      "startDate": "2026-09-01",
+      "endDate": "2026-12-31",
+      "geoType": "point",
+      "lat": 46.207781,
+      "lng": -89.830734
     }
   ]
 }
