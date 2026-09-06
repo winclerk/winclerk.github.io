@@ -1,12 +1,23 @@
 {
-  "updated": "2026-09-06T08:57:27Z",
+  "updated": "2026-09-06T09:02:30Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
     "P0002": "proposed",
     "P0003": "proposed",
     "P0004": "proposed",
-    "2026-ROW-04": "proposed",
+    "2026-ROW-04": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road — multiple",
+        "Board meeting": "2026-08-01",
+        "Authorized start": "2026-08-01",
+        "Authorized end": "2026-08-01",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "n/a — n/a"
+      }
+    },
     "2026-ROW-03": "approved",
     "2026-ROW-02": "approved",
     "2026-ROW-01": "approved",
@@ -105,6 +116,54 @@
         "Conditions": "",
         "Traffic impact": "Flaggers",
         "Public contact": "n — n"
+      }
+    },
+    "2026-ROW-08": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road — multiple",
+        "Board meeting": "2026-08-01",
+        "Authorized start": "2026-08-01",
+        "Authorized end": "2026-08-01",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "n/a — n/a"
+      }
+    },
+    "2026-ROW-07": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road — multiple",
+        "Board meeting": "2026-08-01",
+        "Authorized start": "2026-08-01",
+        "Authorized end": "2026-08-01",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "n/a — n/a"
+      }
+    },
+    "2026-ROW-06": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road — multiple",
+        "Board meeting": "2026-08-01",
+        "Authorized start": "2026-08-01",
+        "Authorized end": "2026-08-01",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "n/a — n/a"
+      }
+    },
+    "2026-ROW-05": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "Other Town road — multiple",
+        "Board meeting": "2026-08-01",
+        "Authorized start": "2026-08-01",
+        "Authorized end": "2026-08-01",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "n/a — n/a"
       }
     }
   }
