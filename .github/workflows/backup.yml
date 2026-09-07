@@ -1,0 +1,43 @@
+name: Backup portal state to SharePoint
+
+# Runs daily at 12:15 UTC (about 15 min after the 7am CT sync completes)
+# so the snapshot captures the freshly-synced state. Also supports manual
+# trigger for on-demand backups.
+
+on:
+  schedule:
+    - cron: '15 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run backup
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: python backup_to_sharepoint.py
+
+      - name: Send failure email
+        if: failure()
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: python notify_failure.py "Backup portal state to SharePoint" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
