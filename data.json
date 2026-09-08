@@ -1,11 +1,11 @@
 {
   "meetings": [
     {
-      "id": "regular-2026-09-07",
-      "title": "Upcoming Town Board Meeting",
-      "type": "regular",
+      "id": "special-2026-09-10",
+      "title": "Special Town Board Meeting - September 10, 2026",
+      "type": "special",
       "status": "upcoming",
-      "date": "2026-09-07",
+      "date": "2026-09-10",
       "time": "10:00 AM",
       "location": "Winchester Town Hall",
       "documents": [],
@@ -969,6 +969,15 @@
           "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAMs5thsEmBQKqnIaUsZuD-Aa6Ru3heeDyck6puzBq7F0U",
           "date": "2026-09-01",
           "posted": "2026-09-07",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDJSkWbqfFGR5iJUZAgigbTARWRvO98M-l40oUwa32VW50"
+        },
+        {
+          "label": "Minutes (Draft)",
+          "filename": "Minutes_STBM_20260901_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA7p0oBZ_T3SK1htfnjo5ZwAZFgP77pxJ2zUwtz8Ppsy2o",
+          "date": "2026-09-01",
+          "posted": "2026-09-08",
+          "draft": true,
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDJSkWbqfFGR5iJUZAgigbTARWRvO98M-l40oUwa32VW50"
         },
         {
