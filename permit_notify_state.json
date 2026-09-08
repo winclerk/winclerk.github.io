@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T16:31:16Z",
+  "updated": "2026-09-08T16:36:13Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -182,6 +182,18 @@
       "status": "received",
       "snapshot": {
         "Location": "Old Hwy W",
+        "Board meeting": "",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "Darren Nyrose — 6088449820"
+      }
+    },
+    "2026-RC-04": {
+      "status": "received",
+      "snapshot": {
+        "Location": "S Turtle Lake",
         "Board meeting": "",
         "Authorized start": "",
         "Authorized end": "",
