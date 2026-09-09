@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T23:16:50Z",
+  "updated": "2026-09-09T23:29:37Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -23,12 +23,12 @@
     "2026-ROW-01": "approved",
     "2026-DW-01": "proposed",
     "2026-RC-01": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
         "Location": "Old Hwy O, W Rock Lake Rd",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "2026-09-01",
+        "Authorized end": "2026-12-31",
         "Conditions": "",
         "Traffic impact": "Flaggers",
         "Public contact": "Darren Nyrose — 6088449820"
@@ -167,36 +167,36 @@
       }
     },
     "2026-RC-02": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
         "Location": "Adelaide",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "2026-09-01",
+        "Authorized end": "2026-12-31",
         "Conditions": "",
         "Traffic impact": "Flaggers",
         "Public contact": "Darren Nyrose — 6088449820"
       }
     },
     "2026-RC-03": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
         "Location": "Old Hwy W",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "2026-09-01",
+        "Authorized end": "2026-12-31",
         "Conditions": "",
         "Traffic impact": "Flaggers",
         "Public contact": "Darren Nyrose — 6088449820"
       }
     },
     "2026-RC-04": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
         "Location": "S Turtle Lake",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "2026-09-01",
+        "Authorized end": "2026-12-31",
         "Conditions": "",
         "Traffic impact": "Flaggers",
         "Public contact": "Darren Nyrose — 6088449820"
