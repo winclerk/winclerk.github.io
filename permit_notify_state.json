@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T12:10:56Z",
+  "updated": "2026-09-09T23:09:57Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -200,6 +200,18 @@
         "Conditions": "",
         "Traffic impact": "Flaggers",
         "Public contact": "Darren Nyrose — 6088449820"
+      }
+    },
+    "2026-ROW-00": {
+      "status": "approved",
+      "snapshot": {
+        "Location": "CTH W — n/a",
+        "Board meeting": "2026-09-01",
+        "Authorized start": "2026-09-01",
+        "Authorized end": "2027-12-31",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "n/a — n/a"
       }
     }
   }
