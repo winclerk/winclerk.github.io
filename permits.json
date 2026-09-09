@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T23:16:49Z",
+  "updated": "2026-09-09T23:29:34Z",
   "permits": [
     {
       "id": "2026-ROW-08",
@@ -1062,6 +1062,286 @@
       "geoType": "point",
       "lat": 46.207781,
       "lng": -89.830734
+    },
+    {
+      "id": "2026-RC-04",
+      "permitNumber": "2026-RC-04",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "road_construction",
+      "pdfUrl": "/public/permits/2026-RC-04.pdf",
+      "title": "2026 Crack Sealing",
+      "org": "PavementGuard LLC",
+      "location": "S Turtle Lake",
+      "startDate": "2026-09-01",
+      "endDate": "2026-12-31",
+      "traffic": "Flaggers",
+      "contactName": "Darren Nyrose",
+      "contactPhone": "6088449820",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.192541,
+          -89.917002
+        ],
+        [
+          46.197057,
+          -89.919062
+        ],
+        [
+          46.199789,
+          -89.918547
+        ],
+        [
+          46.209175,
+          -89.918375
+        ],
+        [
+          46.213689,
+          -89.918547
+        ],
+        [
+          46.214402,
+          -89.914427
+        ],
+        [
+          46.214996,
+          -89.907732
+        ],
+        [
+          46.216658,
+          -89.904985
+        ],
+        [
+          46.221291,
+          -89.904985
+        ],
+        [
+          46.221053,
+          -89.901381
+        ]
+      ],
+      "lat": 46.214402,
+      "lng": -89.914427
+    },
+    {
+      "id": "2026-RC-03",
+      "permitNumber": "2026-RC-03",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "road_construction",
+      "pdfUrl": "/public/permits/2026-RC-03.pdf",
+      "title": "2026 Crack Sealing",
+      "org": "PavementGuard LLC",
+      "location": "Old Hwy W",
+      "startDate": "2026-09-01",
+      "endDate": "2026-12-31",
+      "traffic": "Flaggers",
+      "contactName": "Darren Nyrose",
+      "contactPhone": "6088449820",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.242949,
+          -89.836149
+        ],
+        [
+          46.24283,
+          -89.832544
+        ],
+        [
+          46.244017,
+          -89.829454
+        ],
+        [
+          46.24378,
+          -89.824648
+        ],
+        [
+          46.243423,
+          -89.817438
+        ],
+        [
+          46.243898,
+          -89.814863
+        ],
+        [
+          46.243305,
+          -89.806452
+        ],
+        [
+          46.247341,
+          -89.805079
+        ]
+      ],
+      "lat": 46.243423,
+      "lng": -89.817438
+    },
+    {
+      "id": "2026-RC-02",
+      "permitNumber": "2026-RC-02",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "road_construction",
+      "pdfUrl": "/public/permits/2026-RC-02.pdf",
+      "title": "2026 Crack Sealing",
+      "org": "PavementGuard LLC",
+      "location": "Adelaide",
+      "startDate": "2026-09-01",
+      "endDate": "2026-12-31",
+      "traffic": "Flaggers",
+      "contactName": "Darren Nyrose",
+      "contactPhone": "6088449820",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.247578,
+          -89.893656
+        ],
+        [
+          46.24556,
+          -89.896574
+        ],
+        [
+          46.24378,
+          -89.900351
+        ],
+        [
+          46.244254,
+          -89.904299
+        ],
+        [
+          46.246035,
+          -89.903784
+        ],
+        [
+          46.248409,
+          -89.9055
+        ],
+        [
+          46.249834,
+          -89.901209
+        ],
+        [
+          46.250071,
+          -89.897089
+        ]
+      ],
+      "lat": 46.246035,
+      "lng": -89.903784
+    },
+    {
+      "id": "2026-RC-01",
+      "permitNumber": "2026-RC-01",
+      "status": "approved",
+      "jurisdiction": "town",
+      "permitType": "road_construction",
+      "pdfUrl": "/public/permits/2026-RC-01.pdf",
+      "title": "2026 Crack Sealing",
+      "org": "PavementGuard LLC",
+      "location": "Old Hwy O, W Rock Lake Rd",
+      "startDate": "2026-09-01",
+      "endDate": "2026-12-31",
+      "traffic": "Flaggers",
+      "contactName": "Darren Nyrose",
+      "contactPhone": "6088449820",
+      "geoType": "line",
+      "coordinates": [
+        [
+          46.289839,
+          -89.878678
+        ],
+        [
+          46.286103,
+          -89.879966
+        ],
+        [
+          46.28284,
+          -89.88297
+        ],
+        [
+          46.282484,
+          -89.886146
+        ],
+        [
+          46.28023,
+          -89.888635
+        ],
+        [
+          46.272815,
+          -89.888549
+        ],
+        [
+          46.269252,
+          -89.889708
+        ],
+        [
+          46.263793,
+          -89.888334
+        ],
+        [
+          46.260589,
+          -89.889364
+        ],
+        [
+          46.25869,
+          -89.889536
+        ],
+        [
+          46.257028,
+          -89.888334
+        ],
+        [
+          46.25774,
+          -89.893484
+        ],
+        [
+          46.256672,
+          -89.897432
+        ],
+        [
+          46.254773,
+          -89.899836
+        ],
+        [
+          46.250262,
+          -89.897261
+        ],
+        [
+          46.245395,
+          -89.892282
+        ],
+        [
+          46.245751,
+          -89.885073
+        ],
+        [
+          46.247057,
+          -89.879751
+        ],
+        [
+          46.252043,
+          -89.876833
+        ],
+        [
+          46.256079,
+          -89.874773
+        ],
+        [
+          46.258215,
+          -89.875975
+        ],
+        [
+          46.261894,
+          -89.875975
+        ],
+        [
+          46.263793,
+          -89.874945
+        ]
+      ],
+      "lat": 46.25774,
+      "lng": -89.893484
     }
   ]
 }
