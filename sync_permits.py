@@ -394,13 +394,28 @@ def _dw_location(row):
     return _s(row.get("road")) or "Location on file with the Town Clerk"
 
 
+def _derive_jurisdiction(row):
+    """Return 'town', 'county', or 'state'. Manual override in the Excel
+       'jurisdiction' column wins if set to one of those three values;
+       otherwise auto-derive from road name (CTH J/K/O/W → county;
+       everything else → town). Handles missing column gracefully."""
+    manual = _s(row.get("jurisdiction")).lower()
+    if manual in ("town", "county", "state"):
+        return manual
+    road = _s(row.get("road")).upper()
+    for cth in ("CTH J", "CTH K", "CTH O", "CTH W"):
+        if cth in road:
+            return "county"
+    return "town"
+
+
 def _base_entry(row, permit_type):
     permit_number = _s(row.get("permit_number"))
     entry = {
         "id": permit_number,
         "permitNumber": permit_number,
         "status": _s(row.get("map_status")).lower(),
-        "jurisdiction": "town",
+        "jurisdiction": _derive_jurisdiction(row),
         "permitType": permit_type,
     }
     # permit_pdf.py publishes to /public/permits/{permit_number}.pdf, keyed off the same
