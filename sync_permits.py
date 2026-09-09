@@ -60,7 +60,7 @@ PERMIT_SOURCES = [
     },
 ]
 
-PUBLISHED_STATUSES = {"proposed", "approved"}
+PUBLISHED_STATUSES = {"proposed", "approved", "approved conditionally", "received"}
 EXAMPLE_TOKENS = ("EXAMPLE", "TEMPLATE", "SAMPLE")
 GRAPH = "https://graph.microsoft.com/v1.0"
 
@@ -512,6 +512,14 @@ def build_permits_data(all_rows_by_source):
 
             status = _s(row.get("map_status")).lower()
             if status not in PUBLISHED_STATUSES:
+                stats["status"] += 1
+                continue
+
+            # Received rows only publish once sync has assigned a permit_number.
+            # Guards against half-populated submissions (bots, incomplete forms,
+            # or brand-new rows the daily sync hasn't touched yet) appearing on
+            # the public map before basic vetting.
+            if status == "received" and not _s(row.get("permit_number")):
                 stats["status"] += 1
                 continue
 
