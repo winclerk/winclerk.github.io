@@ -8,7 +8,16 @@
       "date": "2026-09-10",
       "time": "10:00 AM",
       "location": "Winchester Town Hall",
-      "documents": [],
+      "documents": [
+        {
+          "label": "Special Meeting Agenda",
+          "filename": "Agenda_STBM_20260910.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDfm7Qgou5CT61I89Wuez_vASwJrHCRoQw3GnVxqXotM_M",
+          "date": "2026-09-10",
+          "posted": "2026-09-08",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        }
+      ],
       "subfolders": [
         {
           "name": "Financial",
