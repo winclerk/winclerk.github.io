@@ -6,21 +6,21 @@
       "type": "special",
       "status": "upcoming",
       "date": "2026-09-10",
-      "time": "10:00 AM",
+      "time": "9:00 AM",
       "location": "Winchester Town Hall",
       "documents": [
         {
-          "label": "Special Meeting Agenda",
-          "filename": "Agenda_STBM_20260910.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDfm7Qgou5CT61I89Wuez_vASwJrHCRoQw3GnVxqXotM_M",
+          "label": "STBM 1 Agenda",
+          "filename": "Agenda_STBM-1_20260910.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCZmDVLn3SbQYLfh74rnUTBAdEQzLJD4dEA5Scswl6QePk",
           "date": "2026-09-10",
           "posted": "2026-09-08",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         },
         {
-          "label": "Special Meeting Agenda",
-          "filename": "Agenda_STBM_202609100.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCZmDVLn3SbQYLfh74rnUTBAdEQzLJD4dEA5Scswl6QePk",
+          "label": "STBM 2 Agenda",
+          "filename": "Agenda_STBM-2_20260910.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDfm7Qgou5CT61I89Wuez_vASwJrHCRoQw3GnVxqXotM_M",
           "date": "2026-09-10",
           "posted": "2026-09-08",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
@@ -65,7 +65,7 @@
               "label": "2027 Budget Worksheet DRAFT",
               "filename": "2027 Budget Worksheet DRAFT.xlsx",
               "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQDBAhUK8RuQToyRuljts2ujAbHUex7WVZAc8tTthKwsyko",
-              "date": "2026-09-03",
+              "date": "2026-09-10",
               "posted": "2026-08-31",
               "draft": true
             }
