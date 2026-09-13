@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-12T11:30:33Z",
+  "updated": "2026-09-13T03:59:27Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -212,6 +212,18 @@
         "Conditions": "",
         "Traffic impact": "Flaggers",
         "Public contact": "n/a — n/a"
+      }
+    },
+    "2026-ROW-99": {
+      "status": "received",
+      "snapshot": {
+        "Location": "N/A — N/A",
+        "Board meeting": "2026-09-14",
+        "Authorized start": "2026-09-01",
+        "Authorized end": "2026-12-31",
+        "Conditions": "NONE",
+        "Traffic impact": "",
+        "Public contact": ""
       }
     }
   }
