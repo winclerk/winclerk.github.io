@@ -123,6 +123,37 @@ def _coords(v):
     return out or None
 
 
+def _coord_segments(v):
+    """Parse route_segments field — a JSON array-of-arrays like:
+       [[[lat,lng],[lat,lng]], [[lat,lng],[lat,lng],[lat,lng]]]
+       Returns a list of segment lists, each with 2+ coordinate pairs.
+       Segments with <2 valid coords are dropped.
+       Returns None if input isn't parseable as segments."""
+    t = _s(v)
+    if not t:
+        return None
+    try:
+        parsed = json.loads(t)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(parsed, list) or len(parsed) < 1:
+        return None
+    # Each element must itself be a list of coord-pairs (i.e., a polyline)
+    segments = []
+    for seg in parsed:
+        if not isinstance(seg, list):
+            continue
+        pts = []
+        for pt in seg:
+            if isinstance(pt, (list, tuple)) and len(pt) >= 2:
+                lat, lng = _float(pt[0]), _float(pt[1])
+                if lat is not None and lng is not None:
+                    pts.append([lat, lng])
+        if len(pts) >= 2:
+            segments.append(pts)
+    return segments or None
+
+
 def _col_letter(n):
     """1-indexed column number to Excel letter. 1 -> A, 2 -> B, 27 -> AA."""
     letters = ""
@@ -335,9 +366,32 @@ def _dates(row, use_authorized_only=False):
 def _attach_geo(entry, row, allow_multipoint=False):
     geo_type = _s(row.get("geo_type")).lower()
     route_coords = _coords(row.get("route_coords"))
+    route_segments = _coord_segments(row.get("route_segments"))
     project_pins = _coords(row.get("project_pins")) if allow_multipoint else None
     lat = _float(row.get("lat"))
     lng = _float(row.get("lng"))
+
+    # route_segments wins over route_coords when both are set. Cap at 10
+    # segments to avoid pathological JSON payloads.
+    if route_segments:
+        route_segments = route_segments[:10]
+        # Single-segment case: collapse to a regular line so downstream code
+        # (frontend, popups) doesn't need to special-case a 1-element multiline.
+        if len(route_segments) == 1:
+            entry["geoType"] = "line"
+            entry["coordinates"] = route_segments[0]
+            mid = route_segments[0][len(route_segments[0]) // 2]
+            entry["lat"], entry["lng"] = mid[0], mid[1]
+            return True
+        # 2+ segments — emit as multiline
+        entry["geoType"] = "multiline"
+        entry["segments"] = route_segments
+        # Anchor lat/lng at the midpoint of the middle segment's midpoint.
+        # Frontend uses this as the sidebar-list zoom anchor when applicable.
+        middle_seg = route_segments[len(route_segments) // 2]
+        mid = middle_seg[len(middle_seg) // 2]
+        entry["lat"], entry["lng"] = mid[0], mid[1]
+        return True
 
     if geo_type == "line" and route_coords and len(route_coords) >= 2:
         entry["geoType"] = "line"
