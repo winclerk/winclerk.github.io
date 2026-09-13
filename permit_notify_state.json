@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-13T03:59:27Z",
+  "updated": "2026-09-13T04:05:10Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -215,7 +215,7 @@
       }
     },
     "2026-ROW-99": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
         "Location": "N/A — N/A",
         "Board meeting": "2026-09-14",
