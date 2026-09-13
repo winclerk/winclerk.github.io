@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-12T11:30:32Z",
+  "updated": "2026-09-13T03:59:26Z",
   "permits": [
     {
       "id": "2026-ROW-08",
@@ -1326,6 +1326,44 @@
       ],
       "lat": 46.25774,
       "lng": -89.893484
+    },
+    {
+      "id": "2026-ROW-99",
+      "permitNumber": "2026-ROW-99",
+      "status": "received",
+      "jurisdiction": "town",
+      "permitType": "row",
+      "pdfUrl": "/public/permits/2026-ROW-99.pdf",
+      "title": "TEST",
+      "org": "Applicant on file",
+      "location": "N/A",
+      "startDate": "2026-09-01",
+      "endDate": "2026-12-31",
+      "geoType": "multiline",
+      "segments": [
+        [
+          [
+            46.21196,
+            -89.88619
+          ],
+          [
+            46.22,
+            -89.88
+          ]
+        ],
+        [
+          [
+            46.215,
+            -89.87
+          ],
+          [
+            46.218,
+            -89.865
+          ]
+        ]
+      ],
+      "lat": 46.218,
+      "lng": -89.865
     }
   ]
 }
