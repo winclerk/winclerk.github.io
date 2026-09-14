@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-14T02:29:27Z",
+  "updated": "2026-09-14T13:40:37Z",
   "permits": [
     {
       "id": "2026-ROW-08",
@@ -1326,47 +1326,6 @@
       ],
       "lat": 46.25774,
       "lng": -89.893484
-    },
-    {
-      "id": "2026-ROW-09",
-      "permitNumber": "2026-ROW-09",
-      "status": "received",
-      "jurisdiction": "town",
-      "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-09.pdf",
-      "title": "finaltest",
-      "org": "testing",
-      "location": "Bucks Rd — n/a",
-      "startDate": "2026-09-17",
-      "endDate": "2026-09-23",
-      "traffic": "No traffic impact",
-      "contactName": "n/a",
-      "contactPhone": "n/a",
-      "geoType": "multiline",
-      "segments": [
-        [
-          [
-            46.21196,
-            -89.88619
-          ],
-          [
-            46.22,
-            -89.88
-          ]
-        ],
-        [
-          [
-            46.215,
-            -89.87
-          ],
-          [
-            46.218,
-            -89.865
-          ]
-        ]
-      ],
-      "lat": 46.218,
-      "lng": -89.865
     }
   ]
 }
