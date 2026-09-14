@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-13T12:35:19Z",
+  "updated": "2026-09-14T01:32:40Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -224,6 +224,18 @@
         "Conditions": "NONE",
         "Traffic impact": "",
         "Public contact": ""
+      }
+    },
+    "2026-ROW-09": {
+      "status": "received",
+      "snapshot": {
+        "Location": "Bucks Rd — n/a",
+        "Board meeting": "",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "No traffic impact",
+        "Public contact": "n/a — n/a"
       }
     }
   }
