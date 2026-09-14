@@ -34,6 +34,30 @@
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         },
         {
+          "label": "Clerk's Report",
+          "filename": "Report_Clerk_20260914.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB007vrVXDDQogBnhux9mTNAWrFmw_AADaoigTu9vNg51Y",
+          "date": "2026-09-14",
+          "posted": "2026-09-14",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "Quote Connolly 2027",
+          "filename": "Quote_Connolly_2027.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCCq-vhoNtrQ7wiNr0T0sg8ASs1cL5gFxDwUFxrdOi0b9s",
+          "date": "2026-09-14",
+          "posted": "2026-09-14",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "Quote Zach's 2027",
+          "filename": "Quote_Zach's_2027.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB1MdpATLoNTJKq23Y9uDdYAfE2n59hnu95-BdfAIrzKVA",
+          "date": "2026-09-14",
+          "posted": "2026-09-14",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
           "label": "Treasurer's Report",
           "filename": "Report_Treasurer_202608.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAvXKRV-gPySJ37yAr_hnJaAb2Q8hdvZ0a4oKjlfz1PNwg",
@@ -46,6 +70,20 @@
         {
           "name": "Financial",
           "documents": [
+            {
+              "label": "Reconciliation Checking Report",
+              "filename": "Report_Reconciliation-Checking_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDRXCw__ZwJRYEB3FOfdrUdAZz4LgpRnSfLC6F_bUdfLgM",
+              "date": "2026-09-14",
+              "posted": "2026-09-14"
+            },
+            {
+              "label": "Reconciliation MM Report",
+              "filename": "Report_Reconciliation-MM_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCRifOWZN6dQ7JLybS2DZREAQ5gMhS6ldezfsIt4_R1tb0",
+              "date": "2026-09-14",
+              "posted": "2026-09-14"
+            },
             {
               "label": "Statement AB ELAN CC 202608",
               "filename": "Statement_AB-ELAN-CC_202608.pdf",
