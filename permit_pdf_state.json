@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-26T07:45:05Z",
+  "updated": "2026-09-15T03:52:18Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": {
       "public": "81eea9c61cafa84d7269cd417331a2942419c1d7730989d49e0b64426899f94a"
@@ -15,6 +15,48 @@
     },
     "P0004": {
       "public": "16f5a9b47318e8cf23f9c57e501d9c0e9f4fc190004923f72a38075fe967b61a"
+    },
+    "2026-ROW-08": {
+      "public": "a5cc1583869ca103078eae94fb3fdb27c73752f812c2c4c7f4d478a7352ee7d4"
+    },
+    "2026-ROW-07": {
+      "public": "4f847281715ec6fbc4289ca2875900374d10f410c9772c1afe898afd477796c4"
+    },
+    "2026-ROW-06": {
+      "public": "b543d4c1bbb50aa59217b8e3af509e96985dd09bae2fd72f44c6dcbafb9ad870"
+    },
+    "2026-ROW-05": {
+      "public": "91b1372fb16e3decaaf3dcf957b29f2d646ba2903352f334f4aafebe681acf90"
+    },
+    "2026-ROW-04": {
+      "public": "3ec299bcfe7396a7d61cd80c70b9efd9dc173d97360e4631e4601ae3e44e38d2"
+    },
+    "2026-ROW-03": {
+      "public": "c97e92c9d4f372d4278cdb9c8940d883fd78f5d495b24ab256b2b7abf462ccfc"
+    },
+    "2026-ROW-02": {
+      "public": "5ab49aa5b1c8cbe0eb46480b185626d79ec8672b93b15420fcdc5b67f7b442e9"
+    },
+    "2026-ROW-01": {
+      "public": "6c317c691a6ac35b26d24a060b7edf7441dfe7aca2b8ce87ad0178bcee7cb6b5"
+    },
+    "2026-ROW-00": {
+      "public": "d78b2a1a3b1aa1b6a96b2504f852d1175852963aa502700c684004087db7d5dc"
+    },
+    "2026-DW-03": {
+      "public": "96d8aa99fe52227f68583755706e0ec9ba33688fd1cac4b5a23edcd7b52cfc72"
+    },
+    "2026-RC-04": {
+      "public": "9e46e51c6beae2add9b682e7efb3682dfb68b6c4bb4e890b99da555232c259da"
+    },
+    "2026-RC-03": {
+      "public": "a62cbf3b86c8bf990be2420c7d011ec44e6315f8003fdb302b1f1628881123e2"
+    },
+    "2026-RC-02": {
+      "public": "c8fc4eb4dbab6b492c1015403ac87478082057ef560ead92f45186daed8f77d7"
+    },
+    "2026-RC-01": {
+      "public": "61142fa690982b67d378333a1d47bed0c3d52a65c4e054e7261a3a21e5770abb"
     }
   }
 }
