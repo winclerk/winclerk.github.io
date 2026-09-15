@@ -2,7 +2,13 @@ name: Sync SharePoint to data.json
 
 on:
   schedule:
-    - cron: '0 7 * * *'
+    # Every hour, 8am-8pm CDT (UTC-5). 13 runs/day: 8,9,...,20 local ->
+    # 13,14,...,23,0,1 UTC. NOTE: Wisconsin observes DST — this stays fixed
+    # in UTC, so once CST (UTC-6) kicks in this shifts to 7am-7pm local.
+    # Update to '0 14-23,0-2 * * *' in the fall (or back to this in spring)
+    # to keep it pinned to 8am-8pm local, or leave it as-is if an hour of
+    # drift twice a year doesn't matter.
+    - cron: '0 13-23,0-1 * * *'
   workflow_dispatch:
 
 jobs:
