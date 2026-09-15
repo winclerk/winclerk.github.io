@@ -16,6 +16,7 @@ standalone via PERMIT=P0001 python permit_pdf.py (single-permit mode) or
 PERMIT=ALL to rebuild everything.
 """
 
+import base64
 import hashlib
 import io
 import json
@@ -581,8 +582,12 @@ def _upload_to_sharepoint(token, folder_id, filename, data):
 
 
 # ── GitHub helpers (public PDF → winclerk.github.io) ────────────────
-def _github_put_binary(path, data, message):
-    import base64 as _b64
+def _github_put_binary_immediate(path, data, message):
+    """Old behavior: one immediate commit per file. Only used as the
+       fallback when generate_for_rows() is called with no write_github_fn
+       (i.e. standalone `python permit_pdf.py` runs) — sync.py always passes
+       its shared batched write_github_fn instead, so normal sync runs never
+       hit this."""
     api = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{path}"
     hdrs = {
         "Authorization": f"Bearer {GITHUB_TOKEN}",
@@ -594,7 +599,7 @@ def _github_put_binary(path, data, message):
         sha = r.json().get("sha")
     body = {
         "message": message,
-        "content": _b64.b64encode(data).decode("ascii"),
+        "content": base64.b64encode(data).decode("ascii"),
         "branch":  GITHUB_BRANCH,
     }
     if sha:
@@ -605,23 +610,43 @@ def _github_put_binary(path, data, message):
 
 
 # ── State (per-permit content hashes) ────────────────────────────────
+#
+# NOTE: this used to read/write STATE_FILE as a plain local file. On a fresh
+# `actions/checkout` that file never exists and was never committed back
+# anywhere, so _load_state() always returned {} and every PDF looked
+# "changed" on every single run — the whole point of the content-hash check
+# was silently defeated, and every permit's public PDF got rebuilt (and
+# separately committed) on every sync. Loading from / saving to the repo
+# itself via the GitHub API fixes that: state now actually survives between
+# runs, so only permits whose content actually changed get rebuilt.
 def _load_state():
-    if not os.path.exists(STATE_FILE):
-        return {}
+    api = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{STATE_FILE}"
+    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github+json"}
     try:
-        with open(STATE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f).get("permits", {})
-    except Exception:
+        r = requests.get(api, headers=headers, params={"ref": GITHUB_BRANCH}, timeout=30)
+        if r.status_code != 200:
+            return {}
+        raw = base64.b64decode(r.json()["content"])
+        return json.loads(raw).get("permits", {})
+    except Exception as e:
+        print(f"   ! could not load {STATE_FILE} from repo ({e}) — starting fresh")
         return {}
 
 
-def _save_state(state):
+def _save_state(state, write_github_fn=None):
+    """Persist state. When write_github_fn is provided (the normal sync.py
+       path), this just QUEUES the file for the single batched commit at the
+       end of the run — it does not push anything by itself."""
     payload = {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "permits": state,
     }
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2, ensure_ascii=False)
+    body = json.dumps(payload, indent=2, ensure_ascii=False)
+    if write_github_fn is not None:
+        write_github_fn(STATE_FILE, body)
+    else:
+        with open(STATE_FILE, "w", encoding="utf-8") as f:
+            f.write(body)
 
 
 def _permit_key(row):
@@ -633,11 +658,22 @@ def _permit_key(row):
 
 
 # ── Entry point called from sync.py ──────────────────────────────────
-def generate_for_rows(rows, token=None, force=False):
+def generate_for_rows(rows, token=None, force=False, write_github_fn=None):
     """Generates public + internal PDFs for each row whose content has changed.
-       Returns (public_built, internal_built, skipped_unchanged, skipped_error)."""
+       Returns (public_built, internal_built, skipped_unchanged, skipped_error).
+
+       write_github_fn(path, content): when provided (sync.py's normal path),
+       every changed PDF and the updated state file are QUEUED through it
+       instead of each being pushed as its own commit — sync.py flushes
+       everything (data.json, permits.json, notify state, PDFs, this state
+       file) as one commit at the very end. When omitted (standalone runs),
+       falls back to the old immediate-commit-per-file behavior."""
     if token is None:
         token = _get_token()
+
+    if write_github_fn is None:
+        write_github_fn = lambda path, content: _github_put_binary_immediate(
+            path, content, f"Publish {path}")
 
     state = _load_state()
     new_state = dict(state)
@@ -683,9 +719,8 @@ def generate_for_rows(rows, token=None, force=False):
                 pdf = build_public_pdf(row)
                 public_name = f"{_clean_filename(ident_pub)}.pdf"
                 path = f"{PUBLIC_PATH}/{public_name}"
-                _github_put_binary(path, pdf,
-                                   f"Publish public permit record {ident_pub}")
-                print(f"     public   \u2192 {path}")
+                write_github_fn(path, pdf)
+                print(f"     public   \u2192 {path} (queued)")
                 pub_built += 1
                 row_state["public"] = pub_hash
             except Exception as e:
@@ -708,7 +743,7 @@ def generate_for_rows(rows, token=None, force=False):
 
         new_state[key] = row_state
 
-    _save_state(new_state)
+    _save_state(new_state, write_github_fn)
     return pub_built, int_built, skipped, errors
 
 

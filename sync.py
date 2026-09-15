@@ -6,6 +6,7 @@ import requests
 from datetime import datetime, timezone
 import re
 from pypdf import PdfReader
+from github_batch import GitHubBatch
 
 
 TENANT_ID     = os.environ["AZURE_TENANT_ID"]
@@ -837,38 +838,34 @@ def build_data(token, drive_id):
     return {"meetings": meetings}
 
 
+# One GitHubBatch per sync.py run. Every write_github()/write_github_file()
+# call below now just QUEUES a file; nothing is pushed until flush_github()
+# runs once at the end of main(). This collapses what used to be 5-10+
+# separate commits (and 5-10+ GitHub Pages rebuilds) per run into exactly one.
+_batch = GitHubBatch(GITHUB_REPO, GH_PAT)
+
+
 def write_github(data):
-    headers = {"Authorization": f"Bearer {GH_PAT}", "Accept": "application/vnd.github+json"}
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE}"
-    r = requests.get(url, headers=headers)
-    sha = r.json().get("sha") if r.status_code == 200 else None
-    content = base64.b64encode(json.dumps(data, indent=2, ensure_ascii=False).encode()).decode()
-    payload = {
-        "message": f"Auto-sync from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
-        "content": content
-    }
-    if sha:
-        payload["sha"] = sha
-    r = requests.put(url, headers=headers, json=payload)
-    r.raise_for_status()
-    print("data.json updated successfully.")
+    """Queue data.json for the batched commit (previously: an immediate PUT)."""
+    content = json.dumps(data, indent=2, ensure_ascii=False)
+    _batch.add(GITHUB_FILE, content)
+    print("data.json queued for commit.")
 
 def write_github_file(path, content):
-    """Write arbitrary content to any file in the repo (not just data.json).
-       Path is repo-relative, e.g. 'permits.json'. Content is a string."""
-    headers = {"Authorization": f"Bearer {GH_PAT}", "Accept": "application/vnd.github+json"}
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{path}"
-    r = requests.get(url, headers=headers)
-    sha = r.json().get("sha") if r.status_code == 200 else None
-    import base64
-    payload = {
-        "message": f"Auto-sync {path} from SharePoint [{datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}]",
-        "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
-    }
-    if sha:
-        payload["sha"] = sha
-    r = requests.put(url, headers=headers, json=payload)
-    r.raise_for_status()
+    """Queue any file — text (str) or binary (bytes, e.g. a PDF) — for the
+       batched commit. Path is repo-relative, e.g. 'permits.json' or
+       'public/permits/2026-DW-01.pdf'. Previously: an immediate PUT per call."""
+    _batch.add(path, content)
+    print(f"{path} queued for commit.")
+
+def flush_github():
+    """Push every file queued above in ONE commit. Call exactly once, at the
+       very end of main(), after every sync/notify/PDF step has run."""
+    ts = datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
+    sha = _batch.flush(f"Auto-sync from SharePoint [{ts}]")
+    if sha is None:
+        print("No files changed this run — nothing committed, no Pages rebuild triggered.")
+
 def main():
     print("Authenticating with Microsoft Graph...")
     token = get_token()
@@ -898,7 +895,7 @@ def main():
 
     print("Writing to GitHub...")
     write_github(data)
-    print("Done.")    
+    print("Done.")
     # ── Permits (three-tracker sync) ──
     try:
         import sync_permits
@@ -910,10 +907,15 @@ def main():
         time.sleep(3)
         import permit_pdf
         flat_rows = [row for _, rows in all_rows for row in rows]
-        permit_pdf.generate_for_rows(flat_rows, token=token)
+        permit_pdf.generate_for_rows(flat_rows, token=token, write_github_fn=write_github_file)
     except Exception as e:
         import traceback
         print(f"Permit sync/notify/pdf failed: {e}")
         traceback.print_exc()
+
+    # Single commit / single push / single Pages rebuild for everything queued
+    # above (data.json, permits.json, notify state, permit PDFs, PDF state).
+    flush_github()
+
 if __name__ == "__main__":
     main()
