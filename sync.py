@@ -339,21 +339,61 @@ def get_next_meeting_from_ical(ical_events=None, match_date=None):
     return None
 
 
+def _dash_to_space(s):
+    """Replace a hyphen used as a filename-safe stand-in for a space (e.g.
+    "Fee-Schedule" -> "Fee Schedule") but leave a hyphen that already has
+    spaces on both sides (e.g. "Guidelines - DOR") alone — that one is a
+    real word-separator, and blindly stripping it just glues two clauses
+    together with no visible break."""
+    return re.sub(r"(?<!\s)-(?!\s)", " ", s)
+
+
 def clean_name(s):
     s = re.sub(r"_\d{8}$", "", s)
     s = re.sub(r"_\d{6}$", "", s)
-    s = s.replace("-", " ").replace("_", " ").strip()
+    s = _dash_to_space(s).replace("_", " ").strip()
     s = re.sub(r"(\d{4}) (\d{2})\b", r"\1-\2", s)
+    s = re.sub(r"\s{2,}", " ", s).strip()
     return s
 
 
 def infer_label(filename):
+    label = _infer_label_raw(filename)
+    # Collapse any double/triple spaces left behind when a separator
+    # character (e.g. " - ") is replaced with a single space, or when a
+    # "Copy" suffix is stripped out from between two other tokens.
+    label = re.sub(r"\s{2,}", " ", label).strip()
+    return label
+
+
+def _infer_label_raw(filename):
     name = filename
     for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
         if name.lower().endswith(ext):
             name = name[:-len(ext)]
             break
 
+    # A "SUPERSEDED-" prefix marks a document that's been replaced by a
+    # newer one but kept on file for the record — strip it before matching
+    # so the rest of the filename still parses normally, then flag it back
+    # on at the end so it doesn't just look identical to the live document.
+    is_superseded = False
+    m = re.match(r"SUPERSEDED[-_]+(.+)$", name, re.IGNORECASE)
+    if m:
+        is_superseded = True
+        name = m.group(1)
+
+    # Strip a Windows-style "Copy" suffix left over from someone saving a
+    # duplicate file (e.g. "...20260914 Copy.pdf", "...report - Copy.pdf",
+    # "...report_Copy (2).pdf"). Requires a separator before "Copy" so real
+    # words that merely end in "copy" aren't touched.
+    name = re.sub(r"[\s_-]+\(?[Cc]opy\)?(?:\s*\(\d+\))?$", "", name).strip()
+
+    label = _infer_label_core(name)
+    return f"{label} (Superseded)" if is_superseded else label
+
+
+def _infer_label_core(name):
     if re.search(r"NEMSD.{0,5}[Ii]ntermunicipal", name):
         return "NEMSD Intermunicipal Agreement - Current Signed Agreement"
 
@@ -374,22 +414,42 @@ def infer_label(filename):
         slug = m.group(1).replace("-", " ").replace("_", " ").strip()
         return f"{slug} Agenda"
 
-    m = re.match(r"Minutes_(BOR_)?\d{8}(_DRAFT)?", name)
+    # Minutes for a standard-format meeting: include the meeting date so
+    # multiple prior meetings' minutes don't all collapse to plain "Minutes".
+    m = re.match(r"Minutes_(BOR_)?(\d{8})(_DRAFT)?", name)
     if m:
         is_bor = bool(m.group(1))
-        is_draft = bool(m.group(2))
+        is_draft = bool(m.group(3))
+        try:
+            date_str = datetime.strptime(m.group(2), "%Y%m%d").strftime("%B %-d, %Y")
+        except ValueError:
+            date_str = None
         base = "Board of Review Minutes" if is_bor else "Minutes"
-        return f"{base} (Draft)" if is_draft else base
+        label = f"{base} (Draft)" if is_draft else base
+        return f"{label} - {date_str}" if date_str else label
 
-    m = re.match(r"Minutes_(?:RTBM_|STBM_|TBSM_)\d{8}(_DRAFT)?", name)
+    m = re.match(r"Minutes_(?:RTBM|STBM|TBSM)_(\d{8})(_DRAFT)?", name)
     if m:
-        return "Minutes (Draft)" if m.group(1) else "Minutes"
+        is_draft = bool(m.group(2))
+        try:
+            date_str = datetime.strptime(m.group(1), "%Y%m%d").strftime("%B %-d, %Y")
+        except ValueError:
+            date_str = None
+        label = "Minutes (Draft)" if is_draft else "Minutes"
+        return f"{label} - {date_str}" if date_str else label
 
     m = re.match(r"Report_Clerk_\d{8}", name)
     if m:
         return "Clerk's Report"
 
     m = re.match(r"Clerks?_Report_\d{8}", name, re.IGNORECASE)
+    if m:
+        return "Clerk's Report"
+
+    # Clerk's Report using the month-only (YYYYMM) date format — previously
+    # missed this specific rule and fell through to the generic "Report_X_"
+    # pattern below, which dropped the apostrophe ("Clerk Report").
+    m = re.match(r"Report_Clerk_\d{6}$", name)
     if m:
         return "Clerk's Report"
 
@@ -418,27 +478,44 @@ def infer_label(filename):
     if m:
         return f"{m.group(1).replace('-', ' ').replace('_', ' ')} Report"
 
-    m = re.match(r"Policy_(\d{4}-\d{2})_(.+)", name)
+    # Policy/Resolution/Ordinance numbers: accept both "2026-01" and
+    # "2026_01" separators (both show up in practice) so filenames that use
+    # underscores throughout don't fall through to the unstructured fallback.
+    m = re.match(r"Policy_(\d{4})[-_](\d{2})_(.+)", name)
     if m:
-        return f"{m.group(1)} {clean_name(m.group(2))} Policy"
+        return f"{m.group(1)}-{m.group(2)} {clean_name(m.group(3))} Policy"
 
-    m = re.match(r"Resolution_(\d{4}-\d{2})_(.+)", name)
+    m = re.match(r"Resolution_(\d{4})[-_](\d{2})_(.+)", name)
     if m:
-        return f"{m.group(1)} {clean_name(m.group(2))} Resolution"
+        return f"{m.group(1)}-{m.group(2)} {clean_name(m.group(3))} Resolution"
 
-    m = re.match(r"Ordinance_(\d{4}-\d{2})_(.+)", name)
+    m = re.match(r"Ordinance_(\d{4})[-_](\d{2})_(.+)", name)
     if m:
-        return f"{m.group(1)} {clean_name(m.group(2))} Ordinance"
+        return f"{m.group(1)}-{m.group(2)} {clean_name(m.group(3))} Ordinance"
 
     m = re.match(r"Permit_(.+?)(?:_\d{8})?$", name)
     if m:
         return f"{m.group(1).replace('-', ' ').replace('_', ' ').strip()} Permit"
 
-    m = re.match(r"Form_([A-Z0-9\-]+)_(.+?)(?:_\d{8})?$", name)
+    # Number may carry a lowercase suffix (e.g. "EL-128up"), and the trailing
+    # date isn't always a clean 8 digits (a stray extra digit from a typo'd
+    # filename shouldn't make the whole pattern fail to match) — so accept
+    # any trailing run of digits, not exactly 8.
+    m = re.match(r"Form_([A-Za-z0-9\-]+)_(.+?)(?:_\d+)?$", name)
     if m:
         num = m.group(1).replace("-", " ")
         desc = m.group(2).replace("-", " ").replace("_", " ").strip()
         return f"{desc} Form {num}"
+
+    m = re.match(r"Notice_(.+?)_\d{6,8}$", name)
+    if m:
+        desc = m.group(1).replace("-", " ").replace("_", " ").strip()
+        return f"{desc} Notice"
+
+    m = re.match(r"Memo_(.+?)_\d{6,8}$", name)
+    if m:
+        desc = m.group(1).replace("-", " ").replace("_", " ").strip()
+        return f"{desc} Memo"
 
     m = re.match(r"Handbook_(.+?)(?:_\d{8})?$", name)
     if m:
@@ -452,20 +529,44 @@ def infer_label(filename):
         desc = m.group(1).replace("-", " ").replace("_", " ").strip()
         return f"{desc} Communication"
 
-    return name.replace("_", " ").replace("-", " ").strip()
+    # Nothing matched a specific pattern — fall back to a generic cleanup.
+    # Strip a trailing date first (mirrors clean_name()) so a plain filename
+    # like "Fee-Schedule_20260717.pdf" reads as "Fee Schedule" instead of
+    # dragging the raw date digits into the label.
+    fallback = re.sub(r"_\d{8}$", "", name)
+    fallback = re.sub(r"_\d{6}$", "", fallback)
+    return _dash_to_space(fallback).replace("_", " ").strip()
+
+
+def _valid_ymd(y, mo, d):
+    try:
+        yy, mm, dd = int(y), int(mo), int(d)
+    except ValueError:
+        return False
+    # Anchor the year to a plausible range so a random digit run — a phone
+    # photo's timestamp filename, a typo that inserts or drops a digit —
+    # doesn't get accepted as a real date just because it happens to be the
+    # right length.
+    return 2000 <= yy <= 2099 and 1 <= mm <= 12 and 1 <= dd <= 31
 
 
 def parse_date(filename):
-    m = re.search(r"(\d{8})", filename)
-    if m:
+    # Try every non-overlapping 8-digit run in the filename (not just the
+    # first) and take the first one that's a plausible calendar date. A
+    # filename with a typo'd extra digit (e.g. "...200260724.pdf", meant to
+    # be "...20260724.pdf") used to have its first 8 digits blindly accepted
+    # as YYYYMMDD, producing nonsense like "2002-60-72"; now it's rejected
+    # and the caller falls back to the file's actual SharePoint date instead.
+    for m in re.finditer(r"(\d{8})", filename):
         d = m.group(1)
-        return f"{d[:4]}-{d[4:6]}-{d[6:]}"
+        if _valid_ymd(d[:4], d[4:6], d[6:]):
+            return f"{d[:4]}-{d[4:6]}-{d[6:]}"
     # Try YYMMDD format (e.g. 260715 = 2026-07-15)
     m = re.search(r"_(\d{6})(?:\.|$)", filename)
     if m:
         d = m.group(1)
         yy, mm, dd = d[:2], d[2:4], d[4:6]
-        if 1 <= int(mm) <= 12 and 1 <= int(dd) <= 31:
+        if _valid_ymd(f"20{yy}", mm, dd):
             return f"20{yy}-{mm}-{dd}"
     return None
 
@@ -653,10 +754,15 @@ def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
             folder_url = make_folder_link(token, drive_id, folder_path)
             folder_url_fetched = True
 
-        base = re.sub(r"\.(pdf|docx?|xlsx?|pptx?)$", "", name, flags=re.IGNORECASE)
         date = parse_date(name) or item.get("lastModifiedDateTime", "")[:10]
         posted = item.get("createdDateTime", item.get("lastModifiedDateTime", ""))[:10]
-        doc = {"label": clean_name(base), "filename": name, "url": link, "date": date, "posted": posted}
+        # Flat-site libraries (Governance, Elections, Boards & Commissions)
+        # previously got only the plain clean_name() cleanup, so a filename
+        # like "Form_EL-128_..." showed up less polished than the same
+        # naming convention would in a meeting folder. infer_label() covers
+        # the same ground and falls back to the same generic cleanup for
+        # anything it doesn't recognize, so this is a strict improvement.
+        doc = {"label": infer_label(name), "filename": name, "url": link, "date": date, "posted": posted}
         if folder_label:
             doc["folder"] = folder_label
         if folder_url:
