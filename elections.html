@@ -18,7 +18,7 @@
     .folder-top { background: var(--gold); height: 96px; box-sizing: border-box; display: flex; align-items: flex-end; }
     .folder-name { color: #fff; }
 
-    .stat-tile-accent { background: var(--gold) !important; }
+    .stat-tile-accent { background: var(--td) !important; }
     .stat-tile-accent .stat-label,
     .stat-tile-accent .stat-value,
     .stat-tile-accent .stat-sub { color: #fff !important; }
@@ -223,7 +223,7 @@
 <div class="hero">
   <div class="hero-label">Public records</div>
   <h1>Elections</h1>
-  <p>Everything you need to register, vote, and stay in the loop on Town of Winchester elections — plus notices and records for poll workers.</p>
+  <p>Everything you need to register, vote, and stay in the loop on elections held in the Town of Winchester, plus notices and records for poll workers.</p>
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a href="index.html">Home</a>
     <span>/</span>
@@ -241,10 +241,10 @@
       <div class="section-label">Getting registered &amp; voting</div>
       <div class="info-card">
         <div class="info-card-head">
-          <div class="info-card-head-title">New in town? Voting by mail? Start here.</div>
+          <div class="info-card-head-title"><strong>New in town? Voting by mail?</strong> Start here.</div>
         </div>
         <div class="info-card-body">
-          <p>Just moved to Winchester? Give the Clerk's office a call and we'll get you registered — it only takes a minute. Prefer to vote from home? You can request an absentee ballot anytime at <a href="https://myvote.wi.gov/" target="_blank" rel="noopener">MyVote Wisconsin</a>. First time requesting one online? You'll just need to snap a photo of your ID to upload along with the request.</p>
+          <p>Just moved to Winchester? Give the Clerk's office a call and we'll help you register — it only takes a minute. Prefer to vote from home, planning to be out of town, or unable to make it on election day? You can request an absentee ballot anytime at <a href="https://myvote.wi.gov/" target="_blank" rel="noopener">MyVote Wisconsin</a>. First time requesting one online? You'll just need to upload a photo of your ID with the request.</p>
         </div>
         <div class="info-facts">
           <div>
@@ -259,30 +259,20 @@
       </div>
     </div>
 
-    <!-- 2026 election dates & official notices -->
-    <div class="guide-section">
-      <div class="section-label">Upcoming election dates</div>
-      <div class="info-card" id="notice-card">
-        <div id="notice-rows">
-          <div class="no-docs">Loading&hellip;</div>
-        </div>
-      </div>
-    </div>
-
     <!-- Results -->
     <div class="guide-section">
       <div class="results-callout">
-        <div class="results-callout-text">Curious how an election turned out? Vilas County posts results and provisional ballot info as soon as they're available.</div>
+        <div class="results-callout-text">Looking for election results? Vilas County posts results and provisional ballot info as soon as they're available.</div>
         <a class="results-callout-btn" href="https://www.vilascountywi.gov/residents/elections/election_results.php" target="_blank" rel="noopener">See Election Results &rarr;</a>
       </div>
     </div>
 
     <!-- Election forms -->
     <div class="guide-section">
-      <div class="section-label">Handy forms</div>
+      <div class="section-label">Forms</div>
       <div class="info-card">
         <div class="info-card-body" style="padding-bottom: 8px;">
-          <p>Need a form? The full library lives on the <a href="https://elections.wi.gov/" target="_blank" rel="noopener">Wisconsin Elections Commission website</a> — but here are the two folks ask for most often.</p>
+          <p>Need a form? The full library lives on the <a href="https://elections.wi.gov/" target="_blank" rel="noopener">Wisconsin Elections Commission website</a>, but here are the two most commonly requested.</p>
         </div>
         <div class="notice-row" style="border-top: 1px solid var(--border);">
           <div class="notice-name">Absentee Ballot Request &amp; Instructions (EL-121)</div>
@@ -305,7 +295,7 @@
           </div>
           <div>
             <div class="resource-name">MyVote Wisconsin</div>
-            <div class="resource-sub">Register, request a ballot, or look up your polling place</div>
+            <div class="resource-sub">Register, request a ballot, or locate your polling place</div>
           </div>
         </a>
         <a class="resource-card" href="https://elections.wi.gov/voters/photo-id" target="_blank" rel="noopener">
@@ -314,7 +304,7 @@
           </div>
           <div>
             <div class="resource-name">What ID Do I Need?</div>
-            <div class="resource-sub">A quick rundown of accepted photo ID at the polls</div>
+            <div class="resource-sub">An overview of different types of photo IDs accepted at the polls</div>
           </div>
         </a>
         <a class="resource-card" href="https://elections.wi.gov/" target="_blank" rel="noopener">
@@ -323,7 +313,7 @@
           </div>
           <div>
             <div class="resource-name">Wisconsin Elections Commission</div>
-            <div class="resource-sub">The state's home base for all things elections</div>
+            <div class="resource-sub">The state's hub for everything election-related</div>
           </div>
         </a>
       </div>
@@ -388,43 +378,6 @@ function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
-// Official notice PDFs posted to winchesterwi.com, keyed by year + election name.
-// Update this map each election cycle as new notices are posted.
-const OFFICIAL_NOTICES = {
-  2026: {
-    'Spring Election': 'https://winchesterwi.com/wp-content/uploads/2026/04/Type-B-Notice-for-SpringElection.pdf',
-    'Partisan Primary': 'https://winchesterwi.com/wp-content/uploads/2026/04/Notice-of-Election-Fall-2026.pdf',
-    'General Election': 'https://winchesterwi.com/wp-content/uploads/2026/04/Notice-of-Election-Fall-2026.pdf'
-  }
-};
-
-function renderNoticeRows() {
-  const container = document.getElementById('notice-rows');
-  const year = new Date().getFullYear();
-  const elections = getWisconsinElections(year).filter(e => {
-    const cutoff = new Date(); cutoff.setHours(0, 0, 0, 0); cutoff.setDate(cutoff.getDate() - 1);
-    return e.date >= cutoff;
-  });
-  const list = elections.length ? elections : getWisconsinElections(year + 1);
-  const noticeYear = elections.length ? year : year + 1;
-  const notices = OFFICIAL_NOTICES[noticeYear] || {};
-
-  const rows = list.map((e, i) => {
-    const url = notices[e.name];
-    const link = url
-      ? `<a class="notice-link" href="${url}" target="_blank" rel="noopener">View notice &rarr;</a>`
-      : `<span class="notice-link" style="opacity:0.4; pointer-events:none;">Not yet posted</span>`;
-    const borderStyle = i === list.length - 1 ? 'border-top: none;' : 'border-top: none; border-bottom: 1px solid var(--border);';
-    return `
-      <div class="notice-row" style="${borderStyle}">
-        <div class="notice-date">${formatDateShort(e.date.toISOString().slice(0, 10))}</div>
-        <div class="notice-name">${e.name}</div>
-        ${link}
-      </div>`;
-  }).join('');
-  container.innerHTML = rows;
-}
-
 function renderLibrarySection(lib) {
   const id = 'lib-' + slugify(lib.name);
   const docs = lib.documents || [];
@@ -440,8 +393,6 @@ function renderLibrarySection(lib) {
 }
 
 async function init() {
-  renderNoticeRows();
-
   try {
     const data = await loadData();
     const libraries = (data.sites && data.sites.elections && data.sites.elections.libraries) || [];
