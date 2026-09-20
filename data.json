@@ -6,7 +6,7 @@
       "type": "special",
       "status": "upcoming",
       "date": "2026-10-06",
-      "time": "6:00 PM",
+      "time": "10:00 AM",
       "location": "Winchester Town Hall",
       "documents": []
     },
@@ -23,6 +23,15 @@
           "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAhVDlTid-FSJZbD_4Jbhw7AWX2RFUDrRD5nc6SlKqdMuI",
           "date": "2026-09-14",
           "posted": "2026-09-19",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBqHxpFqidyTbgkei8y8mWVAWBs1s_xCRUGkBiS3SyX4ME"
+        },
+        {
+          "label": "Minutes (Draft) - September 14, 2026",
+          "filename": "Minutes_RTBM_20260914_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDOitOFsIAtRKj-_K9JUV_XAR3A-y2n3U5QmcofNWYuEiY",
+          "date": "2026-09-14",
+          "posted": "2026-09-20",
+          "draft": true,
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBqHxpFqidyTbgkei8y8mWVAWBs1s_xCRUGkBiS3SyX4ME"
         },
         {
@@ -1097,6 +1106,24 @@
           "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQATKFsWlgi2Q6XYIqCIpW2fAf_uIhnKaBv2JNZvboDa0Bw",
           "date": "2026-09-10",
           "posted": "2026-09-12",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB9wmAmx6D5QrW-aE1mYweRAT6eLa1WI68aubdTWMtHjoQ"
+        },
+        {
+          "label": "Minutes Special Town Board Meeting 1 20260910 DRAFT",
+          "filename": "Minutes_STBM-1_20260910_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCO-BQ--MHeRZgpqC1d_6ptAdfwiZzDKvq5h3wOkvmNapM",
+          "date": "2026-09-10",
+          "posted": "2026-09-20",
+          "draft": true,
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB9wmAmx6D5QrW-aE1mYweRAT6eLa1WI68aubdTWMtHjoQ"
+        },
+        {
+          "label": "Minutes Special Town Board Meeting 2 20260910 DRAFT",
+          "filename": "Minutes_STBM-2_20260910_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBwI1ojGD_FQLVyBTOP5YgzAVfFOgI8HRo-2hJkICKKfbE",
+          "date": "2026-09-10",
+          "posted": "2026-09-20",
+          "draft": true,
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB9wmAmx6D5QrW-aE1mYweRAT6eLa1WI68aubdTWMtHjoQ"
         },
         {
