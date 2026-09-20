@@ -33,7 +33,7 @@
       margin-right: 8px;
       vertical-align: middle;
       position: relative;
-      top: -2px;
+      top: -1px;
       opacity: 0.4;
     }
     .election-pulse-hero.active {
@@ -192,6 +192,24 @@
     }
     .resource-name { font-size: 13px; color: var(--text); font-weight: 500; }
     .resource-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .calendar-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #fff;
+      opacity: 0.85;
+      margin-top: 8px;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .calendar-link:hover { opacity: 1; }
 
     /* Stat tiles 2 & 3 become clickable shortcuts rather than live counts */
     a.stat-tile-link { display: block; text-decoration: none; transition: border-color 0.15s, transform 0.15s; }
@@ -412,6 +430,50 @@ function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
+// Builds and downloads an .ics file for the next election, so folks can
+// add it to whatever calendar app they use (Outlook, Google, Apple, etc).
+let __nextElectionForCalendar = null;
+
+function icsDate(date, hours, minutes) {
+  const d = new Date(date);
+  d.setHours(hours, minutes, 0, 0);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+}
+
+function downloadNextElectionICS() {
+  const next = __nextElectionForCalendar;
+  if (!next) return;
+
+  const stamp = icsDate(new Date(), 0, 0) + 'Z';
+  const uid = `winchester-election-${next.date.toISOString().slice(0, 10)}@winclerk.github.io`;
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Town of Winchester//Elections//EN',
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART:${icsDate(next.date, 7, 0)}`,
+    `DTEND:${icsDate(next.date, 20, 0)}`,
+    `SUMMARY:${next.name} \\u2014 Town of Winchester`,
+    'LOCATION:Winchester Town Hall\\, 7228 CTH W\\, Winchester\\, WI 54557',
+    'DESCRIPTION:Polls open 7:00am to 8:00pm at Winchester Town Hall. Visit myvote.wi.gov to request an absentee ballot or check your registration.',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'winchester-election.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function renderCategoryCard(name, meta, count, href) {
   return `
     <a class="ecat-card" href="${href}">
@@ -462,6 +524,7 @@ async function init() {
       if (daysUntil <= 30) pulseActive = true;
     }
     const pulseClass = pulseActive ? 'election-pulse-hero active' : 'election-pulse-hero';
+    __nextElectionForCalendar = next;
 
     document.getElementById('stat-tiles-container').innerHTML = `
       <div class="stat-tiles">
@@ -469,6 +532,7 @@ async function init() {
           <div class="stat-label"><span class="${pulseClass}"></span>Next election</div>
           <div class="stat-value">${nextDateStr}</div>
           <div class="stat-sub">${nextName}</div>
+          ${next ? `<button type="button" class="calendar-link" onclick="downloadNextElectionICS()">+ Add to calendar</button>` : ''}
         </div>
         <a class="stat-tile stat-tile-link" href="#forms">
           <div class="stat-label">Need a form?</div>
