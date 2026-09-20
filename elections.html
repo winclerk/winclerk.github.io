@@ -9,14 +9,15 @@
     .lib-section { scroll-margin-top: 24px; margin-bottom: 36px; }
     .lib-section:last-child { margin-bottom: 0; }
 
+    /* Page-scoped: gold is this page's primary color, teal secondary */
+    #library-sections .file-view { color: var(--gold); border-color: var(--gold); }
+    #library-sections .file-view:hover { background: var(--gold); color: #fff; }
+
     .hero { background: var(--gold); }
     .hero h1, .hero p, .hero .hero-label { color: #fff; }
     .hero .breadcrumb a { color: #fff; opacity: 0.7; }
     .hero .breadcrumb a:hover { opacity: 1; }
     .hero .breadcrumb span { color: #fff; }
-
-    .folder-top { background: var(--gold); height: 96px; box-sizing: border-box; display: flex; align-items: flex-end; }
-    .folder-name { color: #fff; }
 
     .stat-tile-accent { background: var(--td) !important; }
     .stat-tile-accent .stat-label,
@@ -40,18 +41,6 @@
     @keyframes electionPulse {
       0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
       50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(255, 255, 255, 0.2); }
-    }
-
-    /* Keep folder cards uniform height: pin the bottom content */
-    .folder-grid .folder-card {
-      display: flex;
-      flex-direction: column;
-    }
-    .folder-grid .folder-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
     }
 
     /* ── Voter guide sections (informational content, not SharePoint-backed) ── */
@@ -84,7 +73,7 @@
     }
     .info-card-body p:last-child { margin-bottom: 0; }
     .info-card-body a {
-      color: var(--tm);
+      color: var(--gold);
       text-decoration: underline;
       text-underline-offset: 2px;
     }
@@ -135,8 +124,8 @@
     }
     .notice-link {
       font-size: 12px;
-      color: var(--tm);
-      border: 1px solid var(--tm);
+      color: var(--gold);
+      border: 1px solid var(--gold);
       padding: 5px 14px;
       border-radius: 4px;
       white-space: nowrap;
@@ -144,7 +133,7 @@
       flex-shrink: 0;
       text-decoration: none;
     }
-    .notice-link:hover { background: var(--tm); color: #fff; }
+    .notice-link:hover { background: var(--gold); color: #fff; }
 
     .results-callout {
       display: flex;
@@ -161,7 +150,7 @@
       font-size: 12px;
       font-family: 'Inter', sans-serif;
       color: #fff;
-      background: var(--tm);
+      background: var(--gold);
       padding: 9px 18px;
       border-radius: 4px;
       white-space: nowrap;
@@ -202,11 +191,59 @@
     .resource-name { font-size: 13px; color: var(--text); font-weight: 500; }
     .resource-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
+    /* Stat tiles 2 & 3 become clickable shortcuts rather than live counts */
+    a.stat-tile-link { display: block; text-decoration: none; transition: border-color 0.15s, transform 0.15s; }
+    a.stat-tile-link:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .stat-tile-link .stat-sub { color: var(--gold); font-weight: 500; }
+
+    /* ── Election category cards: 1/3 color block + title, 2/3 body + link ── */
+    .ecat-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 36px; }
+    .ecat-card {
+      display: flex;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      text-decoration: none;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .ecat-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .ecat-color {
+      flex: 0 0 33%;
+      background: var(--gold);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px;
+      box-sizing: border-box;
+    }
+    .ecat-title {
+      font-family: 'Electrolize', monospace;
+      font-size: 15px;
+      color: #fff;
+      line-height: 1.3;
+    }
+    .ecat-body {
+      flex: 1;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      min-width: 0;
+    }
+    .ecat-meta { font-size: 12px; color: var(--text-muted); }
+    .ecat-count { font-size: 12px; color: var(--tm); font-weight: 500; }
+    .ecat-link { font-size: 12px; color: var(--gold); font-weight: 500; margin-top: 6px; }
+
     @media (max-width: 700px) {
       .info-facts { grid-template-columns: 1fr; }
       .resource-grid { grid-template-columns: 1fr; }
       .results-callout { flex-direction: column; align-items: flex-start; }
       .notice-row { flex-wrap: wrap; }
+      .ecat-card { flex-direction: column; }
+      .ecat-color { flex: 0 0 auto; }
     }
   </style>
 </head>
@@ -244,7 +281,7 @@
           <div class="info-card-head-title"><strong>New in town? Voting by mail?</strong> Start here.</div>
         </div>
         <div class="info-card-body">
-          <p>Just moved to Winchester? Give the Clerk's office a call and we'll help you register — it only takes a minute. Prefer to vote from home, planning to be out of town, or unable to make it on election day? You can request an absentee ballot anytime at <a href="https://myvote.wi.gov/" target="_blank" rel="noopener">MyVote Wisconsin</a>. First time requesting one online? You'll just need to upload a photo of your ID with the request.</p>
+          <p>Just moved to Winchester? Give the Clerk's office a call and we'll help you register — it only takes a minute. Prefer to vote from home, planning to be out of town, or unable to make it on election day? You can request an absentee ballot anytime at <a href="https://myvote.wi.gov/" target="_blank" rel="noopener">MyVote Wisconsin</a>. If it's your first time requesting one online, you'll need to upload a photo of your ID with the request.</p>
         </div>
         <div class="info-facts">
           <div>
@@ -268,7 +305,7 @@
     </div>
 
     <!-- Election forms -->
-    <div class="guide-section">
+    <div class="guide-section" id="forms">
       <div class="section-label">Forms</div>
       <div class="info-card">
         <div class="info-card-body" style="padding-bottom: 8px;">
@@ -321,7 +358,7 @@
 
     <!-- SharePoint-backed document libraries -->
     <div class="section-label">Browse election records</div>
-    <div class="folder-grid" id="folder-grid">
+    <div class="ecat-grid" id="folder-grid">
       <div class="no-docs">Loading&hellip;</div>
     </div>
 
@@ -378,6 +415,21 @@ function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
+function renderCategoryCard(name, meta, count, href) {
+  return `
+    <a class="ecat-card" href="${href}">
+      <div class="ecat-color">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <div class="ecat-title">${name}</div>
+      </div>
+      <div class="ecat-body">
+        <div class="ecat-meta">${meta}</div>
+        <div class="ecat-count">${count}</div>
+        <div class="ecat-link">View folder &rarr;</div>
+      </div>
+    </a>`;
+}
+
 function renderLibrarySection(lib) {
   const id = 'lib-' + slugify(lib.name);
   const docs = lib.documents || [];
@@ -397,11 +449,10 @@ async function init() {
     const data = await loadData();
     const libraries = (data.sites && data.sites.elections && data.sites.elections.libraries) || [];
 
-    // Stat tiles: Next election, Total documents, Categories
+    // Stat tiles: Next election (live), Forms shortcut, MyVote shortcut
     const next = getNextElection();
     const nextDateStr = next ? formatDate(next.date.toISOString().slice(0, 10)) : 'TBD';
     const nextName = next ? next.name : '';
-    const totalDocs = libraries.reduce((s, lib) => s + (lib.documents || []).length, 0);
 
     // Check if within 30 days of election
     let pulseActive = false;
@@ -420,16 +471,16 @@ async function init() {
           <div class="stat-value">${nextDateStr}</div>
           <div class="stat-sub">${nextName}</div>
         </div>
-        <div class="stat-tile">
-          <div class="stat-label">Total documents</div>
-          <div class="stat-value">${totalDocs}</div>
-          <div class="stat-sub">${totalDocs ? 'Open for anyone to view' : 'Check back soon'}</div>
-        </div>
-        <div class="stat-tile">
-          <div class="stat-label">Categories</div>
-          <div class="stat-value">${libraries.length}</div>
-          <div class="stat-sub">${libraries.map(l => l.name).join(', ') || 'None yet'}</div>
-        </div>
+        <a class="stat-tile stat-tile-link" href="#forms">
+          <div class="stat-label">Need a form?</div>
+          <div class="stat-value">Forms</div>
+          <div class="stat-sub">Absentee &amp; registration &darr;</div>
+        </a>
+        <a class="stat-tile stat-tile-link" href="https://myvote.wi.gov/" target="_blank" rel="noopener">
+          <div class="stat-label">Register or request a ballot</div>
+          <div class="stat-value">MyVote Wisconsin</div>
+          <div class="stat-sub">myvote.wi.gov &#8599;</div>
+        </a>
       </div>`;
 
     if (!libraries.length) {
@@ -439,7 +490,7 @@ async function init() {
 
     document.getElementById('folder-grid').innerHTML = libraries.map(lib => {
       const count = (lib.documents || []).length;
-      return renderFolderCard(
+      return renderCategoryCard(
         lib.name,
         'Open to everyone, no login needed',
         `${count} document${count !== 1 ? 's' : ''}`,
