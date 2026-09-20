@@ -357,18 +357,62 @@ def clean_name(s):
     return s
 
 
+# Abbreviations that show up often enough in filenames to be worth spelling
+# out on the public portal, confirmed with Luke on 2026-09-20. Deliberately
+# NOT included: WMRS, PR, PRB, YTD — no confirmed full form (PRB/PR are
+# record-series codes, not spelled-out phrases), so they're left as-is
+# rather than guessed at.
+ABBREVIATION_EXPANSIONS = {
+    "AB": "Associated Bank",
+    "MM": "Money Market",
+    "CC": "Credit Card",
+    "USB": "US Bank",
+    "ELAN": "Elan",  # brand name — normalizes casing, doesn't spell out further
+    "GRS": "General Records Schedule",
+    "UCA": "Uniform Chart of Accounts",
+    "DOR": "Department of Revenue",
+    "STBM": "Special Town Board Meeting",
+    "BOR": "Board of Review",
+    "ROW": "Right-of-Way",
+    "DW": "Driveway",
+    "ATV": "All-Terrain Vehicle",
+    "UTV": "Utility Terrain Vehicle",
+    "PC": "Planning Commission",
+    "MW": "Manitowish Waters",
+    "TOW": "Town of Winchester",
+}
+_ABBREV_PATTERN = re.compile(
+    r"\b(" + "|".join(re.escape(k) for k in ABBREVIATION_EXPANSIONS) + r")\b"
+)
+
+
+def _expand_abbreviations(label):
+    """Spell out known abbreviations wherever they show up as a whole word
+    in a finished label — including ones embedded inside a longer
+    auto-generated label (e.g. "...BOR Alternate Appointment..." inside an
+    ordinance title), not just ones a specific regex already targets."""
+    return _ABBREV_PATTERN.sub(lambda m: ABBREVIATION_EXPANSIONS[m.group(0)], label)
+
+
 def infer_label(filename):
     label = _infer_label_raw(filename)
     # Collapse any double/triple spaces left behind when a separator
     # character (e.g. " - ") is replaced with a single space, or when a
     # "Copy" suffix is stripped out from between two other tokens.
     label = re.sub(r"\s{2,}", " ", label).strip()
+    label = _expand_abbreviations(label)
     return label
 
 
 def _infer_label_raw(filename):
     name = filename
-    for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx"]:
+    # Anything not on this list leaks its extension straight into the label
+    # (e.g. a .csv statement or an .mp4 meeting recording used to show up as
+    # "Statement Elan CC YTD2026.csv" / "video1984926649.mp4"). Cover the
+    # other file types that actually show up in these libraries.
+    for ext in [".pdf", ".docx", ".xlsx", ".doc", ".xls", ".pptx",
+                ".csv", ".mp4", ".mov", ".mp3", ".wav", ".m4a",
+                ".png", ".jpg", ".jpeg", ".heic", ".txt"]:
         if name.lower().endswith(ext):
             name = name[:-len(ext)]
             break
@@ -397,11 +441,16 @@ def _infer_label_core(name):
     if re.search(r"NEMSD.{0,5}[Ii]ntermunicipal", name):
         return "NEMSD Intermunicipal Agreement - Current Signed Agreement"
 
-    m = re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)_\d{8}", name)
+    # A same-day second agenda is sometimes numbered (e.g. "Agenda_STBM-1_...",
+    # "Agenda_STBM-2_...") — without this, the number is all that's left after
+    # the type code, so it fell through to the generic fallback and showed the
+    # raw code ("STBM 1 Agenda") instead of the spelled-out meeting type.
+    m = re.match(r"Agenda_(RTBM|STBM|TBSM|BOR)(?:-(\d+))?_\d{8}", name)
     if m:
         type_map = {"RTBM": "Regular Meeting Agenda", "STBM": "Special Meeting Agenda",
                     "TBSM": "Special Meeting Agenda", "BOR": "Board of Review Agenda"}
-        return type_map[m.group(1)]
+        label = type_map[m.group(1)]
+        return f"{label} (Part {m.group(2)})" if m.group(2) else label
 
     m = re.match(r"Agenda_\d{8}", name)
     if m:
