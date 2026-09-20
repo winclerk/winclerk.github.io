@@ -53,6 +53,161 @@
       flex-direction: column;
       justify-content: flex-end;
     }
+
+    /* ── Voter guide sections (informational content, not SharePoint-backed) ── */
+    .guide-section { margin-bottom: 36px; }
+
+    .info-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .info-card-head {
+      background: var(--gold);
+      padding: 12px 18px;
+    }
+    .info-card-head-title {
+      font-family: 'Electrolize', monospace;
+      font-size: 14px;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    .info-card-body {
+      padding: 18px;
+    }
+    .info-card-body p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .info-card-body p:last-child { margin-bottom: 0; }
+    .info-card-body a {
+      color: var(--tm);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .info-card-body a:hover { color: var(--td); }
+
+    .info-facts {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      padding: 16px 18px;
+      border-top: 1px solid var(--border);
+      background: #fafcfc;
+    }
+    .info-fact-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .info-fact-value {
+      font-size: 13px;
+      color: var(--td);
+      font-weight: 500;
+    }
+
+    .notice-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      gap: 12px;
+    }
+    .notice-date {
+      font-family: 'Electrolize', monospace;
+      font-size: 12px;
+      color: var(--gold);
+      white-space: nowrap;
+      flex-shrink: 0;
+      width: 92px;
+    }
+    .notice-name {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      flex: 1;
+    }
+    .notice-link {
+      font-size: 12px;
+      color: var(--tm);
+      border: 1px solid var(--tm);
+      padding: 5px 14px;
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .notice-link:hover { background: var(--tm); color: #fff; }
+
+    .results-callout {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: var(--tl);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .results-callout-text { font-size: 13px; color: var(--tm); line-height: 1.6; max-width: 560px; }
+    .results-callout-btn {
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      background: var(--tm);
+      padding: 9px 18px;
+      border-radius: 4px;
+      white-space: nowrap;
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .results-callout-btn:hover { background: var(--td); }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .resource-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .resource-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .resource-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      background: #f1efe8;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .resource-name { font-size: 13px; color: var(--text); font-weight: 500; }
+    .resource-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    @media (max-width: 700px) {
+      .info-facts { grid-template-columns: 1fr; }
+      .resource-grid { grid-template-columns: 1fr; }
+      .results-callout { flex-direction: column; align-items: flex-start; }
+      .notice-row { flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body>
@@ -68,7 +223,7 @@
 <div class="hero">
   <div class="hero-label">Public records</div>
   <h1>Elections</h1>
-  <p>Voter information, election notices, and poll worker resources for the Town of Winchester.</p>
+  <p>Everything you need to register, vote, and stay in the loop on Town of Winchester elections — plus notices and records for poll workers.</p>
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a href="index.html">Home</a>
     <span>/</span>
@@ -80,7 +235,102 @@
   <div id="stat-tiles-container"></div>
 
   <div class="page-body">
-    <div class="section-label">Browse by category</div>
+
+    <!-- Voter registration & absentee voting -->
+    <div class="guide-section">
+      <div class="section-label">Getting registered &amp; voting</div>
+      <div class="info-card">
+        <div class="info-card-head">
+          <div class="info-card-head-title">New in town? Voting by mail? Start here.</div>
+        </div>
+        <div class="info-card-body">
+          <p>Just moved to Winchester? Give the Clerk's office a call and we'll get you registered — it only takes a minute. Prefer to vote from home? You can request an absentee ballot anytime at <a href="https://myvote.wi.gov/" target="_blank" rel="noopener">MyVote Wisconsin</a>. First time requesting one online? You'll just need to snap a photo of your ID to upload along with the request.</p>
+        </div>
+        <div class="info-facts">
+          <div>
+            <div class="info-fact-label">Polls are open</div>
+            <div class="info-fact-value">7:00am – 8:00pm</div>
+          </div>
+          <div>
+            <div class="info-fact-label">Where to vote</div>
+            <div class="info-fact-value">Winchester Town Hall, 7228 CTH W</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2026 election dates & official notices -->
+    <div class="guide-section">
+      <div class="section-label">Upcoming election dates</div>
+      <div class="info-card" id="notice-card">
+        <div id="notice-rows">
+          <div class="no-docs">Loading&hellip;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="guide-section">
+      <div class="results-callout">
+        <div class="results-callout-text">Curious how an election turned out? Vilas County posts results and provisional ballot info as soon as they're available.</div>
+        <a class="results-callout-btn" href="https://www.vilascountywi.gov/residents/elections/election_results.php" target="_blank" rel="noopener">See Election Results &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Election forms -->
+    <div class="guide-section">
+      <div class="section-label">Handy forms</div>
+      <div class="info-card">
+        <div class="info-card-body" style="padding-bottom: 8px;">
+          <p>Need a form? The full library lives on the <a href="https://elections.wi.gov/" target="_blank" rel="noopener">Wisconsin Elections Commission website</a> — but here are the two folks ask for most often.</p>
+        </div>
+        <div class="notice-row" style="border-top: 1px solid var(--border);">
+          <div class="notice-name">Absentee Ballot Request &amp; Instructions (EL-121)</div>
+          <a class="notice-link" href="https://elections.wi.gov/wec-form/absentee-ballot-request-el-121-121h-121s" target="_blank" rel="noopener">Open form &rarr;</a>
+        </div>
+        <div class="notice-row">
+          <div class="notice-name">Voter Registration Application &amp; Instructions (EL-131)</div>
+          <a class="notice-link" href="https://elections.wi.gov/wec-form/voter-registration-application-el-131-131h-131s" target="_blank" rel="noopener">Open form &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- State of Wisconsin election resources -->
+    <div class="guide-section">
+      <div class="section-label">More from the State of Wisconsin</div>
+      <div class="resource-grid">
+        <a class="resource-card" href="https://myvote.wi.gov/" target="_blank" rel="noopener">
+          <div class="resource-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+          </div>
+          <div>
+            <div class="resource-name">MyVote Wisconsin</div>
+            <div class="resource-sub">Register, request a ballot, or look up your polling place</div>
+          </div>
+        </a>
+        <a class="resource-card" href="https://elections.wi.gov/voters/photo-id" target="_blank" rel="noopener">
+          <div class="resource-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8 17c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5"/></svg>
+          </div>
+          <div>
+            <div class="resource-name">What ID Do I Need?</div>
+            <div class="resource-sub">A quick rundown of accepted photo ID at the polls</div>
+          </div>
+        </a>
+        <a class="resource-card" href="https://elections.wi.gov/" target="_blank" rel="noopener">
+          <div class="resource-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+          </div>
+          <div>
+            <div class="resource-name">Wisconsin Elections Commission</div>
+            <div class="resource-sub">The state's home base for all things elections</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- SharePoint-backed document libraries -->
+    <div class="section-label">Browse election records</div>
     <div class="folder-grid" id="folder-grid">
       <div class="no-docs">Loading&hellip;</div>
     </div>
@@ -138,6 +388,43 @@ function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
+// Official notice PDFs posted to winchesterwi.com, keyed by year + election name.
+// Update this map each election cycle as new notices are posted.
+const OFFICIAL_NOTICES = {
+  2026: {
+    'Spring Election': 'https://winchesterwi.com/wp-content/uploads/2026/04/Type-B-Notice-for-SpringElection.pdf',
+    'Partisan Primary': 'https://winchesterwi.com/wp-content/uploads/2026/04/Notice-of-Election-Fall-2026.pdf',
+    'General Election': 'https://winchesterwi.com/wp-content/uploads/2026/04/Notice-of-Election-Fall-2026.pdf'
+  }
+};
+
+function renderNoticeRows() {
+  const container = document.getElementById('notice-rows');
+  const year = new Date().getFullYear();
+  const elections = getWisconsinElections(year).filter(e => {
+    const cutoff = new Date(); cutoff.setHours(0, 0, 0, 0); cutoff.setDate(cutoff.getDate() - 1);
+    return e.date >= cutoff;
+  });
+  const list = elections.length ? elections : getWisconsinElections(year + 1);
+  const noticeYear = elections.length ? year : year + 1;
+  const notices = OFFICIAL_NOTICES[noticeYear] || {};
+
+  const rows = list.map((e, i) => {
+    const url = notices[e.name];
+    const link = url
+      ? `<a class="notice-link" href="${url}" target="_blank" rel="noopener">View notice &rarr;</a>`
+      : `<span class="notice-link" style="opacity:0.4; pointer-events:none;">Not yet posted</span>`;
+    const borderStyle = i === list.length - 1 ? 'border-top: none;' : 'border-top: none; border-bottom: 1px solid var(--border);';
+    return `
+      <div class="notice-row" style="${borderStyle}">
+        <div class="notice-date">${formatDateShort(e.date.toISOString().slice(0, 10))}</div>
+        <div class="notice-name">${e.name}</div>
+        ${link}
+      </div>`;
+  }).join('');
+  container.innerHTML = rows;
+}
+
 function renderLibrarySection(lib) {
   const id = 'lib-' + slugify(lib.name);
   const docs = lib.documents || [];
@@ -153,6 +440,8 @@ function renderLibrarySection(lib) {
 }
 
 async function init() {
+  renderNoticeRows();
+
   try {
     const data = await loadData();
     const libraries = (data.sites && data.sites.elections && data.sites.elections.libraries) || [];
@@ -183,7 +472,7 @@ async function init() {
         <div class="stat-tile">
           <div class="stat-label">Total documents</div>
           <div class="stat-value">${totalDocs}</div>
-          <div class="stat-sub">${totalDocs ? 'Publicly available' : 'Check back soon'}</div>
+          <div class="stat-sub">${totalDocs ? 'Open for anyone to view' : 'Check back soon'}</div>
         </div>
         <div class="stat-tile">
           <div class="stat-label">Categories</div>
@@ -201,7 +490,7 @@ async function init() {
       const count = (lib.documents || []).length;
       return renderFolderCard(
         lib.name,
-        'Election resources',
+        'Open to everyone, no login needed',
         `${count} document${count !== 1 ? 's' : ''}`,
         '#lib-' + slugify(lib.name)
       );
