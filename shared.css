@@ -460,3 +460,74 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   .file-name { font-size: 12px; }
   footer { padding: 14px 16px; flex-direction: column; align-items: flex-start; gap: 6px; }
 }
+
+/* ---------- Records Portal topbar (inner pages) ---------- */
+.topbar-portal { height: 64px; }
+.portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  border-radius: 8px;
+}
+.portal-brand:focus-visible,
+.town-link:focus-visible,
+.topbar-portal .back-link:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+.portal-brand-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: block;
+}
+.portal-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  min-width: 0;
+}
+.portal-brand-name {
+  font-family: 'Electrolize', monospace;
+  font-size: 19px;
+  color: var(--td);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.portal-brand-sub {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.town-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 20px;
+  border-left: 1px solid var(--border);
+  font-size: 13px;
+  color: rgba(25,60,60,0.55);
+  transition: color 0.15s;
+}
+.town-link:hover { color: var(--td); }
+.town-link .seal-logo { width: 28px; height: 28px; }
+
+@media (max-width: 700px) {
+  .topbar-portal { height: 56px; }
+  .portal-brand-icon { width: 32px; height: 32px; }
+  .portal-brand-name { font-size: 16px; }
+  .portal-brand-sub { font-size: 8.5px; letter-spacing: 0.12em; }
+  .topbar-portal .back-link,
+  .town-link-text { display: none; }
+  .town-link { padding-left: 0; border-left: 0; }
+}
