@@ -97,6 +97,10 @@
       border-radius: 50%;
       background: var(--tm);
       margin-bottom: 10px;
+      opacity: 0.4;
+    }
+    .meeting-pulse.active {
+      opacity: 1;
       animation: meetingPulse 2s ease-in-out infinite;
     }
     @keyframes meetingPulse {
@@ -258,11 +262,20 @@
 </head>
 <body>
 
-<div class="topbar">
-  <a class="brand" href="https://winchesterwi.com">
-    <img src="winchester-logo.png" class="seal-logo" alt="Town of Winchester">
-    <span class="brand-name">TOWN OF WINCHESTER, WI</span>
+<div class="topbar topbar-portal">
+  <a class="portal-brand" href="index.html" aria-label="Records Portal home" aria-current="page">
+    <img src="records-portal-icon.svg" class="portal-brand-icon" alt="" width="36" height="36">
+    <span class="portal-brand-text">
+      <span class="portal-brand-name">Records Portal</span>
+      <span class="portal-brand-sub">Town of Winchester &middot; Public Records</span>
+    </span>
   </a>
+  <nav class="topbar-links" aria-label="Site">
+    <a class="town-link town-link-solo" href="https://winchesterwi.com">
+      <img src="winchester-logo.png" class="seal-logo" alt="">
+      <span class="town-link-text">winchesterwi.com</span>
+    </a>
+  </nav>
 </div>
 
 <div class="hero">
@@ -433,6 +446,18 @@ renderNextElection();
 
 // Next Town Board meeting: uses data.json (primary), falls back to
 // second Tuesday of current/next month if no upcoming meeting in data.
+// The dot only pulses when the meeting is within 7 calendar days.
+function setMeetingPulse(meetingDate) {
+  const pulse = document.querySelector('.meeting-pulse');
+  if (!pulse || !meetingDate) return;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const day = new Date(meetingDate);
+  day.setHours(0, 0, 0, 0);
+  const daysUntil = Math.round((day - today) / (1000 * 60 * 60 * 24));
+  pulse.classList.toggle('active', daysUntil >= 0 && daysUntil <= 7);
+}
+
 async function renderNextMeeting() {
   const el = document.getElementById('next-meeting-date');
   if (!el) return;
@@ -443,6 +468,7 @@ async function renderNextMeeting() {
     if (upcoming && upcoming.date) {
       el.textContent = formatDateShort(upcoming.date);
       el.title = upcoming.title || '';
+      setMeetingPulse(new Date(upcoming.date + 'T00:00:00'));
       return;
     }
   } catch (e) { /* fall through to default schedule */ }
@@ -465,6 +491,7 @@ async function renderNextMeeting() {
   }
   el.textContent = formatDateShort(next.toISOString().slice(0, 10));
   el.title = 'Regular Town Board Meeting (default schedule)';
+  setMeetingPulse(next);
 }
 
 renderNextMeeting();

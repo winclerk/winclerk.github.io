@@ -143,6 +143,15 @@ a { text-decoration: none; color: inherit; }
   border-radius: 50%;
   background: var(--tm);
   flex-shrink: 0;
+  opacity: 0.4;
+}
+.next-dot.active {
+  opacity: 1;
+  animation: nextDotPulse 2s ease-in-out infinite;
+}
+@keyframes nextDotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(0,80,90,0.5); }
+  50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(0,80,90,0.3); }
 }
 .next-text {
   font-size: 13px;
@@ -531,3 +540,4 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   .town-link-text { display: none; }
   .town-link { padding-left: 0; border-left: 0; }
 }
+.town-link-solo { padding-left: 0; border-left: 0; }

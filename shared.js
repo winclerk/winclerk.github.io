@@ -3,7 +3,26 @@ const MEETINGS_JSON = 'data.json';
 async function loadData() {
   const res = await fetch(MEETINGS_JSON + '?t=' + Date.now());
   if (!res.ok) throw new Error('Failed to load');
-  return res.json();
+  const data = await res.json();
+  updateNextDot(data);
+  return data;
+}
+
+// Inner pages: the next-meeting dot only pulses when the next meeting
+// is within 7 calendar days (matches the homepage Town Board tile).
+function updateNextDot(data) {
+  const dot = document.querySelector('.next-dot');
+  if (!dot) return;
+  const upcoming = ((data && data.meetings) || []).find(m => m.status === 'upcoming');
+  let active = false;
+  if (upcoming && upcoming.date) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const day = new Date(upcoming.date + 'T00:00:00');
+    const daysUntil = Math.round((day - today) / (1000 * 60 * 60 * 24));
+    active = daysUntil >= 0 && daysUntil <= 7;
+  }
+  dot.classList.toggle('active', active);
 }
 
 function formatDate(dateStr) {
