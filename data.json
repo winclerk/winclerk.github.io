@@ -1,14 +1,23 @@
 {
   "meetings": [
     {
-      "id": "special-2026-10-06",
-      "title": "Special Town Board Meeting - October 6, 2026",
+      "id": "special-2026-09-28",
+      "title": "Town Board Meeting - September 28, 2026",
       "type": "special",
       "status": "upcoming",
-      "date": "2026-10-06",
+      "date": "2026-09-28",
       "time": "10:00 AM",
       "location": "Winchester Town Hall",
-      "documents": []
+      "documents": [
+        {
+          "label": "Board of Review Agenda",
+          "filename": "Agenda_BOR_20260928.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCXg8jvQXO4Rpjtx1FnziVqAUpWSGimHaaOjRsmOc19VEc",
+          "date": "2026-09-28",
+          "posted": "2026-09-26",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        }
+      ]
     },
     {
       "id": "regular-2026-09-14",
