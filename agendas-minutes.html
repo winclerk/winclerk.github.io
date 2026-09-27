@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Agendas &amp; Minutes — Town of Winchester, WI</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="records-portal-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* White-with-teal-accent identity to match the homepage tile:
+       this page is an index across bodies, not a department of its own. */
+    .hero {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      box-shadow: inset 4px 0 0 var(--td);
+    }
+    .hero-label { color: var(--tm); }
+    .hero h1 { color: var(--td); }
+    .hero p { color: var(--text-muted); }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--td); }
+    .breadcrumb span { color: rgba(25,60,60,0.35); }
+    .breadcrumb .crumb-current { color: var(--td); }
+
+    .filter-group { margin-bottom: 4px; }
+    .filter-group-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .result-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 4px 0 20px;
+    }
+    .year-section { margin-bottom: 32px; }
+    .year-section:last-child { margin-bottom: 0; }
+    .file-meta-line {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .file-meta-line a {
+      color: var(--tm);
+      text-decoration: underline;
+      text-decoration-color: rgba(0,80,90,0.3);
+      text-underline-offset: 2px;
+    }
+    .file-meta-line a:hover { text-decoration-color: var(--tm); }
+    .body-chip {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--td);
+      background: var(--tl);
+      border-radius: 3px;
+      padding: 1px 6px;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar topbar-portal">
+  <a class="portal-brand" href="index.html" aria-label="Records Portal home">
+    <img src="records-portal-icon.svg" class="portal-brand-icon" alt="" width="36" height="36">
+    <span class="portal-brand-text">
+      <span class="portal-brand-name">Records Portal</span>
+      <span class="portal-brand-sub">Town of Winchester &middot; Public Records</span>
+    </span>
+  </a>
+  <nav class="topbar-links" aria-label="Site">
+    <a class="back-link" href="index.html">&#8592; Back to portal home</a>
+    <a class="town-link" href="https://winchesterwi.com">
+      <img src="winchester-logo.png" class="seal-logo" alt="">
+      <span class="town-link-text">winchesterwi.com</span>
+    </a>
+  </nav>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Public records</div>
+  <h1>All Agendas &amp; Minutes</h1>
+  <p>Every agenda and set of minutes from the Town Board and the Town's committees and commissions, newest first.</p>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <span class="crumb-current">All Agendas &amp; Minutes</span>
+  </nav>
+</div>
+
+<main>
+  <div id="stat-tiles-container"></div>
+
+  <div class="page-body">
+    <div class="filter-group">
+      <div class="filter-group-label">Document type</div>
+      <div class="filter-bar" id="type-filter">
+        <button class="filter-btn active" data-type="all">All</button>
+        <button class="filter-btn" data-type="agenda">Agendas</button>
+        <button class="filter-btn" data-type="minutes">Minutes</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-group-label">Meeting body</div>
+      <div class="filter-bar" id="body-filter">
+        <button class="filter-btn active" data-body="all">All bodies</button>
+      </div>
+    </div>
+    <div class="result-count" id="result-count" aria-live="polite"></div>
+
+    <div id="doc-list">
+      <div class="no-docs">Loading&hellip;</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>Town of Winchester &middot; Winchester, WI 54557 &middot; (715) 686-2123</span>
+  <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+// Builds one list of every agenda and minutes document from data.json:
+//   - Town Board: documents attached to each meeting (and its subfolders)
+//   - Committees & Commissions: documents in each boardsCommissions library
+// Only files whose name contains "agenda" or "minute(s)" are included.
+// New files appear automatically after each sync.
+
+const state = { items: [], type: 'all', body: 'all' };
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Minutes are often filed in a later meeting's packet, so the date a document
+// belongs to is read from its filename first (e.g. Minutes_RTBM_20260608.pdf
+// or "minutes special meeting 09.10.25.pdf"), then falls back to the
+// meeting or document date.
+function dateFromFilename(filename) {
+  const f = filename || '';
+  let m = f.match(/(20\d{2})(\d{2})(\d{2})/);
+  if (m) {
+    const mo = +m[2], d = +m[3];
+    if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${m[1]}-${m[2]}-${m[3]}`;
+  }
+  m = f.match(/(?:^|[^0-9])(\d{1,2})[.\-](\d{1,2})[.\-](\d{2})(?:[^0-9]|$)/);
+  if (m) {
+    const mo = +m[1], d = +m[2];
+    if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) {
+      return `20${m[3]}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+  }
+  return null;
+}
+
+// Town Board files are named with a meeting code; use it to label the
+// meeting when there is no matching meeting in data.json.
+function townBoardKind(filename) {
+  const f = (filename || '').toUpperCase();
+  if (/(^|[_\-\s])BOR([_\-\s.]|$)/.test(f)) return { body: 'Board of Review', label: 'Board of Review' };
+  if (/RTBM/.test(f)) return { body: 'Town Board', label: 'Regular Town Board Meeting' };
+  if (/STBM|TBSM|SPECIAL/.test(f)) return { body: 'Town Board', label: 'Special Town Board Meeting' };
+  if (/BUDGET/.test(f)) return { body: 'Town Board', label: 'Budget Meeting' };
+  return { body: 'Town Board', label: 'Town Board Meeting' };
+}
+
+function baseKey(filename) {
+  return (filename || '').toLowerCase().replace(/[_\-\s]*draft/g, '').replace(/\s+\(\d+\)/g, '');
+}
+
+function collectItems(data) {
+  const meetings = data.meetings || [];
+  const byDate = {};
+  meetings.forEach(m => { if (m.date) (byDate[m.date] = byDate[m.date] || []).push(m); });
+
+  const raw = [];
+
+  meetings.forEach(m => {
+    const docs = (m.documents || []).slice();
+    (m.subfolders || []).forEach(sf => (sf.documents || []).forEach(d => docs.push(d)));
+    docs.forEach(doc => {
+      const type = getDocTag(doc.filename);
+      if (type === 'other') return;
+      const kind = townBoardKind(doc.filename);
+      const date = dateFromFilename(doc.filename) || m.date || doc.date || '';
+      // Link to the meeting this document is for, if we have it
+      let meeting = null;
+      if (kind.body === 'Town Board' && byDate[date]) {
+        const wantSpecial = /Special/.test(kind.label);
+        const wantRegular = /Regular/.test(kind.label);
+        meeting = byDate[date].find(x => (wantSpecial && x.type === 'special') || (wantRegular && x.type === 'regular'))
+               || byDate[date][0];
+      }
+      raw.push({
+        doc, type, date,
+        body: kind.body,
+        label: meeting ? meeting.title : kind.label,
+        meetingId: meeting ? meeting.id : null,
+        inThisMeeting: meeting && meeting.id === m.id
+      });
+    });
+  });
+
+  const bc = (data.sites && data.sites.boardsCommissions && data.sites.boardsCommissions.libraries) || [];
+  bc.forEach(lib => {
+    (lib.documents || []).forEach(doc => {
+      const type = getDocTag(doc.filename);
+      if (type === 'other') return;
+      raw.push({
+        doc, type,
+        date: dateFromFilename(doc.filename) || doc.date || '',
+        body: lib.name,
+        label: lib.name + (doc.folder && doc.folder !== 'General' ? ' · ' + doc.folder : ''),
+        meetingId: null,
+        inThisMeeting: true
+      });
+    });
+  });
+
+  // The same file is often attached to more than one meeting. Keep one copy,
+  // preferring the copy filed with the meeting it belongs to.
+  const byFile = new Map();
+  raw.forEach(it => {
+    const key = it.body + '|' + (it.doc.filename || '').toLowerCase();
+    const prev = byFile.get(key);
+    if (!prev || (!prev.inThisMeeting && it.inThisMeeting)) byFile.set(key, it);
+  });
+  let items = Array.from(byFile.values());
+
+  // If a final version exists, hide the draft of the same document.
+  const finals = new Set(items.filter(it => !isDraft(it.doc.filename)).map(it => it.body + '|' + baseKey(it.doc.filename)));
+  items = items.filter(it => !(isDraft(it.doc.filename) && finals.has(it.body + '|' + baseKey(it.doc.filename))));
+
+  // Newest first; for the same meeting, minutes (written later) before the agenda.
+  items.sort((a, b) =>
+    (b.date || '').localeCompare(a.date || '') ||
+    (a.type === b.type ? 0 : (a.type === 'minutes' ? -1 : 1)) ||
+    (a.doc.filename || '').localeCompare(b.doc.filename || ''));
+  return items;
+}
+
+function renderRow(it) {
+  const doc = it.doc;
+  const [iconClass, iconLabel] = getIconClass(doc.filename);
+  const draft = isDraft(doc.filename);
+  const tagHtml = `<span class="file-tag tag-${it.type}">${it.type === 'agenda' ? 'Agenda' : 'Minutes'}</span>`;
+  const draftHtml = draft ? `<span class="file-tag tag-draft">Draft</span>` : '';
+  const labelHtml = it.meetingId
+    ? `<a href="meeting.html?id=${encodeURIComponent(it.meetingId)}">${escapeHtml(it.label)}</a>`
+    : escapeHtml(it.label);
+  const dateHtml = it.date ? ` &middot; ${formatDate(it.date)}` : '';
+  return `
+    <div class="file-row">
+      <div class="file-left">
+        <div class="file-icon ${iconClass}">${iconLabel}</div>
+        <div class="file-info">
+          <div class="file-name">${escapeHtml(doc.label || doc.filename)}${tagHtml}${draftHtml}</div>
+          <div class="file-meta-line"><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}</div>
+        </div>
+      </div>
+      <a class="file-view" href="${escapeHtml(doc.url)}" target="_self">View &rarr;</a>
+    </div>`;
+}
+
+function renderList() {
+  const list = document.getElementById('doc-list');
+  const shown = state.items.filter(it =>
+    (state.type === 'all' || it.type === state.type) &&
+    (state.body === 'all' || it.body === state.body));
+
+  const count = document.getElementById('result-count');
+  count.textContent = `${shown.length} document${shown.length !== 1 ? 's' : ''}`;
+
+  if (!shown.length) {
+    list.innerHTML = '<div class="no-docs">No documents match these filters yet.</div>';
+    return;
+  }
+
+  const years = [];
+  const byYear = {};
+  shown.forEach(it => {
+    const y = (it.date || '').slice(0, 4) || 'Undated';
+    if (!byYear[y]) { byYear[y] = []; years.push(y); }
+    byYear[y].push(it);
+  });
+
+  list.innerHTML = years.map(y => `
+    <div class="year-section">
+      <div class="section-label">${y}</div>
+      <div class="file-list">${byYear[y].map(renderRow).join('')}</div>
+    </div>`).join('');
+}
+
+function renderStats(items) {
+  const latest = t => items.find(it => it.type === t);
+  const a = latest('agenda');
+  const m = items.find(it => it.type === 'minutes' && !isDraft(it.doc.filename));
+  const bodies = new Set(items.map(it => it.body));
+  return `
+    <div class="stat-tiles">
+      <div class="stat-tile stat-tile-accent">
+        <div class="stat-label">Latest agenda</div>
+        <div class="stat-value">${a && a.date ? formatDate(a.date) : 'None yet'}</div>
+        <div class="stat-sub">${a ? escapeHtml(a.label) : 'Check back soon'}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Latest final minutes</div>
+        <div class="stat-value">${m && m.date ? formatDate(m.date) : 'None yet'}</div>
+        <div class="stat-sub">${m ? escapeHtml(m.label) : 'Check back soon'}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Documents on file</div>
+        <div class="stat-value">${items.length}</div>
+        <div class="stat-sub">Across ${bodies.size} meeting ${bodies.size !== 1 ? 'bodies' : 'body'}</div>
+      </div>
+    </div>`;
+}
+
+function setupFilters(items) {
+  const bodyBar = document.getElementById('body-filter');
+  const order = ['Town Board', 'Board of Review'];
+  const bodies = Array.from(new Set(items.map(it => it.body)))
+    .sort((x, y) => {
+      const ix = order.indexOf(x), iy = order.indexOf(y);
+      if (ix !== -1 || iy !== -1) return (ix === -1 ? 99 : ix) - (iy === -1 ? 99 : iy);
+      return x.localeCompare(y);
+    });
+  bodies.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.dataset.body = b;
+    btn.textContent = b;
+    bodyBar.appendChild(btn);
+  });
+
+  function wire(bar, key, attr) {
+    bar.addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state[key] = btn.dataset[attr];
+      renderList();
+    });
+  }
+  wire(document.getElementById('type-filter'), 'type', 'type');
+  wire(bodyBar, 'body', 'body');
+}
+
+async function init() {
+  try {
+    const data = await loadData();
+    state.items = collectItems(data);
+    document.getElementById('stat-tiles-container').innerHTML = renderStats(state.items);
+    setupFilters(state.items);
+    renderList();
+  } catch (e) {
+    document.getElementById('doc-list').innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>

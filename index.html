@@ -203,19 +203,15 @@
       50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 6px 3px rgba(165,150,100,0.3); }
     }
 
-    .tile-exit {
-      border: 1px solid var(--gold);
-    }
-    .tile-exit .portal-tile-head {
+    .tile-agendas-minutes { border: 1px solid var(--gold); }
+    .tile-agendas-minutes .portal-tile-head {
       background: var(--white);
       border-bottom: 1px solid var(--border);
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+      box-shadow: inset 4px 0 0 var(--td);
     }
-    .tile-exit .portal-tile-badge { color: var(--tm); margin-bottom: 4px; }
-    .tile-exit .portal-tile-title { color: var(--td); display: flex; align-items: center; gap: 6px; font-size: 14px; }
-    .tile-exit img { height: 34px; width: auto; flex-shrink: 0; align-self: flex-start; }
+    .tile-agendas-minutes .portal-tile-body { box-shadow: inset 4px 0 0 var(--td); }
+    .tile-agendas-minutes .portal-tile-badge { color: var(--tm); }
+    .tile-agendas-minutes .portal-tile-title { color: var(--td); }
 
     @media (max-width: 700px) {
       .portal-grid { grid-template-columns: 1fr; }
@@ -316,13 +312,13 @@
         </div>
       </div>
 
-      <a class="portal-tile tile-governance" href="governance.html">
+      <a class="portal-tile tile-agendas-minutes" href="agendas-minutes.html">
         <div class="portal-tile-head">
           <div class="portal-tile-badge">Live</div>
-          <div class="portal-tile-title">Governance</div>
+          <div class="portal-tile-title">All Agendas &amp; Minutes</div>
         </div>
         <div class="portal-tile-body">
-          <div class="portal-tile-desc">Ordinances, resolutions, policies &amp; fees</div>
+          <div class="portal-tile-desc">Town Board &amp; committees, newest first</div>
         </div>
       </a>
 
@@ -344,6 +340,16 @@
         </div>
       </a>
 
+      <a class="portal-tile tile-governance" href="governance.html">
+        <div class="portal-tile-head">
+          <div class="portal-tile-badge">Live</div>
+          <div class="portal-tile-title">Governance</div>
+        </div>
+        <div class="portal-tile-body">
+          <div class="portal-tile-desc">Ordinances, resolutions, policies &amp; fees</div>
+        </div>
+      </a>
+
       <div class="portal-tile tile-records-archive">
         <div class="portal-tile-head">
           <div class="portal-tile-badge">Coming soon</div>
@@ -353,22 +359,6 @@
           <div class="portal-tile-desc">Public historical town records</div>
         </div>
       </div>
-
-      <a class="portal-tile tile-exit" href="https://winchesterwi.com">
-        <div class="portal-tile-head">
-          <div>
-            <div class="portal-tile-badge">Exit portal</div>
-            <div class="portal-tile-title">
-              winchesterwi.com
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
-            </div>
-          </div>
-          <img src="winchester-logo-tight.png" alt="Town of Winchester seal">
-        </div>
-        <div class="portal-tile-body">
-          <div class="portal-tile-desc">Back to the main town website</div>
-        </div>
-      </a>
 
     </div>
 
