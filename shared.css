@@ -535,7 +535,7 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   .topbar-portal { height: 56px; }
   .portal-brand-icon { width: 32px; height: 32px; }
   .portal-brand-name { font-size: 16px; }
-  .portal-brand-sub { font-size: 8.5px; letter-spacing: 0.12em; }
+  .portal-brand-sub { font-size: 8.5px; letter-spacing: 0.08em; }
   .topbar-portal .back-link,
   .town-link-text { display: none; }
   .town-link { padding-left: 0; border-left: 0; }
@@ -543,18 +543,32 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
 .town-link-solo { padding-left: 0; border-left: 0; }
 
 /* ---------- Site-wide search (top bar) ---------- */
+/* The top bar is a 3-column grid: brand | search | links. The two outer
+   columns share the leftover space equally, so the search box sits at the
+   exact center of the page whenever there is room. Each column is at least
+   as wide as its content, so nothing can overlap: on tighter screens the
+   right-side links shrink first (see breakpoints below), then the search
+   box narrows, and under 700px it becomes an icon. */
+.topbar-portal {
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+  column-gap: 24px;
+}
+.topbar-portal .portal-brand { grid-column: 1; justify-self: start; }
+.topbar-portal .portal-search { grid-column: 2; }
+.topbar-portal .topbar-links { grid-column: 3; justify-self: end; }
 .portal-search {
-  flex: 1 1 auto;
   display: flex;
   justify-content: center;
-  padding: 0 24px;
+  /* Narrows as the window narrows so it can stay centered between the
+     logo and the links for as long as possible. */
+  width: clamp(200px, calc(100vw - 740px), 400px);
   min-width: 0;
 }
 .ps-open { display: none; }
 .ps-field {
   position: relative;
   width: 100%;
-  max-width: 380px;
   display: flex;
   align-items: center;
 }
@@ -709,13 +723,24 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
 }
 .ps-more:hover { background: var(--tl); }
 
-@media (max-width: 900px) {
-  .portal-search { padding: 0 12px; }
+@media (max-width: 1100px) {
   .topbar-portal .back-link { display: none; }
 }
+@media (max-width: 880px) {
+  .topbar-portal { column-gap: 16px; }
+  .topbar-portal .town-link-text { display: none; }
+  .topbar-portal .town-link { padding-left: 0; border-left: 0; }
+}
 @media (max-width: 700px) {
-  .topbar-portal { position: relative; }
-  .portal-search { flex: 0 0 auto; padding: 0; margin-left: auto; margin-right: 12px; }
+  .topbar-portal {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    column-gap: 10px;
+  }
+  .topbar-portal .portal-brand { min-width: 0; max-width: 100%; }
+  .portal-brand-name,
+  .portal-brand-sub { overflow: hidden; text-overflow: ellipsis; }
+  .portal-search { width: auto; }
   .ps-field { display: none; }
   .ps-open {
     display: flex;
@@ -730,6 +755,10 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
     cursor: pointer;
   }
   .topbar-portal.ps-mobile-open .portal-search {
+    /* grid-column:auto makes the overlay cover the whole bar rather than
+       just the search column */
+    grid-column: auto;
+    width: auto;
     position: absolute;
     inset: 0;
     margin: 0;
@@ -757,3 +786,6 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   .ps-body { padding: 12px 14px 16px; }
 }
 .ps-result .file-tag { margin-left: 6px; vertical-align: 2px; }
+@media (max-width: 374px) {
+  .portal-brand-sub { display: none; }
+}
