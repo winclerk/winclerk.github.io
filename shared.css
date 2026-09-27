@@ -619,10 +619,17 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
 
 .ps-backdrop {
   position: fixed;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 64px;               /* set to the bottom of the top bar by shared.js */
   background: rgba(25,60,60,0.18);
   z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
+.ps-backdrop.is-open { opacity: 1; pointer-events: auto; }
 .ps-panel {
   position: fixed;
   left: 16px;
@@ -638,7 +645,36 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   box-shadow: 0 12px 32px rgba(25,60,60,0.18);
   z-index: 1000;
 }
-.ps-panel[hidden], .ps-backdrop[hidden] { display: none; }
+/* Opening: the panel is revealed top-down like a pull-down shade.
+   Closed state keeps it clipped away and hidden from screen readers. */
+.ps-panel {
+  clip-path: inset(0 0 100% 0);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    clip-path 200ms cubic-bezier(0.32, 0.72, 0, 1),
+    height 240ms cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 0s linear 200ms;
+}
+.ps-panel.is-open {
+  clip-path: inset(0 0 -48px 0);   /* negative bottom keeps the drop shadow visible */
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    clip-path 280ms cubic-bezier(0.32, 0.72, 0, 1),
+    height 240ms cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 0s;
+}
+.ps-result.ps-enter { animation: psRowIn 220ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+@keyframes psRowIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-panel, .ps-panel.is-open { clip-path: none; transition: opacity 150ms ease, visibility 0s linear 150ms; opacity: 0; }
+  .ps-panel.is-open { opacity: 1; transition: opacity 150ms ease, visibility 0s; }
+  .ps-result.ps-enter { animation: none; }
+}
 .ps-body { padding: 16px 20px 20px; }
 .ps-summary { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
 .ps-status { font-size: 13px; color: var(--text-muted); padding: 12px 0; }

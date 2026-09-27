@@ -175,8 +175,11 @@ function renderFolderCard(name, meta, count, href) {
     'agendas-minutes.html': 'agendas'
   };
   const INITIAL_SHOWN = 8;
+  const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const S = {
+    open: false,
+    lastKeys: '',
     docs: null,          // built from data.json
     textLoaded: false,
     textLoading: null,
@@ -303,7 +306,7 @@ function renderFolderCard(name, meta, count, href) {
     return (start > 0 ? '&hellip;' : '') + highlight(d.rawText.slice(start, end), ts) + (end < d.rawText.length ? '&hellip;' : '');
   }
 
-  function renderResult(r, ts, phrase) {
+  function renderResult(r, ts, phrase, i, animate) {
     const d = r.d, doc = d.doc;
     const [iconClass, iconLabel] = getIconClass(doc.filename);
     const draft = isDraft(doc.filename) ? '<span class="file-tag tag-draft">Draft</span>' : '';
@@ -314,7 +317,7 @@ function renderFolderCard(name, meta, count, href) {
     const date = doc.date ? ' &middot; ' + formatDateShort(doc.date) : '';
     const snip = snippet(d, ts, phrase);
     return `
-      <div class="ps-result">
+      <div class="ps-result${animate && i < 6 ? ' ps-enter' : ''}"${animate && i < 6 ? ` style="animation-delay:${i * 25}ms"` : ''}>
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="ps-result-body">
           <a class="ps-result-title" href="${esc(doc.url)}">${highlight(doc.label || doc.filename, ts)}</a>${tag}${draft}
@@ -324,7 +327,7 @@ function renderFolderCard(name, meta, count, href) {
       </div>`;
   }
 
-  function renderGroup(key, title, list, ts, phrase) {
+  function renderGroup(key, title, list, ts, phrase, counter, animate) {
     if (!list.length) return '';
     const shown = S.expanded[key] ? list : list.slice(0, INITIAL_SHOWN);
     const more = list.length > shown.length
@@ -332,7 +335,7 @@ function renderFolderCard(name, meta, count, href) {
     return `
       <div class="ps-group">
         <div class="ps-group-title">${esc(title)} <span>${list.length}</span></div>
-        ${shown.map(r => renderResult(r, ts, phrase)).join('')}
+        ${shown.map(r => renderResult(r, ts, phrase, counter.i++, animate)).join('')}
         ${more}
       </div>`;
   }
@@ -343,7 +346,7 @@ function renderFolderCard(name, meta, count, href) {
     const ts = terms(q);
     if (!ts.length) { closePanel(); return; }
     openPanel();
-    if (!S.docs) { panelBody.innerHTML = '<div class="ps-status">Loading&hellip;</div>'; return; }
+    if (!S.docs) { setPanelContent('<div class="ps-status">Loading&hellip;</div>'); return; }
 
     const phrase = ts.join(' ');
     const results = [];
@@ -354,6 +357,12 @@ function renderFolderCard(name, meta, count, href) {
     const inSection = r => sec === 'agendas' ? (r.d.tag !== 'other') : r.d.section === sec;
     const secTitle = sec === 'agendas' ? 'In agendas & minutes' : 'In ' + (SECTION_LABELS[sec] || 'this section');
 
+    // Fade the first few rows in only when the set of results actually changes
+    const keys = results.slice(0, 12).map(r => r.d.doc.url).join('|');
+    const animate = keys !== S.lastKeys;
+    S.lastKeys = keys;
+    const counter = { i: 0 };
+
     const note = S.textLoaded ? '' : '<div class="ps-status ps-status-inline">Searching names now; document text is still loading&hellip;</div>';
     let html = `<div class="ps-summary" role="status">${results.length} result${results.length !== 1 ? 's' : ''} for &ldquo;${esc(q)}&rdquo;</div>${note}`;
 
@@ -363,13 +372,31 @@ function renderFolderCard(name, meta, count, href) {
       const mine = results.filter(inSection);
       const rest = results.filter(r => !inSection(r));
       html += mine.length
-        ? renderGroup('here', secTitle, mine, ts, phrase)
+        ? renderGroup('here', secTitle, mine, ts, phrase, counter, animate)
         : `<div class="ps-group"><div class="ps-group-title">${esc(secTitle)} <span>0</span></div><div class="ps-empty ps-empty-sm">No matches on this page.</div></div>`;
-      html += renderGroup('else', 'Also found elsewhere in the portal', rest, ts, phrase);
+      html += renderGroup('else', 'Also found elsewhere in the portal', rest, ts, phrase, counter, animate);
     } else {
-      html += renderGroup('all', 'All records', results, ts, phrase);
+      html += renderGroup('all', 'All records', results, ts, phrase, counter, animate);
     }
-    panelBody.innerHTML = html;
+    setPanelContent(html);
+  }
+
+  // Swap in new results and let the panel smoothly grow or shrink to fit.
+  function setPanelContent(html) {
+    const panel = S.els.panel;
+    const wasShown = S.open && !S.justOpened && panel.offsetHeight > 0;
+    S.justOpened = false;
+    const from = wasShown ? panel.offsetHeight : 0;
+    S.els.body.innerHTML = html;
+    if (!wasShown || REDUCED_MOTION.matches) { panel.style.height = ''; return; }
+    panel.style.height = '';
+    const to = panel.offsetHeight;
+    if (Math.abs(to - from) < 2) return;
+    panel.style.height = from + 'px';
+    panel.getBoundingClientRect();           // commit the start height
+    panel.style.height = to + 'px';
+    clearTimeout(S.heightTimer);
+    S.heightTimer = setTimeout(() => { panel.style.height = ''; }, 260);
   }
 
   let timer = null;
@@ -388,20 +415,28 @@ function renderFolderCard(name, meta, count, href) {
 
   function positionPanel() {
     const bar = document.querySelector('.topbar-portal');
-    const top = bar ? bar.getBoundingClientRect().bottom : 64;
-    S.els.panel.style.top = Math.max(0, top) + 8 + 'px';
-    S.els.panel.style.maxHeight = `calc(100vh - ${Math.max(0, top) + 24}px)`;
+    const top = Math.max(0, bar ? bar.getBoundingClientRect().bottom : 64);
+    S.els.panel.style.top = top + 8 + 'px';
+    S.els.panel.style.maxHeight = `calc(100vh - ${top + 24}px)`;
+    // The dimmed layer starts below the top bar, so the search box stays bright.
+    S.els.backdrop.style.top = top + 'px';
   }
   function openPanel() {
-    if (!S.els.panel.hidden) return;
+    if (S.open) return;
     positionPanel();
-    S.els.panel.hidden = false;
-    S.els.backdrop.hidden = false;
+    S.open = true;
+    S.justOpened = true;
+    S.els.panel.classList.add('is-open');
+    S.els.backdrop.classList.add('is-open');
     S.els.input.setAttribute('aria-expanded', 'true');
   }
   function closePanel() {
-    S.els.panel.hidden = true;
-    S.els.backdrop.hidden = true;
+    if (!S.open) return;
+    S.open = false;
+    S.lastKeys = '';
+    S.els.panel.style.height = '';
+    S.els.panel.classList.remove('is-open');
+    S.els.backdrop.classList.remove('is-open');
     S.els.input.setAttribute('aria-expanded', 'false');
   }
   function clearSearch() {
@@ -434,11 +469,9 @@ function renderFolderCard(name, meta, count, href) {
 
     const backdrop = document.createElement('div');
     backdrop.className = 'ps-backdrop';
-    backdrop.hidden = true;
     const panel = document.createElement('div');
     panel.className = 'ps-panel';
     panel.id = 'ps-panel';
-    panel.hidden = true;
     panel.setAttribute('role', 'region');
     panel.setAttribute('aria-label', 'Search results');
     panel.innerHTML = '<div class="ps-body"></div>';
@@ -474,7 +507,7 @@ function renderFolderCard(name, meta, count, href) {
     });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        if (!S.els.panel.hidden) { closePanel(); S.els.input.focus(); }
+        if (S.open) { closePanel(); S.els.input.focus(); }
         else if (S.query) clearSearch();
         bar.classList.remove('ps-mobile-open');
       } else if (e.key === '/' && !/^(input|textarea|select)$/i.test((e.target.tagName || ''))) {
@@ -482,8 +515,8 @@ function renderFolderCard(name, meta, count, href) {
         S.els.input.focus();
       }
     });
-    window.addEventListener('resize', () => { if (!S.els.panel.hidden) positionPanel(); });
-    window.addEventListener('scroll', () => { if (!S.els.panel.hidden) positionPanel(); }, { passive: true });
+    window.addEventListener('resize', () => { if (S.open) positionPanel(); });
+    window.addEventListener('scroll', () => { if (S.open) positionPanel(); }, { passive: true });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
