@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import re
 from pypdf import PdfReader
 from github_batch import GitHubBatch
+import search_index
 
 
 TENANT_ID     = os.environ["AZURE_TENANT_ID"]
@@ -723,6 +724,7 @@ def scan_folder(token, drive_id, folder_path):
             doc["draft"] = True
         if folder_url:
             doc["folderUrl"] = folder_url
+        search_index.register(doc, drive_id, item)
         docs.append(doc)
 
     def key(d):
@@ -760,6 +762,7 @@ def scan_subfolder(token, drive_id, folder_path):
         doc = {"label": infer_label(name), "filename": name, "url": link, "date": date, "posted": posted}
         if "DRAFT" in name.upper():
             doc["draft"] = True
+        search_index.register(doc, drive_id, item)
         docs.append(doc)
 
     docs.sort(key=lambda d: d["label"].lower())
@@ -816,6 +819,7 @@ def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
             doc["folder"] = folder_label
         if folder_url:
             doc["folderUrl"] = folder_url
+        search_index.register(doc, drive_id, item)
         docs.append(doc)
 
     return docs
@@ -1051,6 +1055,15 @@ def main():
     print("Writing to GitHub...")
     write_github(data)
     print("Done.")
+    # ── Full-text search index (search-index.json) ──
+    # Only re-reads files that changed since the last run. A failure here is
+    # logged and skipped so it can never block data.json or the permit sync.
+    try:
+        search_index.build(token, download_file, write_github_file)
+    except Exception as e:
+        import traceback
+        print(f"Search index build failed: {e}")
+        traceback.print_exc()
     # ── Permits (three-tracker sync) ──
     try:
         import sync_permits
