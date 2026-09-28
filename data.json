@@ -1,63 +1,14 @@
 {
   "meetings": [
     {
-      "id": "special-2026-09-28",
-      "title": "Town Board Meeting - September 28, 2026",
+      "id": "special-2026-10-06",
+      "title": "Special Town Board Meeting - October 6, 2026",
       "type": "special",
       "status": "upcoming",
-      "date": "2026-09-28",
+      "date": "2026-10-06",
       "time": "10:00 AM",
       "location": "Winchester Town Hall",
-      "documents": [
-        {
-          "label": "Board of Review Agenda",
-          "filename": "Agenda_BOR_20260928.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCXg8jvQXO4Rpjtx1FnziVqAUpWSGimHaaOjRsmOc19VEc",
-          "date": "2026-09-28",
-          "posted": "2026-09-26",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "2026 Real Estate Assessment Roll Alphabetical Report",
-          "filename": "Report_2026-Real-Estate-Assessment-Roll-Alphabetical_20260928.xls",
-          "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQDnwt44LxtIQZEYUilIJ-0UARlSFTaNAE9syu12Ebs0HiY",
-          "date": "2026-09-28",
-          "posted": "2026-09-28",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "2026-08 Virtual Meeting Attendance Policy",
-          "filename": "Policy_2026-08_Virtual-Meeting-Attendance_20260927.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBK9t3GeXlcRrNg1RfbYnmIAXcLLMj-tWldSpD-WGjn8FM",
-          "date": "2026-09-27",
-          "posted": "2026-09-28",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Board of Review Training Form PA 107 Amended",
-          "filename": "Form_PA-107-Amended_BOR-Training_20260928.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDL0tWcZFs6R5U0s7pxickDATt93tbA0D9IqMmgMPj7hz8",
-          "date": "2026-09-28",
-          "posted": "2026-09-28",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Confidentiality 200201 2049",
-          "filename": "Confidentiality 200201_2049.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAMZdel83mZQJ42kAPvvM3vAfSUI_Fsv59bklXTp_cijFc",
-          "date": "2026-09-28",
-          "posted": "2026-09-28",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Guide 2026 Board of Review Members",
-          "filename": "Guide_2026-Board-of-Review-Members_20260928.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBQO26vhG6qR69Boq2csHc6Ae__7V7MPNNAei99N18qzRM",
-          "date": "2026-09-28",
-          "posted": "2026-09-28",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        }
-      ]
+      "documents": []
     },
     {
       "id": "regular-2026-09-14",
@@ -1322,6 +1273,80 @@
       ]
     },
     {
+      "id": "special-2026-09-28",
+      "title": "Special Town Board Meeting - September 28, 2026",
+      "type": "special",
+      "status": "complete",
+      "date": "2026-09-28",
+      "documents": [
+        {
+          "label": "Board of Review Agenda",
+          "filename": "Agenda_BOR_20260928.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCqKlJuv2E7S7v2Bm5GLfnmAcznRFggECLPRVvIcKo5Ym8",
+          "date": "2026-09-28",
+          "posted": "2026-09-28",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARPkNkgQ0BTprK_psma0v9AXj5zkG6-2o4Zov0Qm4Dim8"
+        },
+        {
+          "label": "Board of Review Minutes (Draft) - September 28, 2026",
+          "filename": "Minutes_BOR_20260928_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCP2tx7g-ySS75TngHiMNDdAagFrCXYkqJvLDr3Gk9Gh08",
+          "date": "2026-09-28",
+          "posted": "2026-09-28",
+          "draft": true,
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARPkNkgQ0BTprK_psma0v9AXj5zkG6-2o4Zov0Qm4Dim8"
+        },
+        {
+          "label": "2026 Real Estate Assessment Roll Report",
+          "filename": "Report_2026-Real-Estate-Assessment-Roll_20260928.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDX_D9r4B7ZQLw2yWSTSU3vAcJYXd60EtQhbCW2nzt84lE",
+          "date": "2026-09-28",
+          "posted": "2026-09-28",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARPkNkgQ0BTprK_psma0v9AXj5zkG6-2o4Zov0Qm4Dim8"
+        },
+        {
+          "label": "2026-08 Virtual Meeting Attendance Policy",
+          "filename": "Policy_2026-08_Virtual-Meeting-Attendance_20260927.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAA0X-lA4VXRK0fEgSGXmXLAZANLHeL9Zc25w4Ra1Zr9-E",
+          "date": "2026-09-27",
+          "posted": "2026-09-28",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARPkNkgQ0BTprK_psma0v9AXj5zkG6-2o4Zov0Qm4Dim8"
+        },
+        {
+          "label": "Affidavit Board of Review Robert Silvis",
+          "filename": "Affidavit_BOR-Robert-Silvis_20260928.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCi7v1auOFPR4sfv1WydTfwAV6j8Elo4rLFQeA_v3DGjWc",
+          "date": "2026-09-28",
+          "posted": "2026-09-28",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARPkNkgQ0BTprK_psma0v9AXj5zkG6-2o4Zov0Qm4Dim8"
+        },
+        {
+          "label": "Board of Review Training Form PA 107 Amended",
+          "filename": "Form_PA-107-Amended_BOR-Training_20260928.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBRf0zZpcg2Rr56tvRTCp6jAT6FMlwWfkz90brYDRoucN0",
+          "date": "2026-09-28",
+          "posted": "2026-09-28",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARPkNkgQ0BTprK_psma0v9AXj5zkG6-2o4Zov0Qm4Dim8"
+        },
+        {
+          "label": "Confidentiality 200201 2049",
+          "filename": "Confidentiality 200201_2049.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAWn5gmNnjETJw3lvl8qRDgAbX6fHA-Y_QneM7VQ66qXBQ",
+          "date": "2026-09-28",
+          "posted": "2026-09-28",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARPkNkgQ0BTprK_psma0v9AXj5zkG6-2o4Zov0Qm4Dim8"
+        },
+        {
+          "label": "Guide 2026 Board of Review Members",
+          "filename": "Guide_2026-Board-of-Review-Members_20260928.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAjNO43SbxATpqKRquvLDRTARVRt2Mx6kG3qZm1oUz_Y28",
+          "date": "2026-09-28",
+          "posted": "2026-09-28",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARPkNkgQ0BTprK_psma0v9AXj5zkG6-2o4Zov0Qm4Dim8"
+        }
+      ]
+    },
+    {
       "id": "special-2026-09-10",
       "title": "Special Town Board Meeting - September 10, 2026",
       "type": "special",
@@ -2232,6 +2257,13 @@
               "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQC-KzCHw-gBSYyoWVsiY6D2AZun4MKKt8eRYFRnE9rOjZA",
               "date": "2026-06-30",
               "posted": "2026-08-16"
+            },
+            {
+              "label": "2026-08 Virtual Meeting Attendance Policy",
+              "filename": "Policy_2026-08_Virtual-Meeting-Attendance_20260927.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBojZdKTWOnS4uELiX4PFinATzUNwMjA5jnCF3K7ImNnUs",
+              "date": "2026-09-27",
+              "posted": "2026-09-28"
             }
           ]
         },
