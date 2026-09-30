@@ -789,6 +789,20 @@ def collect_all_next_meeting_filenames(token, drive_id):
     return filenames
 
 
+def newest_first(docs):
+    """Sort documents newest first by their date. On the same date: agenda,
+    then minutes, then everything else alphabetically. Undated files last."""
+    def rank(d):
+        l = (d.get("label") or d.get("filename") or "").lower()
+        if "agenda" in l: return 0
+        if "minutes" in l: return 1
+        return 2
+    docs.sort(key=lambda d: ((d.get("label") or "").lower()))
+    docs.sort(key=rank)
+    docs.sort(key=lambda d: d.get("date") or "", reverse=True)
+    return docs
+
+
 def scan_folder(token, drive_id, folder_path):
     """Scan a meeting folder for documents and subfolders.
     Returns (docs, subfolders) where subfolders is a list of
@@ -845,12 +859,7 @@ def scan_folder(token, drive_id, folder_path):
         search_index.register(doc, drive_id, item)
         docs.append(doc)
 
-    def key(d):
-        l = d["label"].lower()
-        if "agenda" in l: return (0, l)
-        if "minutes" in l: return (1, l)
-        return (2, l)
-    docs.sort(key=key)
+    newest_first(docs)
     return docs, subfolders
 
 
@@ -883,7 +892,7 @@ def scan_subfolder(token, drive_id, folder_path):
         search_index.register(doc, drive_id, item)
         docs.append(doc)
 
-    docs.sort(key=lambda d: d["label"].lower())
+    newest_first(docs)
     return docs
 
 
@@ -982,7 +991,7 @@ def build_flat_site_data(token, site_config):
             docs = scan_library(token, drive_id, cfg["folder"], None, depth=0, max_depth=0)
         else:
             docs = scan_library(token, drive_id, max_depth=cfg["max_depth"])
-        docs.sort(key=lambda d: d["label"].lower())
+        newest_first(docs)
         print(f"    Found {len(docs)} document(s).")
         if not docs:
             print(f"    Note: 0 documents published from '{lib_name}'. If it has files, look above for "
@@ -1147,6 +1156,13 @@ def build_data(token, drive_id):
         spec.append(entry)
     spec.sort(key=lambda x: x["date"], reverse=True)
     meetings.extend(spec)
+
+    # One list, newest first: the upcoming meeting stays on top, then every
+    # past meeting (regular and special together) by date.
+    upcoming = [m for m in meetings if m.get("status") == "upcoming"]
+    past = [m for m in meetings if m.get("status") != "upcoming"]
+    past.sort(key=lambda x: x.get("date") or "", reverse=True)
+    meetings = upcoming + past
 
     return {"meetings": meetings}
 
