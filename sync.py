@@ -47,7 +47,7 @@ FLAT_SITES = [
         "libraries": [
             {"name": "Planning Commission",   "label": "Planning Commission",     "folder": "Agendas & Minutes"},
             {"name": "WTLC",                  "label": "Lakes Committee (WTLC)",  "max_depth": 0},
-            {"name": "NEMSD Shared Services", "label": "Northwoods EMS District", "max_depth": 0},
+            {"name": "NEMSD",                 "label": "Northwoods EMS District", "max_depth": 0},
             {"name": "Fire Department",       "label": "Fire & Rescue",           "max_depth": 0},
         ],
     },
@@ -168,13 +168,48 @@ def make_folder_link(token, drive_id, folder_path=None):
         return None
 
 
-def make_link(token, drive_id, item_id):
+# The tenant requires "Anyone" links to expire (currently 300 days).
+# createLink hands back the file's existing Anyone link when there is one,
+# so without this a portal link would quietly die when it expires. When the
+# existing link is within LINK_REFRESH_DAYS of expiring (or already expired),
+# it is deleted and a fresh one is created; data.json is rewritten with the
+# new URL on the same run, so the portal never points at a dead link.
+LINK_REFRESH_DAYS = 30
+
+
+def _create_anon_link(token, drive_id, item_id):
     url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/createLink"
     r = requests.post(url,
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
         json={"type": "view", "scope": "anonymous"})
     r.raise_for_status()
-    return r.json()["link"]["webUrl"]
+    return r.json()
+
+
+def _link_expires_soon(perm):
+    exp = perm.get("expirationDateTime")
+    if not exp:
+        return False
+    try:
+        exp_dt = datetime.fromisoformat(exp.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    days_left = (exp_dt - datetime.now(timezone.utc)).total_seconds() / 86400
+    return days_left < LINK_REFRESH_DAYS
+
+
+def make_link(token, drive_id, item_id):
+    perm = _create_anon_link(token, drive_id, item_id)
+    if _link_expires_soon(perm) and perm.get("id"):
+        del_url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/permissions/{perm['id']}"
+        r = requests.delete(del_url, headers={"Authorization": f"Bearer {token}"})
+        if r.ok:
+            print(f"    Refreshed expiring link (was set to expire {perm.get('expirationDateTime')})")
+            perm = _create_anon_link(token, drive_id, item_id)
+        else:
+            # Keep the old link rather than fail the sync; it will be retried next run.
+            print(f"    Warning: could not refresh expiring link ({r.status_code}); keeping existing link")
+    return perm["link"]["webUrl"]
 
 
 def download_file(token, drive_id, item_id):
