@@ -160,6 +160,7 @@ function renderFolderCard(name, meta, count, href) {
     elections: 'Elections'
   };
   const SECTION_PAGES = {
+    boardsCommissions: 'committees.html',
     governance: 'governance.html',
     elections: 'elections.html'
   };
