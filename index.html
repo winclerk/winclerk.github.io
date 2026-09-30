@@ -129,7 +129,6 @@
     .tile-town-board .portal-tile-badge { color: #fff; }
     .tile-town-board .portal-tile-title { color: #fff; }
 
-    .tile-boards-commissions,
     .tile-records-archive {
       /* Grayscale while pages are unbuilt. To reactivate a tile:
          1. Remove its class from this rule
@@ -149,19 +148,20 @@
     .tile-elections .portal-tile-next { background: #f1efe8; }
     .tile-elections .portal-tile-next-label { color: #888780; }
     .tile-elections .portal-tile-next-date { color: #444441; }
-    /* ── Live tile CSS (uncomment per-tile when reactivating) ──
-    Committees & Commissions reserved: head bg var(--tl), badge var(--tm), title var(--td)
+    .tile-boards-commissions { border: 1px solid var(--gold); }
+    .tile-boards-commissions .portal-tile-head { background: var(--tl); }
+    .tile-boards-commissions .portal-tile-badge { color: var(--tm); }
+    .tile-boards-commissions .portal-tile-title { color: var(--td); }
+
+    /* ── Live tile CSS (add when reactivating) ──
     Records Archive: not yet decided
-    ──────────────────────────────────────────────────────── */
-    .tile-boards-commissions .portal-tile-head,
+    ──────────────────────────────────────────── */
     .tile-records-archive .portal-tile-head {
       background: #888780;
     }
-    .tile-boards-commissions .portal-tile-badge,
     .tile-records-archive .portal-tile-badge {
       color: #f1efe8;
     }
-    .tile-boards-commissions .portal-tile-title,
     .tile-records-archive .portal-tile-title {
       color: #fff;
     }
@@ -323,15 +323,15 @@
         </div>
       </a>
 
-      <div class="portal-tile tile-boards-commissions">
+      <a class="portal-tile tile-boards-commissions" href="committees.html">
         <div class="portal-tile-head">
-          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-badge">Live</div>
           <div class="portal-tile-title">Committees &amp; Commissions</div>
         </div>
         <div class="portal-tile-body">
-          <div class="portal-tile-desc">Planning, intermunicipal &amp; shared services</div>
+          <div class="portal-tile-desc">Planning, lakes, EMS &amp; fire agendas and minutes</div>
         </div>
-      </div>
+      </a>
 
       <a class="portal-tile tile-agendas-minutes" href="agendas-minutes.html">
         <div class="portal-tile-head">
