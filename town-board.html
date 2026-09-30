@@ -85,13 +85,26 @@ function filterQuick(type, el) {
   renderQuickList(type);
 }
 
+// Recording(s) of a meeting, from data.json "recordings". When two meetings
+// share a date, a recording only goes with the one its title matches.
+function recordingsForMeeting(m) {
+  const data = window.__portalData || {};
+  const sameDay = allMeetings.filter(x => x.date === m.date).length > 1;
+  const kw = t => ['annual', 'board of review', 'special', 'regular', 'budget']
+    .filter(w => (t || '').toLowerCase().includes(w));
+  return getRecordings(data, r =>
+    r.date === m.date && (r.body === 'Town Board' || r.body === 'Board of Review') &&
+    (!sameDay || kw(r.title).some(w => kw(m.title).includes(w))));
+}
+
 function renderQuickList(filter) {
   const list = document.getElementById('quick-list');
   const meetings = filter === 'all' ? allMeetings : allMeetings.filter(m => m.type === filter);
   const agendaMinutes = meetings.map(m => ({
     ...m,
-    documents: (m.documents || []).filter(d => getDocTag(d.filename) !== 'other')
-  })).filter(m => m.documents.length > 0);
+    documents: (m.documents || []).filter(d => getDocTag(d.filename) !== 'other'),
+    recordings: recordingsForMeeting(m)
+  })).filter(m => m.documents.length > 0 || m.recordings.length > 0);
 
   if (!agendaMinutes.length) {
     list.innerHTML = '<div class="no-docs">No documents found.</div>';
@@ -103,7 +116,19 @@ function renderQuickList(filter) {
     let badgeClass = 'badge-complete', badgeLabel = 'Complete';
     if (isUpcoming) { badgeClass = 'badge-upcoming'; badgeLabel = 'Upcoming'; }
 
-    const rows = m.documents.map(doc => {
+    const recRows = m.recordings.map(rec => `
+        <div class="quick-row">
+          <div class="quick-left">
+            <div class="file-icon icon-video"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></div>
+            <div>
+              <div class="quick-name">Meeting recording <span class="file-tag tag-recording">Recording</span></div>
+              ${rec.date ? `<div class="quick-meta">${formatDateShort(rec.date)}</div>` : ''}
+            </div>
+          </div>
+          <a class="quick-view" href="${rec.url}" target="_blank" rel="noopener">Watch &rarr;</a>
+        </div>`).join('');
+
+    const rows = recRows + m.documents.map(doc => {
       const tag = getDocTag(doc.filename);
       const draft = isDraft(doc.filename);
       const dateStr = doc.updated ? `Updated ${formatDateShort(doc.updated)}` : (doc.date ? formatDateShort(doc.date) : '');
