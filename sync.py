@@ -36,10 +36,18 @@ FLAT_SITES = [
     {
         "key": "boardsCommissions",
         "path": "/sites/BoardsCommitteesCommissions",
+        # Committees publish agendas & minutes only. Each entry names the
+        # SharePoint library ("name"), the heading shown on the portal
+        # ("label"), and what to publish:
+        #   "folder": only files inside that one folder (no subfolders)
+        #   "max_depth": 0 -> only files at the library root (no subfolders)
+        # Anything else in the library (working files, recordings, maps,
+        # Internal Only, etc.) is never published.
         "libraries": [
-            "Planning Commission",
-            "Intermunicipal Committees",
-            "NEMSD Shared Services",
+            {"name": "Planning Commission",   "label": "Planning Commission",     "folder": "Agendas & Minutes"},
+            {"name": "WTLC",                  "label": "Lakes Committee (WTLC)",  "max_depth": 0},
+            {"name": "NEMSD Shared Services", "label": "Northwoods EMS District", "max_depth": 0},
+            {"name": "Fire Department",       "label": "Fire & Rescue",           "max_depth": 0},
         ],
     },
     {
@@ -769,7 +777,7 @@ def scan_subfolder(token, drive_id, folder_path):
     return docs
 
 
-def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
+def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0, max_depth=None):
     """Recursively scan a document library (not meeting-folder-shaped).
     Skips any folder named SKIP_FOLDER_NAME at any depth. Recurses into
     other subfolders up to MAX_SCAN_DEPTH levels below the library root.
@@ -791,9 +799,10 @@ def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
         if "folder" in item:
             if name.strip().lower() == SKIP_FOLDER_NAME.lower():
                 continue
-            if depth < MAX_SCAN_DEPTH:
+            limit = MAX_SCAN_DEPTH if max_depth is None else max_depth
+            if depth < limit:
                 sub_path = f"{folder_path}/{name}" if folder_path else name
-                docs.extend(scan_library(token, drive_id, sub_path, name, depth + 1))
+                docs.extend(scan_library(token, drive_id, sub_path, name, depth + 1, max_depth))
             continue
 
         try:
@@ -825,27 +834,47 @@ def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0):
     return docs
 
 
+def _lib_cfg(lib):
+    """Normalize a FLAT_SITES library entry. Plain strings (Governance,
+    Elections) keep the original behavior: whole library, MAX_SCAN_DEPTH."""
+    if isinstance(lib, str):
+        return {"name": lib, "label": lib, "folder": None, "max_depth": None}
+    return {
+        "name": lib["name"],
+        "label": lib.get("label", lib["name"]),
+        "folder": lib.get("folder"),
+        "max_depth": lib.get("max_depth"),
+    }
+
+
 def build_flat_site_data(token, site_config):
     print(f"Locating site: {site_config['key']} ({site_config['path']})...")
     try:
         site_id = get_site_id(token, site_config["path"])
     except Exception as e:
         print(f"  Warning: could not find site {site_config['path']}: {e}")
-        return {"libraries": [{"name": lib, "documents": []} for lib in site_config["libraries"]]}
+        return {"libraries": [{"name": _lib_cfg(lib)["label"], "documents": []} for lib in site_config["libraries"]]}
 
     libraries_out = []
-    for lib_name in site_config["libraries"]:
+    for lib in site_config["libraries"]:
+        cfg = _lib_cfg(lib)
+        lib_name, label = cfg["name"], cfg["label"]
         print(f"  Scanning library: {lib_name}...")
         try:
             drive_id = get_drive_id(token, site_id, lib_name)
         except Exception as e:
             print(f"    Warning: {e}")
-            libraries_out.append({"name": lib_name, "documents": []})
+            libraries_out.append({"name": label, "documents": []})
             continue
-        docs = scan_library(token, drive_id)
+        if cfg["folder"]:
+            # Publish only this folder's files. folder_label stays None so the
+            # docs read as the library's own documents, not a sub-group.
+            docs = scan_library(token, drive_id, cfg["folder"], None, depth=0, max_depth=0)
+        else:
+            docs = scan_library(token, drive_id, max_depth=cfg["max_depth"])
         docs.sort(key=lambda d: d["label"].lower())
         print(f"    Found {len(docs)} document(s).")
-        libraries_out.append({"name": lib_name, "documents": docs})
+        libraries_out.append({"name": label, "documents": docs})
 
     return {"libraries": libraries_out}
 
