@@ -5,6 +5,7 @@ import io
 import requests
 from datetime import datetime, timezone
 import re
+import urllib.parse
 from pypdf import PdfReader
 from github_batch import GitHubBatch
 import search_index
@@ -104,11 +105,22 @@ def get_site_id(token, site_path=SITE_PATH):
 
 
 def get_drive_id(token, site_id, library_name=LIBRARY_NAME):
+    """Find a document library by its display name. Falls back to the
+    library's URL segment (e.g. .../sites/X/NEMSD%20Shared%20Services),
+    since a library's display name can differ from the name in its URL."""
     url = f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives"
-    for d in graph_get(token, url)["value"]:
+    drives = graph_get(token, url)["value"]
+    for d in drives:
         if d["name"] == library_name:
             return d["id"]
-    raise ValueError(f"Drive '{library_name}' not found")
+    want = library_name.strip().lower()
+    for d in drives:
+        segment = urllib.parse.unquote((d.get("webUrl") or "").rstrip("/").split("/")[-1]).strip().lower()
+        if segment == want:
+            print(f"    Matched library '{library_name}' by URL (display name is '{d['name']}')")
+            return d["id"]
+    names = ", ".join(f"'{d['name']}'" for d in drives)
+    raise ValueError(f"Drive '{library_name}' not found. Libraries on this site: {names}")
 
 
 def list_root(token, drive_id):
@@ -874,6 +886,9 @@ def build_flat_site_data(token, site_config):
             docs = scan_library(token, drive_id, max_depth=cfg["max_depth"])
         docs.sort(key=lambda d: d["label"].lower())
         print(f"    Found {len(docs)} document(s).")
+        if not docs:
+            print(f"    Note: 0 documents published from '{lib_name}'. If it has files, look above for "
+                  f"'skipping' warnings (sharing links could not be created for them).")
         libraries_out.append({"name": label, "documents": docs})
 
     return {"libraries": libraries_out}

@@ -148,7 +148,7 @@ async function init() {
       nextBar.style.display = 'flex';
     }
 
-    // Stat tiles: Next meeting, Most recent meeting, Years covered
+    // Stat tiles: Next meeting, Most recent meeting, Years available
     const nextDate = upcoming ? formatDate(upcoming.date) : 'TBD';
     const nextTime = upcoming ? (upcoming.time || '') : '';
     const nextLocation = upcoming ? (upcoming.location || '') : '';
@@ -178,7 +178,7 @@ async function init() {
           ${mostRecentTitle ? `<div class="stat-sub">${mostRecentTitle}</div>` : ''}
         </div>
         <div class="stat-tile">
-          <div class="stat-label">Years covered</div>
+          <div class="stat-label">Years available</div>
           <div class="stat-value">${yearsStr}</div>
           <div class="stat-sub">${totalMeetings} meeting${totalMeetings !== 1 ? 's' : ''} on record</div>
         </div>

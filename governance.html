@@ -95,20 +95,15 @@ function getMostRecentDoc(libraries) {
   return best;
 }
 
-function getMostActiveLibrary(libraries) {
-  let best = null;
-  libraries.forEach(lib => {
-    const count = (lib.documents || []).length;
-    if (!best || count > best.count) best = { name: lib.name, count };
-  });
-  return best;
-}
-
 function renderGovernanceStatTiles(libraries) {
   const mostRecent = getMostRecentDoc(libraries);
   const feeSchedule = libraries.find(l => l.name === 'Fee Schedule');
   const feeCount = feeSchedule ? feeSchedule.documents.length : 0;
-  const mostActive = getMostActiveLibrary(libraries);
+
+  const dates = [];
+  let total = 0;
+  libraries.forEach(lib => (lib.documents || []).forEach(doc => { total++; dates.push(doc.date); }));
+  const years = yearsAvailable(dates);
 
   const linkIcon = `
     <svg class="stat-link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -121,14 +116,9 @@ function renderGovernanceStatTiles(libraries) {
   return `
     <div class="stat-tiles">
       <div class="stat-tile stat-tile-accent">
-        <div class="stat-label">Most recent addition</div>
+        <div class="stat-label">Most recent</div>
         <div class="stat-value">${mostRecent ? formatDateShort(mostRecent.date) : 'None yet'}</div>
         <div class="stat-sub">${mostRecent ? mostRecent.library : 'Check back soon'}</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Most active category</div>
-        <div class="stat-value">${mostActive && mostActive.count ? mostActive.name : 'None yet'}</div>
-        <div class="stat-sub">${mostActive && mostActive.count ? mostActive.count + ' document' + (mostActive.count !== 1 ? 's' : '') + ' on file' : 'No documents posted yet'}</div>
       </div>
       <a class="stat-tile stat-tile-link" href="#lib-fee-schedule">
         ${linkIcon}
@@ -136,7 +126,20 @@ function renderGovernanceStatTiles(libraries) {
         <div class="stat-value">${feeCount ? 'Fee Schedule' : 'Not posted yet'}</div>
         <div class="stat-sub">${feeCount ? feeSub : 'No documents yet'}</div>
       </a>
+      <div class="stat-tile">
+        <div class="stat-label">Years available</div>
+        <div class="stat-value">${years || 'None yet'}</div>
+        <div class="stat-sub">${total} document${total !== 1 ? 's' : ''} on file</div>
+      </div>
     </div>`;
+}
+
+// "2026" or "2024–2026", from the dates on file.
+function yearsAvailable(dates) {
+  const years = dates.filter(Boolean).map(d => d.substring(0, 4)).sort();
+  if (!years.length) return '';
+  const first = years[0], last = years[years.length - 1];
+  return first === last ? first : `${first}\u2013${last}`;
 }
 
 function slugify(name) {

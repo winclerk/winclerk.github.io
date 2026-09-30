@@ -39,7 +39,11 @@ function formatDateShort(dateStr) {
 }
 
 function getIconClass(filename) {
-  const ext = (filename || '').split('.').pop().toLowerCase();
+  const name = filename || '';
+  // A file uploaded without an extension would otherwise show its whole
+  // name inside the icon; treat it as a generic file.
+  const ext = name.includes('.') ? name.split('.').pop().toLowerCase() : '';
+  if (!ext || ext.length > 5) return ['icon-file', 'FILE'];
   if (ext === 'pdf') return ['icon-pdf', 'PDF'];
   if (['doc', 'docx'].includes(ext)) return ['icon-doc', 'DOC'];
   if (['xls', 'xlsx'].includes(ext)) return ['icon-xlsx', 'XLS'];

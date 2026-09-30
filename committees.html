@@ -9,11 +9,11 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="shared.css">
   <style>
-    /* Committees & Commissions uses the colors reserved for its homepage
-       tile: light teal head, mid teal badge, dark teal title. The hero is
-       light, so text and breadcrumb colors flip to dark. shared.css is untouched. */
+    /* Committees & Commissions matches its homepage tile: warm tan head,
+       mid teal badge, dark teal title. The hero is light, so text and
+       breadcrumb colors flip to dark. shared.css is untouched. */
     .hero {
-      background: var(--tl);
+      background: #F5F2EC;
       border-bottom: 1px solid var(--border);
     }
     .hero-label { color: var(--tm); }
@@ -112,18 +112,29 @@ function sortNewestFirst(docs) {
   });
 }
 
+// "2026" or "2024–2026", from the dates on file.
+function yearsAvailable(dates) {
+  const years = dates.filter(Boolean).map(d => d.substring(0, 4)).sort();
+  if (!years.length) return '';
+  const first = years[0], last = years[years.length - 1];
+  return first === last ? first : `${first}\u2013${last}`;
+}
+
 function renderStatTiles(libraries) {
   let latest = null;
   let total = 0;
+  const dates = [];
+  const meetings = new Set();
   libraries.forEach(lib => {
     (lib.documents || []).forEach(doc => {
       total++;
-      if (doc.date && (!latest || doc.date > latest.date)) {
-        latest = { date: doc.date, library: lib.name };
-      }
+      if (!doc.date) return;
+      dates.push(doc.date);
+      meetings.add(lib.name + '|' + doc.date);
+      if (!latest || doc.date > latest.date) latest = { date: doc.date, library: lib.name };
     });
   });
-  const active = libraries.filter(l => (l.documents || []).length).length;
+  const years = yearsAvailable(dates);
 
   return `
     <div class="stat-tiles">
@@ -138,15 +149,34 @@ function renderStatTiles(libraries) {
         <div class="stat-sub">document${total !== 1 ? 's' : ''} on file</div>
       </div>
       <div class="stat-tile">
-        <div class="stat-label">Committees</div>
-        <div class="stat-value">${libraries.length}</div>
-        <div class="stat-sub">${active} with documents posted</div>
+        <div class="stat-label">Years available</div>
+        <div class="stat-value">${years || 'None yet'}</div>
+        <div class="stat-sub">${meetings.size} meeting${meetings.size !== 1 ? 's' : ''} on record</div>
       </div>
     </div>`;
 }
 
+// Files follow Agenda_<Body>[-<Subcommittee>]_YYYYMMDD[_DRAFT].<ext>.
+// The committee is already the section heading, so the row title is the
+// document type and meeting date, plus the subcommittee when there is one
+// (e.g. "Budget Committee Agenda – May 29, 2026"), matching Town Board labels.
+// Anything not in that pattern keeps the label sync.py gave it.
+function committeeLabel(doc) {
+  const m = /^(Agenda|Minutes)_([^_]+)_\d{8}/i.exec(doc.filename || '');
+  if (!m) return doc.label;
+  const type = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+  const parts = m[2].split('-');
+  const sub = parts.length > 1 && !/^rescue$/i.test(parts.slice(1).join('-'))
+    ? parts.slice(1).join(' ') + ' '
+    : '';
+  const date = doc.date
+    ? new Date(doc.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : '';
+  return sub + type + (date ? ' \u2013 ' + date : '');
+}
+
 function renderLibrarySection(lib) {
-  const docs = sortNewestFirst(lib.documents || []);
+  const docs = sortNewestFirst(lib.documents || []).map(d => Object.assign({}, d, { label: committeeLabel(d) }));
   const body = docs.length
     ? docs.map(doc => renderFileRow(doc)).join('')
     : '<div class="no-docs">No agendas or minutes posted yet.</div>';
