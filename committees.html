@@ -60,7 +60,7 @@
 <div class="hero">
   <div class="hero-label">Public records</div>
   <h1>Committees &amp; Commissions</h1>
-  <p>Agendas and minutes for the Planning Commission, Lakes Committee, Northwoods EMS District, and Fire &amp; Rescue.</p>
+  <p>Agendas, minutes, and meeting recordings for the Planning Commission, Winchester Town Lakes Committee (WTLC), Northwoods EMS District, and Fire &amp; Rescue.</p>
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a href="index.html">Home</a>
     <span>/</span>
@@ -120,20 +120,24 @@ function yearsAvailable(dates) {
   return first === last ? first : `${first}\u2013${last}`;
 }
 
-function renderStatTiles(libraries) {
+function renderStatTiles(libraries, recordings) {
   let latest = null;
   let total = 0;
   const dates = [];
   const meetings = new Set();
+  const note = (date, name) => {
+    dates.push(date);
+    meetings.add(name + '|' + date);
+    if (!latest || date > latest.date) latest = { date, library: name };
+  };
   libraries.forEach(lib => {
     (lib.documents || []).forEach(doc => {
       total++;
-      if (!doc.date) return;
-      dates.push(doc.date);
-      meetings.add(lib.name + '|' + doc.date);
-      if (!latest || doc.date > latest.date) latest = { date: doc.date, library: lib.name };
+      if (doc.date) note(doc.date, lib.name);
     });
   });
+  // Recordings count toward the years and meetings on record.
+  recordings.forEach(rec => { if (rec.date) note(rec.date, rec.body); });
   const years = yearsAvailable(dates);
 
   return `
@@ -175,11 +179,25 @@ function committeeLabel(doc) {
   return sub + type + (date ? ' \u2013 ' + date : '');
 }
 
-function renderLibrarySection(lib) {
+function renderLibrarySection(lib, recordings) {
   const docs = sortNewestFirst(lib.documents || []).map(d => Object.assign({}, d, { label: committeeLabel(d) }));
-  const body = docs.length
-    ? docs.map(doc => renderFileRow(doc)).join('')
-    : '<div class="no-docs">No agendas or minutes posted yet.</div>';
+  // Recordings for this committee, placed with their meeting date
+  // (a recording sorts just above that meeting's minutes and agenda).
+  const recs = recordings
+    .filter(r => r.body === lib.name)
+    .map(r => ({
+      rec: Object.assign({}, r, {
+        label: 'Recording' + (r.date
+          ? ' \u2013 ' + new Date(r.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+          : '')
+      }),
+      date: r.date || ''
+    }));
+  const rows = docs.map(d => ({ doc: d, date: d.date || '' })).concat(recs)
+    .sort((a, b) => b.date.localeCompare(a.date) || ((a.rec ? 0 : 1) - (b.rec ? 0 : 1)));
+  const body = rows.length
+    ? rows.map(r => r.rec ? renderRecordingRow(r.rec) : renderFileRow(r.doc)).join('')
+    : '<div class="no-docs">No agendas, minutes, or recordings posted yet.</div>';
 
   return `
     <div class="lib-section" id="lib-${slugify(lib.name)}" data-group="${slugify(lib.name)}">
@@ -205,7 +223,8 @@ async function init() {
     const data = await loadData();
     const libraries = (data.sites && data.sites.boardsCommissions && data.sites.boardsCommissions.libraries) || [];
 
-    document.getElementById('stat-tiles-container').innerHTML = renderStatTiles(libraries);
+    const recordings = getRecordings(data, r => libraries.some(l => l.name === r.body));
+    document.getElementById('stat-tiles-container').innerHTML = renderStatTiles(libraries, recordings);
 
     if (!libraries.length) {
       sections.innerHTML = '<div class="error-msg">Unable to load committees.</div>';
@@ -227,7 +246,7 @@ async function init() {
       history.replaceState(null, '', btn.dataset.group === 'all' ? location.pathname : '#lib-' + btn.dataset.group);
     });
 
-    sections.innerHTML = libraries.map(renderLibrarySection).join('');
+    sections.innerHTML = libraries.map(lib => renderLibrarySection(lib, recordings)).join('');
 
     // Links from search results and the homepage use #lib-<slug>.
     const hash = location.hash.replace(/^#lib-/, '');

@@ -114,15 +114,27 @@ async function init() {
     const subfolders = meeting.subfolders || [];
     const totalDocsHere = docs.length + subfolders.reduce((sum, sf) => sum + (sf.documents || []).length, 0);
     document.getElementById('stat-tiles-container').innerHTML = renderStatTiles(data, totalDocsHere);
+    // Recording(s) of this meeting from winchesterwi.com, shown first.
+    // When two meetings share a date (e.g. the annual meeting and a special
+    // board meeting), a recording only shows on the one its title matches.
+    const sameDay = meetings.filter(m => m.date === meeting.date).length > 1;
+    const kw = t => ['annual', 'board of review', 'special', 'regular', 'budget']
+      .filter(w => (t || '').toLowerCase().includes(w));
+    const recordings = getRecordings(data, r =>
+      r.date === meeting.date && (r.body === 'Town Board' || r.body === 'Board of Review') &&
+      (!sameDay || kw(r.title).some(w => kw(meeting.title).includes(w))));
     document.getElementById('filter-bar').innerHTML = `
       <button class="filter-btn active" onclick="filterFiles('all', this, 'file-list')">All files</button>
       <button class="filter-btn" onclick="filterFiles('agenda', this, 'file-list')">Agendas</button>
-      <button class="filter-btn" onclick="filterFiles('minutes', this, 'file-list')">Minutes</button>`;
-    if (!docs.length && !subfolders.length) {
+      <button class="filter-btn" onclick="filterFiles('minutes', this, 'file-list')">Minutes</button>
+      ${recordings.length ? `<button class="filter-btn" onclick="filterFiles('recording', this, 'file-list')">Recording</button>` : ''}`;
+    if (!docs.length && !subfolders.length && !recordings.length) {
       document.getElementById('file-list').innerHTML = '<div class="no-docs">No documents posted yet.</div>';
       return;
     }
-    document.getElementById('file-list').innerHTML = docs.map(doc => renderFileRow(doc)).join('');
+    document.getElementById('file-list').innerHTML =
+      recordings.map(r => renderRecordingRow(Object.assign({}, r, { label: 'Meeting recording' }))).join('') +
+      docs.map(doc => renderFileRow(doc)).join('');
 
     // Render subfolders (Financial, etc.) below main documents
     if (subfolders.length) {

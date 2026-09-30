@@ -361,6 +361,7 @@ a { text-decoration: none; color: inherit; }
 .icon-doc { background: var(--blue-light); color: var(--blue); }
 .icon-xlsx { background: var(--green-light); color: var(--green); }
 .icon-file { background: #f0f0f0; color: #666; }
+.icon-video { background: #F5F2EC; color: #7A6A3A; }
 .file-info { min-width: 0; }
 .file-name {
   font-size: 13px;
@@ -384,6 +385,7 @@ a { text-decoration: none; color: inherit; }
 .tag-agenda { background: var(--tl); color: var(--tm); }
 .tag-minutes { background: #FAEEDA; color: #854F0B; }
 .tag-draft { background: var(--red-light); color: var(--red); }
+.tag-recording { background: #F5F2EC; color: #7A6A3A; }
 .file-view {
   font-size: 12px;
   color: var(--tm);

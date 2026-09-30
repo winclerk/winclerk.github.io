@@ -46,7 +46,7 @@ FLAT_SITES = [
         # Internal Only, etc.) is never published.
         "libraries": [
             {"name": "Planning Commission",   "label": "Planning Commission",     "folder": "Agendas & Minutes"},
-            {"name": "WTLC",                  "label": "Lakes Committee (WTLC)",  "max_depth": 0},
+            {"name": "WTLC",                  "label": "Winchester Town Lakes Committee (WTLC)", "max_depth": 0},
             {"name": "NEMSD",                 "label": "Northwoods EMS District", "max_depth": 0},
             {"name": "Fire Department",       "label": "Fire & Rescue",           "max_depth": 0},
         ],
@@ -75,6 +75,12 @@ FLAT_SITES = [
 ]
 
 ICAL_URL = "https://winchesterwi.com/?post_type=tribe_events&ical=1&eventDisplay=list"
+
+# Meeting recordings (YouTube links) are listed in the Video column of the
+# website's Board Agendas & Minutes table. The table is server-rendered, so
+# its rows can be read straight from the page HTML.
+RECORDINGS_PAGE_URL = "https://winchesterwi.com/your-government/board-agendas-minutes/"
+WTLC_LABEL = "Winchester Town Lakes Committee (WTLC)"
 MEETING_KEYWORDS = ["regular town board meeting", "special town board meeting"]
 
 
@@ -285,6 +291,63 @@ def extract_details_from_next_meeting(token, drive_id, docs):
             print(f"    Warning: could not parse {fn}: {e}")
             continue
     return {}
+
+
+def _recording_body(title, committees):
+    """Which meeting body a recording belongs to. Uses the same names the
+    portal uses for documents so recordings line up with their agendas."""
+    t = title.lower()
+    c = committees.lower()
+    if "board of review" in t:
+        return "Board of Review"
+    if "lakes committee" in t or (c.strip() == "lakes committee"):
+        return WTLC_LABEL
+    if "planning commission" in t or c.strip() == "planning commission":
+        return "Planning Commission"
+    if "fire" in t and "rescue" in t:
+        return "Fire & Rescue"
+    if "ems district" in t or "nemsd" in t or "nwems" in t:
+        return "Northwoods EMS District"
+    # Town Board meetings, annual/elector meetings, budget and public hearings
+    return "Town Board"
+
+
+def fetch_recordings():
+    """Read every row with a video link from the website's agendas table.
+    Returns [{date, title, url, body}], newest first, one entry per
+    recording per date (the same video is sometimes listed under several
+    rows for a combined meeting)."""
+    try:
+        r = requests.get(RECORDINGS_PAGE_URL, timeout=20,
+            headers={"User-Agent": "Winchester-Sync/1.0"})
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  Warning: could not fetch recordings page: {e}")
+        return []
+
+    import html as _html
+    out, seen = [], set()
+    for row in re.findall(r"<tr[^>]*data-row_id[^>]*>(.*?)</tr>", r.text, re.S):
+        cells = [_html.unescape(re.sub(r"<[^>]+>", "", c)).strip()
+                 for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
+        if len(cells) < 5:
+            continue
+        date_raw, title, video = cells[0], cells[1], cells[4]
+        committees = cells[5] if len(cells) > 5 else ""
+        if not re.match(r"https?://(www\.)?(youtu\.be|youtube\.com)/", video):
+            continue
+        m = re.match(r"(\d{2})/(\d{2})/(\d{4})$", date_raw)
+        if not m:
+            continue
+        date = f"{m.group(3)}-{m.group(1)}-{m.group(2)}"
+        key = (video, date)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append({"date": date, "title": title, "url": video,
+                    "body": _recording_body(title, committees)})
+    out.sort(key=lambda x: x["date"], reverse=True)
+    return out
 
 
 def _fetch_ical_events():
@@ -941,8 +1004,20 @@ def parse_folder_name(name, mtype):
                 "title": f"Regular Town Board Meeting - {dt.strftime('%B %Y')}",
                 "date": date_str}
     else:
-        return {"id": f"special-{date_str}",
-                "title": f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}",
+        # Folders in Previous Special Meetings are usually STBM_YYYYMMDD, but
+        # other meetings live there too (Annual-Town-Meeting_20260421,
+        # Board-of-Review_20260928). Name those after their folder so they
+        # don't show up as a second "Special Town Board Meeting" with the
+        # same id as a real special meeting on that date.
+        prefix = name[:m.start()].rstrip("_- ").strip()
+        if not prefix or re.fullmatch(r"(?i)(STBM|TBSM)(-\d+)?", prefix):
+            return {"id": f"special-{date_str}",
+                    "title": f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}",
+                    "date": date_str}
+        words = re.sub(r"[_\-]+", " ", prefix).strip()
+        slug = re.sub(r"[^a-z0-9]+", "-", words.lower()).strip("-")
+        return {"id": f"{slug}-{date_str}",
+                "title": f"{words} - {dt.strftime('%B %-d, %Y')}",
                 "date": date_str}
 
 
@@ -1124,6 +1199,10 @@ def main():
     for site_config in FLAT_SITES:
         sites_data[site_config["key"]] = build_flat_site_data(token, site_config)
     data["sites"] = sites_data
+
+    print("Collecting meeting recordings from winchesterwi.com...")
+    data["recordings"] = fetch_recordings()
+    print(f"Found {len(data['recordings'])} recording(s).")
     sites_total = sum(
         len(lib["documents"])
         for site in sites_data.values()

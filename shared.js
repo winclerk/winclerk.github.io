@@ -117,6 +117,32 @@ function renderFileRow(doc) {
     </div>`;
 }
 
+// Meeting recordings come from data.json "recordings" (collected by sync.py
+// from the Video column on winchesterwi.com). Each is {date, title, url, body}.
+function getRecordings(data, test) {
+  return (data.recordings || []).filter(r => r && r.url && (!test || test(r)));
+}
+
+function renderRecordingRow(rec, metaHtml) {
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const dateStr = rec.date ? formatDateShort(rec.date) : '';
+  const meta = metaHtml != null ? metaHtml : (dateStr ? `<div class="file-date">${dateStr}</div>` : '');
+  return `
+    <div class="file-row" data-tag="recording">
+      <div class="file-left">
+        <div class="file-icon icon-video">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="file-info">
+          <div class="file-name">${esc(rec.label || rec.title || 'Meeting recording')}<span class="file-tag tag-recording">Recording</span></div>
+          ${meta}
+        </div>
+      </div>
+      <a class="file-view" href="${esc(rec.url)}" target="_blank" rel="noopener">Watch &rarr;</a>
+    </div>`;
+}
+
 function filterFiles(tag, el, containerId) {
   el.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
