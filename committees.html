@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Committees &amp; Commissions — Town of Winchester, WI</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="records-portal-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* Committees & Commissions uses the colors reserved for its homepage
+       tile: light teal head, mid teal badge, dark teal title. The hero is
+       light, so text and breadcrumb colors flip to dark. shared.css is untouched. */
+    .hero {
+      background: var(--tl);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-label { color: var(--tm); }
+    .hero h1 { color: var(--td); }
+    .hero p { color: var(--text-muted); }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--td); }
+    .breadcrumb span { color: rgba(25,60,60,0.35); }
+    .breadcrumb .crumb-current { color: var(--td); }
+
+    .filter-group { margin-bottom: 20px; }
+    .filter-group-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .lib-section { scroll-margin-top: 24px; margin-bottom: 36px; }
+    .lib-section:last-child { margin-bottom: 0; }
+    .lib-section[hidden] { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="topbar topbar-portal">
+  <a class="portal-brand" href="index.html" aria-label="Records Portal home">
+    <img src="records-portal-icon.svg" class="portal-brand-icon" alt="" width="36" height="36">
+    <span class="portal-brand-text">
+      <span class="portal-brand-name">Records Portal</span>
+      <span class="portal-brand-sub">Town of Winchester &middot; Public Records</span>
+    </span>
+  </a>
+  <nav class="topbar-links" aria-label="Site">
+    <a class="back-link" href="index.html">&#8592; Back to portal home</a>
+    <a class="town-link" href="https://winchesterwi.com">
+      <img src="winchester-logo.png" class="seal-logo" alt="">
+      <span class="town-link-text">winchesterwi.com</span>
+    </a>
+  </nav>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Public records</div>
+  <h1>Committees &amp; Commissions</h1>
+  <p>Agendas and minutes for the Planning Commission, Lakes Committee, Northwoods EMS District, and Fire &amp; Rescue.</p>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <span class="crumb-current">Committees &amp; Commissions</span>
+  </nav>
+</div>
+
+<main>
+  <div id="stat-tiles-container"></div>
+
+  <div class="page-body">
+    <div class="filter-group">
+      <div class="filter-group-label">Committee</div>
+      <div class="filter-bar" id="group-filter">
+        <button class="filter-btn active" data-group="all">All committees</button>
+      </div>
+    </div>
+
+    <div id="library-sections">
+      <div class="no-docs">Loading&hellip;</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>Town of Winchester &middot; Winchester, WI 54557 &middot; (715) 686-2123</span>
+  <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+function slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Newest meeting first. Files are named Agenda_/Minutes_<body>_YYYYMMDD,
+// so doc.date is the meeting date; ties put the agenda before the minutes.
+function sortNewestFirst(docs) {
+  return docs.slice().sort((a, b) => {
+    const d = (b.date || '').localeCompare(a.date || '');
+    if (d) return d;
+    return (a.filename || '').localeCompare(b.filename || '');
+  });
+}
+
+function renderStatTiles(libraries) {
+  let latest = null;
+  let total = 0;
+  libraries.forEach(lib => {
+    (lib.documents || []).forEach(doc => {
+      total++;
+      if (doc.date && (!latest || doc.date > latest.date)) {
+        latest = { date: doc.date, library: lib.name };
+      }
+    });
+  });
+  const active = libraries.filter(l => (l.documents || []).length).length;
+
+  return `
+    <div class="stat-tiles">
+      <div class="stat-tile stat-tile-accent">
+        <div class="stat-label">Most recent meeting</div>
+        <div class="stat-value">${latest ? formatDateShort(latest.date) : 'None yet'}</div>
+        <div class="stat-sub">${latest ? escapeHtml(latest.library) : 'Check back soon'}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Agendas &amp; minutes</div>
+        <div class="stat-value">${total}</div>
+        <div class="stat-sub">document${total !== 1 ? 's' : ''} on file</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Committees</div>
+        <div class="stat-value">${libraries.length}</div>
+        <div class="stat-sub">${active} with documents posted</div>
+      </div>
+    </div>`;
+}
+
+function renderLibrarySection(lib) {
+  const docs = sortNewestFirst(lib.documents || []);
+  const body = docs.length
+    ? docs.map(doc => renderFileRow(doc)).join('')
+    : '<div class="no-docs">No agendas or minutes posted yet.</div>';
+
+  return `
+    <div class="lib-section" id="lib-${slugify(lib.name)}" data-group="${slugify(lib.name)}">
+      <div class="section-label">${escapeHtml(lib.name)}</div>
+      <div class="file-list">${body}</div>
+    </div>`;
+}
+
+function applyGroup(group) {
+  document.querySelectorAll('#group-filter .filter-btn').forEach(b => {
+    const on = b.dataset.group === group;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  document.querySelectorAll('.lib-section').forEach(sec => {
+    sec.hidden = group !== 'all' && sec.dataset.group !== group;
+  });
+}
+
+async function init() {
+  const sections = document.getElementById('library-sections');
+  try {
+    const data = await loadData();
+    const libraries = (data.sites && data.sites.boardsCommissions && data.sites.boardsCommissions.libraries) || [];
+
+    document.getElementById('stat-tiles-container').innerHTML = renderStatTiles(libraries);
+
+    if (!libraries.length) {
+      sections.innerHTML = '<div class="error-msg">Unable to load committees.</div>';
+      return;
+    }
+
+    const bar = document.getElementById('group-filter');
+    libraries.forEach(lib => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      btn.dataset.group = slugify(lib.name);
+      btn.textContent = lib.name;
+      bar.appendChild(btn);
+    });
+    bar.addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      applyGroup(btn.dataset.group);
+      history.replaceState(null, '', btn.dataset.group === 'all' ? location.pathname : '#lib-' + btn.dataset.group);
+    });
+
+    sections.innerHTML = libraries.map(renderLibrarySection).join('');
+
+    // Links from search results and the homepage use #lib-<slug>.
+    const hash = location.hash.replace(/^#lib-/, '');
+    const known = libraries.some(l => slugify(l.name) === hash);
+    applyGroup(known ? hash : 'all');
+  } catch (e) {
+    sections.innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
