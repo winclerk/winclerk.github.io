@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-01T01:44:11Z",
+  "updated": "2026-10-01T16:45:02Z",
   "permits": [
     {
       "id": "2026-ROW-08",
@@ -1328,17 +1328,17 @@
       "lng": -89.893484
     },
     {
-      "id": "2026-ROW-08",
-      "permitNumber": "2026-ROW-08",
-      "status": "approved",
+      "id": "2026-ROW-09",
+      "permitNumber": "2026-ROW-09",
+      "status": "received",
       "jurisdiction": "town",
       "permitType": "row",
-      "pdfUrl": "/public/permits/2026-ROW-08.pdf",
+      "pdfUrl": "/public/permits/2026-ROW-09.pdf",
       "title": "Communtications buried mainline and services",
       "org": "Norvado, Inc",
       "location": "Other Town road — Various",
-      "startDate": "2026-10-01",
-      "endDate": "2026-10-30",
+      "startDate": "2026-10-05",
+      "endDate": "2027-10-05",
       "traffic": "Other: off shoulder work, or shoulder work, possible closure if they move equipment from one side to other.",
       "contactName": "Brian Hempel",
       "contactPhone": "715-246-3440",
