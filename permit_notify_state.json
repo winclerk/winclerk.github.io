@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-01T16:45:02Z",
+  "updated": "2026-10-01T18:40:27Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -227,15 +227,15 @@
       }
     },
     "2026-ROW-09": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
-        "Location": "Bucks Rd — n/a",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Location": "Other Town road — Various",
+        "Board meeting": "2026-09-29",
+        "Authorized start": "2026-10-05",
+        "Authorized end": "2027-10-05",
         "Conditions": "",
-        "Traffic impact": "No traffic impact",
-        "Public contact": "n/a — n/a"
+        "Traffic impact": "Other: off shoulder work, or shoulder work, possible closure if they move equipment from one side to other.",
+        "Public contact": "Brian Hempel — 715-246-3440"
       }
     }
   }
