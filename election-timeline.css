@@ -1,0 +1,392 @@
+/* ═══════════════════════════════════════════════════════════════
+   Election timeline — Town of Winchester Records Portal
+   Used by elections.html (full timeline) and index.html (mini
+   timeline inside the Elections tile). Dates live in
+   election-timeline.js. Safe to delete both files once the
+   timeline auto-hides.
+   ═══════════════════════════════════════════════════════════════ */
+
+.etl-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.etl-card-head {
+  background: var(--gold);
+  padding: 12px 18px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.etl-card-title {
+  font-family: 'Electrolize', monospace;
+  font-size: 14px;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+.etl-card-sub {
+  font-size: 11px;
+  color: #fff;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* ── Horizontal track (desktop) ── */
+.etl-body { padding: 52px 28px 18px; }
+
+.etl-track {
+  position: relative;
+  height: 92px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.etl-line,
+.etl-fill {
+  position: absolute;
+  top: 9px;
+  left: 0;
+  height: 3px;
+  border-radius: 2px;
+}
+.etl-line { right: 0; background: var(--border); }
+.etl-fill {
+  width: var(--fill, 0%);
+  background: var(--gold);
+  transform-origin: left center;
+  animation: etlFillIn 700ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+@keyframes etlFillIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.etl-stop {
+  position: absolute;
+  top: 0;
+  left: var(--pos);
+  width: 0;
+}
+.etl-dot {
+  position: absolute;
+  top: 0;
+  left: -10px;
+  width: 21px;
+  height: 21px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--border);
+}
+.etl-stop.is-past .etl-dot { background: var(--gold); border-color: var(--gold); }
+
+/* Election Day checkbox */
+.etl-check {
+  position: absolute;
+  top: -2px;
+  left: -12px;
+  width: 25px;
+  height: 25px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  background: var(--td);
+  border: 2px solid var(--td);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.etl-check svg { display: block; }
+
+.etl-label {
+  position: absolute;
+  top: 34px;
+  width: 150px;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.etl-stop.is-first .etl-label { transform: none; left: -10px; text-align: left; }
+.etl-stop.is-last  .etl-label { transform: none; right: -12px; text-align: right; }
+
+.etl-date {
+  font-family: 'Electrolize', monospace;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+.etl-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--td);
+  line-height: 1.35;
+}
+.etl-stop:not(.is-past) .etl-name { color: var(--text); }
+
+/* ── "You are here" marker ── */
+.etl-here {
+  position: absolute;
+  top: 0;
+  left: var(--pos);
+  width: 0;
+  z-index: 2;
+}
+.etl-here-dot {
+  position: absolute;
+  top: 2px;
+  left: -8px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--td);
+  border: 3px solid var(--white);
+  box-sizing: border-box;
+  box-shadow: 0 0 0 1px var(--td);
+}
+.etl-here-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: var(--td);
+  opacity: 0;
+  animation: etlPing 2s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+}
+@keyframes etlPing {
+  0%   { transform: scale(1);   opacity: 0.45; }
+  80%  { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+.etl-here-tag {
+  position: absolute;
+  bottom: 8px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--td);
+  padding: 4px 9px;
+  border-radius: 4px;
+}
+.etl-here-tag::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: var(--td);
+}
+.etl-here.align-left  .etl-here-tag { transform: translateX(-14px); }
+.etl-here.align-left  .etl-here-tag::after { left: 14px; }
+.etl-here.align-right .etl-here-tag { transform: translateX(calc(-100% + 14px)); }
+.etl-here.align-right .etl-here-tag::after { left: auto; right: 9px; }
+
+/* ── Notices under the track ── */
+.etl-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  background: #f1efe8;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #4A3F28;
+}
+.etl-notice-icon { flex-shrink: 0; margin-top: 2px; color: var(--gold); }
+.etl-notice strong { color: var(--td); font-weight: 500; }
+
+.etl-complete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--tl);
+}
+.etl-complete-text {
+  font-size: 13px;
+  color: var(--td);
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.etl-complete-text strong { font-weight: 500; }
+.etl-complete-btn {
+  font-size: 12px;
+  color: #fff;
+  background: var(--td);
+  padding: 9px 18px;
+  border-radius: 4px;
+  white-space: nowrap;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.etl-complete-btn:hover { background: var(--tm); }
+
+.etl-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── Vertical track (phones) ── */
+@media (max-width: 700px) {
+  .etl-card-head { flex-direction: column; gap: 2px; }
+  .etl-body { padding: 18px 18px 18px 18px; }
+  .etl-track { height: 340px; margin-left: 104px; }
+  .etl-here-date { display: none; }
+  .etl-line, .etl-fill {
+    top: 0; left: 9px;
+    width: 3px; height: auto;
+  }
+  .etl-line { bottom: 0; right: auto; }
+  .etl-fill {
+    width: 3px;
+    height: var(--fill, 0%);
+    transform-origin: center top;
+    animation-name: etlFillInY;
+  }
+  @keyframes etlFillInY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+  .etl-stop { left: 0; top: var(--pos); height: 0; width: auto; right: 0; }
+  .etl-dot { top: -10px; left: 0; }
+  .etl-check { top: -12px; left: -2px; }
+  .etl-label,
+  .etl-stop.is-first .etl-label,
+  .etl-stop.is-last .etl-label {
+    top: -10px;
+    left: 34px;
+    right: auto;
+    width: auto;
+    transform: none;
+    text-align: left;
+  }
+  .etl-stop.is-last .etl-label { top: auto; bottom: -8px; }
+  .etl-stop.is-first .etl-label { top: -8px; }
+
+  .etl-here { left: 0; top: var(--pos); width: auto; }
+  .etl-here-dot { top: -8px; left: 2px; }
+  .etl-here-tag,
+  .etl-here.align-left .etl-here-tag,
+  .etl-here.align-right .etl-here-tag {
+    bottom: auto;
+    top: -12px;
+    right: 22px;
+    transform: none;
+  }
+  .etl-here-tag::after,
+  .etl-here.align-left .etl-here-tag::after,
+  .etl-here.align-right .etl-here-tag::after {
+    top: 50%; left: 100%; right: auto;
+    margin: -5px 0 0 0;
+    border-top-color: transparent;
+    border-left-color: var(--td);
+  }
+
+  .etl-complete { flex-direction: column; align-items: flex-start; }
+}
+
+/* ═══ Mini timeline (homepage Elections tile) ═══ */
+.portal-tile-body.etl-mini-active { padding: 8px 16px; }
+.etl-mini { width: 100%; }
+.etl-mini-track {
+  position: relative;
+  height: 12px;
+  margin: 0 5px 5px;
+}
+.etl-mini-line,
+.etl-mini-fill {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  height: 2px;
+  border-radius: 1px;
+}
+.etl-mini-line { right: 0; background: var(--border); }
+.etl-mini-fill { width: var(--fill, 0%); background: var(--gold); }
+.etl-mini-dot {
+  position: absolute;
+  top: 2px;
+  left: var(--pos);
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--border);
+}
+.etl-mini-dot.is-past { background: var(--gold); border-color: var(--gold); }
+.etl-mini-check {
+  position: absolute;
+  top: 1px;
+  left: var(--pos);
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 2px;
+  background: var(--td);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.etl-mini-here {
+  position: absolute;
+  top: 1px;
+  left: var(--pos);
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--td);
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 1px var(--td);
+  z-index: 1;
+}
+.etl-mini-here::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: var(--td);
+  opacity: 0;
+  animation: etlPing 2s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+}
+.etl-mini-caption {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.etl-mini-caption strong { color: var(--td); font-weight: 500; }
+
+/* Election Day itself: the checkbox becomes the pulsing "you are here" */
+.etl-check.is-today      { animation: etlRing 2s cubic-bezier(0.23, 1, 0.32, 1) infinite; }
+.etl-mini-check.is-today { animation: etlRingMini 2s cubic-bezier(0.23, 1, 0.32, 1) infinite; }
+@keyframes etlRing {
+  0%   { box-shadow: 0 0 0 0 rgba(25, 60, 60, 0.45); }
+  80%  { box-shadow: 0 0 0 12px rgba(25, 60, 60, 0); }
+  100% { box-shadow: 0 0 0 12px rgba(25, 60, 60, 0); }
+}
+@keyframes etlRingMini {
+  0%   { box-shadow: 0 0 0 0 rgba(25, 60, 60, 0.45); }
+  80%  { box-shadow: 0 0 0 6px rgba(25, 60, 60, 0); }
+  100% { box-shadow: 0 0 0 6px rgba(25, 60, 60, 0); }
+}
+
+/* Respect reduced-motion settings */
+@media (prefers-reduced-motion: reduce) {
+  .etl-fill { animation: none; }
+  .etl-here-dot::after,
+  .etl-mini-here::after,
+  .etl-check.is-today,
+  .etl-mini-check.is-today { animation: none; }
+}

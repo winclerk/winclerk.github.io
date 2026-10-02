@@ -8,6 +8,7 @@
   <link rel="icon" href="records-portal-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="election-timeline.css">
   <style>
     .hero-home {
       display: flex;
@@ -349,7 +350,7 @@
             <div class="portal-tile-badge">Live</div>
             <div class="portal-tile-title">Elections</div>
           </div>
-          <div class="portal-tile-body">
+          <div class="portal-tile-body" id="election-tile-body">
             <div class="portal-tile-desc">Notices, voter info &amp; election inspector resources</div>
           </div>
         </div>
@@ -398,6 +399,7 @@
 </footer>
 
 <script src="shared.js"></script>
+<script src="election-timeline.js"></script>
 <script>
 // Wisconsin statutory election date calculator retained for when Elections goes live.
 function nthWeekdayOfMonth(year, month, weekday, n) {
@@ -454,6 +456,7 @@ function renderNextElection() {
 }
 
 renderNextElection();
+ElectionTimeline.renderMini('election-tile-body');
 
 // Next Town Board meeting: uses data.json (primary), falls back to
 // second Tuesday of current/next month if no upcoming meeting in data.

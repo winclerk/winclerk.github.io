@@ -8,6 +8,7 @@
   <link rel="icon" href="records-portal-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="election-timeline.css">
   <style>
     .lib-section { scroll-margin-top: 24px; margin-bottom: 36px; }
     .lib-section:last-child { margin-bottom: 0; }
@@ -305,6 +306,9 @@
 
   <div class="page-body">
 
+    <!-- Election timeline (dates in election-timeline.js; auto-hides two weeks after Election Day) -->
+    <div class="guide-section" id="election-timeline" hidden></div>
+
     <!-- Voter registration & absentee voting -->
     <div class="guide-section">
       <div class="section-label">Getting registered &amp; voting</div>
@@ -404,6 +408,7 @@
 </footer>
 
 <script src="shared.js"></script>
+<script src="election-timeline.js"></script>
 <script>
 // Wisconsin statutory election date calculator
 function nthWeekdayOfMonth(year, month, weekday, n) {
@@ -523,6 +528,8 @@ function renderLibrarySection(lib) {
 }
 
 async function init() {
+  ElectionTimeline.renderFull('election-timeline');
+
   try {
     const data = await loadData();
     const libraries = (data.sites && data.sites.elections && data.sites.elections.libraries) || [];
