@@ -255,8 +255,8 @@
 /* ── Vertical track (phones) ── */
 @media (max-width: 700px) {
   .etl-card-head { flex-direction: column; gap: 2px; }
-  .etl-body { padding: 18px 18px 18px 18px; }
-  .etl-track { height: 420px; margin-left: 104px; }
+  .etl-body { padding: 18px 18px 34px; }
+  .etl-track { height: 290px; margin-left: 104px; }
   .etl-here-date { display: none; }
   .etl-line, .etl-fill {
     top: 0; left: 9px;
@@ -284,7 +284,7 @@
     transform: none;
     text-align: left;
   }
-  .etl-stop.is-last .etl-label { top: auto; bottom: -8px; }
+  .etl-stop.is-last .etl-label { top: -8px; bottom: auto; }
   .etl-stop.is-first .etl-label { top: -8px; }
 
   .etl-here { left: 0; top: var(--pos); width: auto; }
