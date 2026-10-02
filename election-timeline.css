@@ -38,7 +38,7 @@
 
 .etl-track {
   position: relative;
-  height: 92px;
+  height: 108px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -120,6 +120,11 @@
   line-height: 1.35;
 }
 .etl-stop:not(.is-past) .etl-name { color: var(--text); }
+.etl-detail {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
 
 /* ── "You are here" marker ── */
 .etl-here {
@@ -195,6 +200,9 @@
 }
 .etl-notice-icon { flex-shrink: 0; margin-top: 2px; color: var(--gold); }
 .etl-notice strong { color: var(--td); font-weight: 500; }
+.etl-notice a { color: var(--td); text-decoration: underline; text-underline-offset: 2px; }
+.etl-hours { background: var(--white); color: var(--text); }
+.etl-hours .etl-notice-icon { color: var(--td); }
 
 .etl-complete {
   display: flex;
@@ -235,11 +243,20 @@
   white-space: nowrap;
 }
 
+/* ── Mid widths: narrower labels so neighbors don't collide ── */
+@media (max-width: 960px) {
+  .etl-label { width: 118px; }
+  .etl-stop.is-first .etl-label,
+  .etl-stop.is-last .etl-label { width: 96px; }
+  .etl-name { font-size: 12px; }
+  .etl-detail { font-size: 11px; }
+}
+
 /* ── Vertical track (phones) ── */
 @media (max-width: 700px) {
   .etl-card-head { flex-direction: column; gap: 2px; }
   .etl-body { padding: 18px 18px 18px 18px; }
-  .etl-track { height: 340px; margin-left: 104px; }
+  .etl-track { height: 420px; margin-left: 104px; }
   .etl-here-date { display: none; }
   .etl-line, .etl-fill {
     top: 0; left: 9px;
@@ -293,12 +310,12 @@
 }
 
 /* ═══ Mini timeline (homepage Elections tile) ═══ */
-.portal-tile-body.etl-mini-active { padding: 8px 16px; }
+.portal-tile-body.etl-mini-active { padding: 6px 16px; }
 .etl-mini { width: 100%; }
 .etl-mini-track {
   position: relative;
   height: 12px;
-  margin: 0 5px 5px;
+  margin: 0 5px 3px;
 }
 .etl-mini-line,
 .etl-mini-fill {
@@ -361,10 +378,12 @@
 }
 .etl-mini-caption {
   font-size: 11px;
+  line-height: 1.3;
   color: var(--text-muted);
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 .etl-mini-caption strong { color: var(--td); font-weight: 500; }
 

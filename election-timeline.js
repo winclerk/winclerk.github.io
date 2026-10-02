@@ -15,9 +15,13 @@ const ELECTION_TIMELINE = {
   title: 'November 3, 2026 General Election',
   hideOn: '2026-11-17',
   resultsUrl: 'https://www.vilascountywi.gov/residents/elections/election_results.php',
+  // In-person absentee hours note (shown under the timeline through hoursNoteUntil)
+  hoursNote: '<strong>In-person absentee voting:</strong> Walk-in hours are <strong>Monday, October 26, 10:00 AM \u2013 1:00 PM</strong> at Winchester Town Hall, or by appointment. Call <a href="tel:+17156862123">(715) 686-2123</a> to schedule.',
+  hoursNoteUntil: '2026-10-30',
   milestones: [
     { date: '2026-09-17', name: 'Absentee Voting Starts',                short: 'Absentee starts' },
-    { date: '2026-10-20', name: 'In-Person Absentee Voting Begins',      short: 'In-person opens' },
+    { date: '2026-10-20', name: 'In-Person Absentee Voting Begins',      short: 'In-person early voting opens' },
+    { date: '2026-10-26', name: 'In-Person Absentee Hours',              short: 'Walk-in 10am\u20131pm', detail: '10:00 AM \u2013 1:00 PM' },
     { date: '2026-10-30', name: 'Last Day for In-Person Absentee Voting', short: 'Last in-person day' },
     { date: '2026-11-03', name: 'Election Day',                           short: 'Election Day', electionDay: true }
   ]
@@ -97,6 +101,7 @@ const ELECTION_TIMELINE = {
           <div class="etl-label">
             <div class="etl-date">${shortDate(s.day)}</div>
             <div class="etl-name">${s.name}</div>
+            ${s.detail ? `<div class="etl-detail">${s.detail}</div>` : ''}
             <span class="etl-sr">(${status})</span>
           </div>
         </li>`;
@@ -108,6 +113,13 @@ const ELECTION_TIMELINE = {
         <span class="etl-here-tag" aria-hidden="true">You are here<span class="etl-here-date"> &middot; ${shortDate(st.today)}</span></span>
         <span class="etl-here-dot"></span>
       </li>`;
+
+    const showHours = !st.complete && st.cfg.hoursNote && st.today <= parseDay(st.cfg.hoursNoteUntil);
+    const hoursHtml = showHours ? `
+        <div class="etl-notice etl-hours">
+          <svg class="etl-notice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <div>${st.cfg.hoursNote}</div>
+        </div>` : '';
 
     const footer = st.complete
       ? `
@@ -140,6 +152,7 @@ const ELECTION_TIMELINE = {
             ${hereHtml}
           </ol>
         </div>
+        ${hoursHtml}
         ${footer}
       </div>`;
   }
