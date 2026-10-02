@@ -157,18 +157,12 @@ const ELECTION_TIMELINE = {
       </div>`;
   }
 
-  /* ── Mini timeline (homepage Elections tile) ── */
+  /* ── Homepage Elections tile: text-only status line ── */
   function renderMini(bodyId) {
     const body = document.getElementById(bodyId);
     if (!body) return;
     const st = computeState();
     if (!st) return; // leave the normal tile description in place
-
-    const dots = st.stops.map(s => s.electionDay
-      ? `<span class="etl-mini-check${st.isElectionDay ? ' is-today' : ''}" style="--pos:${s.pos}%">${CHECK_SVG(8, 4)}</span>`
-      : `<span class="etl-mini-dot${s.past ? ' is-past' : ''}" style="--pos:${s.pos}%"></span>`
-    ).join('');
-    const here = (st.complete || st.isElectionDay) ? '' : `<span class="etl-mini-here" style="--pos:${st.herePos}%"></span>`;
 
     let caption;
     if (st.complete) {
@@ -182,16 +176,7 @@ const ELECTION_TIMELINE = {
     }
 
     body.classList.add('etl-mini-active');
-    body.innerHTML = `
-      <div class="etl-mini" role="img" aria-label="Election timeline. ${st.complete ? 'Election complete.' : 'Today is ' + longDate(st.today) + '.'} ${st.next && !st.complete ? 'Next: ' + st.next.name + ', ' + longDate(st.next.day) + '.' : ''}">
-        <div class="etl-mini-track" style="--fill:${st.herePos}%">
-          <span class="etl-mini-line"></span>
-          <span class="etl-mini-fill"></span>
-          ${dots}
-          ${here}
-        </div>
-        <div class="etl-mini-caption" aria-hidden="true">${caption}</div>
-      </div>`;
+    body.innerHTML = `<div class="portal-tile-desc etl-mini-caption">${caption}</div>`;
   }
 
   window.ElectionTimeline = { renderFull, renderMini };
