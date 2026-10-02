@@ -18,6 +18,9 @@
   --border: #dde3e3;
   --bg: #f5f7f7;
   --white: #fff;
+  /* Side padding that lines full-width bands (topbar, hero, next-bar, footer) up
+     with the 1100px content column. % resolves against the page width. */
+  --edge: max(40px, calc((100% - 1100px) / 2 + 40px));
 }
 
 body {
@@ -36,7 +39,7 @@ a { text-decoration: none; color: inherit; }
 .topbar {
   background: var(--white);
   border-bottom: 1px solid var(--border);
-  padding: 0 40px;
+  padding: 0 var(--edge);
   height: 56px;
   display: flex;
   align-items: center;
@@ -85,7 +88,7 @@ a { text-decoration: none; color: inherit; }
 
 .hero {
   background: var(--td);
-  padding: 36px 40px 30px;
+  padding: 36px var(--edge) 30px;
   border-bottom: 3px solid var(--gold);
 }
 .hero-label {
@@ -132,7 +135,7 @@ a { text-decoration: none; color: inherit; }
 .next-bar {
   background: var(--tl);
   border-bottom: 1px solid var(--border);
-  padding: 12px 40px;
+  padding: 12px var(--edge);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -446,7 +449,7 @@ a { text-decoration: none; color: inherit; }
 
 footer {
   background: var(--td);
-  padding: 18px 40px;
+  padding: 18px var(--edge);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -563,8 +566,9 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   display: flex;
   justify-content: center;
   /* Narrows as the window narrows so it can stay centered between the
-     logo and the links for as long as possible. */
-  width: clamp(200px, calc(100vw - 740px), 400px);
+     logo and the links for as long as possible. Capped at 310px so the
+     links fit inside the 1100px content column on wide screens. */
+  width: clamp(200px, calc(100vw - 740px), 310px);
   min-width: 0;
 }
 .ps-open { display: none; }
@@ -763,6 +767,8 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
 
 @media (max-width: 1100px) {
   .topbar-portal .back-link { display: none; }
+  /* With the back link hidden, drop the divider in front of the seal link */
+  .topbar-portal .town-link { padding-left: 0; border-left: 0; }
 }
 @media (max-width: 880px) {
   .topbar-portal { column-gap: 16px; }
