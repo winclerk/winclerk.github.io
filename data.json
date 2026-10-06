@@ -39,14 +39,6 @@
           "name": "Financial",
           "documents": [
             {
-              "label": "2027 Budget Worksheet DRAFT",
-              "filename": "2027 Budget Worksheet DRAFT.xlsx",
-              "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQA0Llo7ucdGRYn6Q35o7SEvAaFP9iZlXqCXSAmYmvl4RnM",
-              "date": "2026-10-06",
-              "posted": "2026-10-06",
-              "draft": true
-            },
-            {
               "label": "2925 levy limit worksheet",
               "filename": "2925 levy limit worksheet.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDWTXbVopLmTosjzX-mBxyiATc6OKwrDteNo6ofHZxykYM",
@@ -57,13 +49,6 @@
               "label": "Form CT 2025 Section O",
               "filename": "Form-CT-2025 Section O.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAf0MaZwm6yTaR93GG92e0wAdjKCAxN6RGU1voFaArlvb0",
-              "date": "2026-10-06",
-              "posted": "2026-10-06"
-            },
-            {
-              "label": "Sept 2026 Treasurers report",
-              "filename": "Sept 2026 Treasurers report.xlsx",
-              "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQAp8qdgQAzmTZ-OG9SQf6-HATJ6qdE0wIUVXqvp7kFyn38",
               "date": "2026-10-06",
               "posted": "2026-10-06"
             }
@@ -565,19 +550,19 @@
           "name": "Financial",
           "documents": [
             {
+              "label": "2027 Budget Worksheet DRAFT",
+              "filename": "2027 Budget Worksheet DRAFT.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQCJVM9GVj4gTr_BVOOPUuPJAU87zUqziwPsntFb-vQGo5M",
+              "date": "2026-10-06",
+              "posted": "2026-09-07",
+              "draft": true
+            },
+            {
               "label": "2026 Budget Worksheet",
               "filename": "2026 Budget Worksheet.xlsx",
               "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQARZeVm-NmXQYmHY0ss7ehjActOgicVW1WVne7nwIWQbcw",
               "date": "2026-09-07",
               "posted": "2026-09-07"
-            },
-            {
-              "label": "2027 Budget Worksheet DRAFT",
-              "filename": "2027 Budget Worksheet DRAFT.xlsx",
-              "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQCJVM9GVj4gTr_BVOOPUuPJAU87zUqziwPsntFb-vQGo5M",
-              "date": "2026-09-07",
-              "posted": "2026-09-07",
-              "draft": true
             }
           ],
           "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgC0WUahqmypSIVclhgg5iKQAeiRTDGSV0dcQT6PGWHl6UA"
