@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-08T03:53:54Z",
+  "updated": "2026-10-08T19:07:12Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -236,6 +236,18 @@
         "Conditions": "",
         "Traffic impact": "Other: off shoulder work, or shoulder work, possible closure if they move equipment from one side to other.",
         "Public contact": "Brian Hempel — 715-246-3440"
+      }
+    },
+    "2026-ROW-10": {
+      "status": "received",
+      "snapshot": {
+        "Location": "Papoose Lake Rd — 14009 Tonys Boulevard",
+        "Board meeting": "",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "No traffic impact",
+        "Public contact": "William Kurtz — 715-798-7122"
       }
     }
   }

@@ -1,77 +1,14 @@
 {
   "meetings": [
     {
-      "id": "special-2026-10-06",
-      "title": "Special Town Board Meeting - October 6, 2026",
-      "type": "special",
+      "id": "regular-2026-10-07",
+      "title": "Regular Town Board Meeting - October 2026",
+      "type": "regular",
       "status": "upcoming",
-      "date": "2026-10-06",
-      "time": "10:00 AM",
+      "date": "2026-10-07",
+      "time": "6:00 PM",
       "location": "Winchester Town Hall",
-      "documents": [
-        {
-          "label": "Special Meeting Agenda",
-          "filename": "Agenda_STBM_20261006.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDELumxyoaRS4cTRoLkOJjYAZGY19LAjTmia4uOiZdSCA4",
-          "date": "2026-10-06",
-          "posted": "2026-10-05",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Fee Schedule RC Inspection Agency 2026",
-          "filename": "Fee-Schedule_RC-Inspection-Agency_2026.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBE_OR9YrokQ7jEqz7wAAfSAdHRQwXytcLcIp1woDzLlFU",
-          "date": "2026-10-06",
-          "posted": "2026-10-06",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Fee Schedule RC Inspection Agency 2027",
-          "filename": "Fee-Schedule_RC-Inspection-Agency_2027.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDPNDKkKY2XT4RdBi8SuTj6AZzi7jh4q1l9hwuJ0sSNbxE",
-          "date": "2026-10-06",
-          "posted": "2026-10-06",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Ordinance 2018 01 Building (Amended 10.6.2026)",
-          "filename": "Ordinance_2018-01-Building-(Amended 10.6.2026)_20261006.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAaB9tP4MsGS4q8DqsREtfBAU2pmnE74RbmD4RlIHlAkQk",
-          "date": "2026-10-06",
-          "posted": "2026-10-07",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        }
-      ],
-      "subfolders": [
-        {
-          "name": "Financial",
-          "documents": [
-            {
-              "label": "2027 Budget Worksheet DRAFT",
-              "filename": "2027 Budget Worksheet DRAFT.xlsx",
-              "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQD4WlLgOHUzQqdks_nPRwSXAXIAUV0Ln04sVyUUN21Wirw",
-              "date": "2026-10-06",
-              "posted": "2026-10-06",
-              "draft": true
-            },
-            {
-              "label": "2925 levy limit worksheet",
-              "filename": "2925 levy limit worksheet.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDWTXbVopLmTosjzX-mBxyiATc6OKwrDteNo6ofHZxykYM",
-              "date": "2026-10-06",
-              "posted": "2026-10-06"
-            },
-            {
-              "label": "Form CT 2025 Section O",
-              "filename": "Form-CT-2025 Section O.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAf0MaZwm6yTaR93GG92e0wAdjKCAxN6RGU1voFaArlvb0",
-              "date": "2026-10-06",
-              "posted": "2026-10-06"
-            }
-          ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgANq8nq44b0SK7ybtS1X-rQAejihQlTvAqE70G8RAAopFQ"
-        }
-      ]
+      "documents": []
     },
     {
       "id": "special-2026-10-06",
