@@ -74,6 +74,77 @@
       ]
     },
     {
+      "id": "special-2026-10-06",
+      "title": "Special Town Board Meeting - October 6, 2026",
+      "type": "special",
+      "status": "complete",
+      "date": "2026-10-06",
+      "documents": [
+        {
+          "label": "Fee Schedule RC Inspection Agency 2026",
+          "filename": "Fee-Schedule_RC-Inspection-Agency_2026.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCsJTWHxli1Q7z51-Fq3ZWeAR0eIBajzx6NCG5OI9ZjmP8",
+          "date": "2026-10-08",
+          "posted": "2026-10-08",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCV3EwZ3lMgQKARyTemGEFDAWLdFGF47zNYszmSV3O1I8s"
+        },
+        {
+          "label": "Fee Schedule RC Inspection Agency 2027",
+          "filename": "Fee-Schedule_RC-Inspection-Agency_2027.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBEVFJHcdv3S6u1jroHbcOwAe1_HuONKyDrzDcaw7YXR_U",
+          "date": "2026-10-08",
+          "posted": "2026-10-08",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCV3EwZ3lMgQKARyTemGEFDAWLdFGF47zNYszmSV3O1I8s"
+        },
+        {
+          "label": "Special Meeting Agenda",
+          "filename": "Agenda_STBM_20261006.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA1LbZ3wPieTZ-Vv-DRy0jfAUKc7U3pEfUIclMfpRaL-Ek",
+          "date": "2026-10-06",
+          "posted": "2026-10-08",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCV3EwZ3lMgQKARyTemGEFDAWLdFGF47zNYszmSV3O1I8s"
+        },
+        {
+          "label": "Ordinance 2018 01 Building (Amended 10.6.2026)",
+          "filename": "Ordinance_2018-01-Building-(Amended 10.6.2026)_20261006.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCgfvJhmveGQZuL7zDG4ju7AcoKp4RFzB70IkEtma76c64",
+          "date": "2026-10-06",
+          "posted": "2026-10-08",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCV3EwZ3lMgQKARyTemGEFDAWLdFGF47zNYszmSV3O1I8s"
+        }
+      ],
+      "subfolders": [
+        {
+          "name": "Financial",
+          "documents": [
+            {
+              "label": "2027 Budget Worksheet DRAFT",
+              "filename": "2027 Budget Worksheet DRAFT.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQC60iVcNZHYQbAXGAQpEIGwAeoQ1ze7-fLNQDZF1unL4-Q",
+              "date": "2026-10-08",
+              "posted": "2026-10-08",
+              "draft": true
+            },
+            {
+              "label": "2925 levy limit worksheet",
+              "filename": "2925 levy limit worksheet.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDrmGEmlGXQTLvzWWxa57sgAdoLaT0fvUqh6uE3veKnI4k",
+              "date": "2026-10-08",
+              "posted": "2026-10-08"
+            },
+            {
+              "label": "Form CT 2025 Section O",
+              "filename": "Form-CT-2025 Section O.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB_5lpfB3tiRJ-kHkz6wdmpAamTCoghwpcIKUflg3EyPlQ",
+              "date": "2026-10-08",
+              "posted": "2026-10-08"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB-L1kQxDnzS4wAfZmExQwKAVLJbUX0w6DKSmYCwQpf-kI"
+        }
+      ]
+    },
+    {
       "id": "board-of-review-2026-09-28",
       "title": "Board of Review - September 28, 2026",
       "type": "special",
