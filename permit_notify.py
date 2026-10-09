@@ -347,9 +347,126 @@ def _applicant_body(row, permit_type, new_status):
     return _wrap_html(headline, lead, _detail_rows(detail_pairs), next_step, _s(row.get("permit_number")))
 
 
+# ══════════════════════════════════════════════════════════════
+# Board Teams post — table layout matching the "New Permit Application" post
+# ══════════════════════════════════════════════════════════════
+
+# Tracker links — same URLs the Make "new application" modules (9, 31, 32) use.
+TRACKER_LINKS = {
+    "row": ("Open the Right-of-Way tracker",
+            "https://townofwinchester54557.sharepoint.com/:x:/s/RecordsArchive/IQBTkd1UGdgKSbyiCcCzvEp1AbRKVPayhjgOo2oihaL0Tz8?e=qUW727"),
+    "driveway": ("Open the Driveway tracker",
+                 "https://townofwinchester54557.sharepoint.com/:x:/s/RecordsArchive/IQD546fVA3_wQppMTyNjJhIvAfZNLlIKtZ1GYpVal24eGR0?e=IA4ODg"),
+    "road_construction": ("Open the permit tracker",
+                          "https://townofwinchester54557.sharepoint.com/sites/RecordsArchive/Permits/2026%20to%20Present.xlsx"),
+}
+
+_TD_LABEL = '<td style="padding:4px 12px 4px 0;font-weight:bold">'
+
+
+def _join(*parts):
+    """Join non-empty parts with an em dash (same style as the Make template)."""
+    return " \u2014 ".join(p for p in (_s(x) for x in parts) if p)
+
+
+def _span(a, b, sep=" to "):
+    a, b = _s(a), _s(b)
+    if a and b:
+        return f"{a}{sep}{b}"
+    return a or b
+
+
+def _teams_html(row, permit_type, new_status, changed_labels):
+    """Build the full Teams message HTML. Rows with no value are left out so
+       the table never shows blank lines. A '*' marks fields that changed
+       since the last notice for this permit."""
+    changed = set(changed_labels or [])
+
+    def star(label):
+        return "*" if label in changed else ""
+
+    # Application details — same rows, order and labels as the new-application posts
+    if permit_type == "driveway":
+        app_rows = [
+            ("Applicant",       _s(row.get("applicant")), ""),
+            ("Phone",           _s(row.get("phone")), ""),
+            ("Property",        _s(row.get("parcel")), star("Location")),
+            ("Road",            _s(row.get("road")), star("Location")),
+            ("Access to",       _s(row.get("access_to")), ""),
+            ("Surface / Width", _join(row.get("surface"), row.get("width")), ""),
+            ("Culvert exists",  _s(row.get("culvert_exists")), ""),
+            ("Contractor",      _join(row.get("contractor"), row.get("contractor_phone")), ""),
+        ]
+    elif permit_type == "road_construction":
+        app_rows = [
+            ("Project",        _s(row.get("title")), ""),
+            ("Type",           _s(row.get("type")), ""),
+            ("Road(s)",        _s(row.get("road")), star("Location")),
+            ("Organization",   _join(row.get("org"), row.get("applicant")), ""),
+            ("Phone",          _s(row.get("phone")), ""),
+            ("Dates",          _span(row.get("start_date"), row.get("end_date")), ""),
+            ("Traffic impact", _s(row.get("traffic")), star("Traffic impact")),
+            ("Public contact", _join(row.get("public_contact_name"), row.get("public_contact_phone")), star("Public contact")),
+        ]
+    else:  # row (right-of-way)
+        app_rows = [
+            ("Project",        _s(row.get("title")), ""),
+            ("Type",           _s(row.get("type")), ""),
+            ("Road",           _row_location(row, "row"), star("Location")),
+            ("Applicant",      _join(row.get("org"), row.get("applicant")), ""),
+            ("Phone",          _s(row.get("phone")), ""),
+            ("Dates",          _span(row.get("start_date"), row.get("end_date")), ""),
+            ("Traffic impact", _s(row.get("traffic")), star("Traffic impact")),
+            ("Public contact", _join(row.get("public_contact_name"), row.get("public_contact_phone")), star("Public contact")),
+        ]
+
+    # Status details
+    status_rows = [
+        ("Status",        STATUS_LABELS.get(new_status, new_status.capitalize()), ""),
+        ("Permit number", _s(row.get("permit_number")), ""),
+        ("Board meeting", _s(row.get("board_date")), star("Board meeting")),
+    ]
+    if new_status in ("approved", "approved conditionally"):
+        status_rows.append((
+            "Authorized period",
+            _span(row.get("authorized_start"), row.get("authorized_end"), " through "),
+            star("Authorized start") or star("Authorized end"),
+        ))
+    if new_status == "approved conditionally":
+        status_rows.append(("Conditions", _s(row.get("conditions")), star("Conditions")))
+    if new_status == "denied":
+        status_rows.append(("Reason", _s(row.get("clerk_notes")), ""))
+
+    def tr(label, value, mark):
+        # Keep line breaks the clerk typed into Conditions / Reason
+        val = escape(value).replace("\r\n", "<br>").replace("\n", "<br>")
+        return f"<tr>{_TD_LABEL}{escape(label)}</td><td>{val}{mark}</td></tr>"
+
+    table_rows = [tr(l, v, m) for l, v, m in status_rows + app_rows if v]
+
+    status_label = STATUS_LABELS.get(new_status, new_status.capitalize())
+    parts = [
+        f"<h3>\U0001F4CB Permit Status Update: {escape(status_label)}</h3>",
+        '<table style="border-collapse:collapse;font-size:14px">',
+        *table_rows,
+        "</table>",
+    ]
+    if changed:
+        parts.append('<p style="font-style:italic;color:#888;font-size:12px">'
+                     "* indicates update since last notice</p>")
+    link_text, link_url = TRACKER_LINKS.get(permit_type, TRACKER_LINKS["row"])
+    parts.append(f'<br>\n<a href="{link_url}">{escape(link_text)}</a>')
+    return "\n".join(parts)
+
+
 def _build_teams_payload(row, permit_type, new_status, old_status, changed_labels=None):
     """Compact JSON payload for the Make webhook. Make's router branches on
        event_type=status_change to send it via the fallback Teams module.
+
+       message_html is the complete, ready-to-post Teams message (table layout
+       matching the "New Permit Application" post). Make's status-change Teams
+       module should send {{2.message_html}} as its message. The individual
+       fields below are kept for reference / other uses.
 
        changed_labels: list of field labels (from _TRACKED_FIELDS) whose values
        differ from the last notification. Used to render '*' indicators in the
@@ -385,6 +502,8 @@ def _build_teams_payload(row, permit_type, new_status, old_status, changed_label
         # Ready-to-render footer: empty when nothing changed, else the reminder line.
         "changes_footer":   "* indicates update since last notice" if changed_labels else "",
         "has_changes":      bool(changed_labels),
+        # Complete Teams message in the table layout
+        "message_html":     _teams_html(row, permit_type, new_status, changed_labels),
     }
 
 

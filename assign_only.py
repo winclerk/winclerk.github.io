@@ -8,6 +8,9 @@ Unlike sync.py (which does meeting sync, site sync, PDFs, etc.), this only:
      writes permits.json
   3. Runs permit_notify.notify_status_changes() — sends the "Application
      received, your permit number is X" email to the applicant
+  4. Calls flush_github() — commits permits.json and permit_notify_state.json
+     in one commit. write_github_file() only queues files; without this flush
+     nothing is saved, and the next sync re-sends the same notifications.
 
 The daily 7am sync (sync.py) still handles PDF generation, meeting sync,
 other sites, and any status-change notifications for existing permits.
@@ -21,9 +24,9 @@ import os
 import sys
 import traceback
 
-# Reuse everything from sync.py — token, write_github_file
+# Reuse everything from sync.py — token, write_github_file, flush_github
 try:
-    from sync import get_token, write_github_file
+    from sync import get_token, write_github_file, flush_github
 except ImportError as e:
     print(f"Run from the winclerk.github.io repo root (missing import: {e})", file=sys.stderr)
     sys.exit(1)
@@ -40,6 +43,9 @@ def main():
 
         import permit_notify
         permit_notify.notify_status_changes(token, all_rows, write_github_file)
+
+        # Commit everything queued above (permits.json + notify state).
+        flush_github()
 
         print("Done.")
     except Exception as e:
