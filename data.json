@@ -1,14 +1,22 @@
 {
   "meetings": [
     {
-      "id": "special-2026-10-06",
-      "title": "Special Town Board Meeting - October 6, 2026",
-      "type": "special",
+      "id": "regular-2026-10-12",
+      "title": "Regular Town Board Meeting - October 2026",
+      "type": "regular",
       "status": "upcoming",
-      "date": "2026-10-06",
+      "date": "2026-10-12",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
       "documents": [
+        {
+          "label": "Regular Meeting Agenda",
+          "filename": "Agenda_RTBM_20261012.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBck6vR6nveQa6y7GWTIjWVAbwiZZ1aXOL_vL3lsTyGeQw",
+          "date": "2026-10-12",
+          "posted": "2026-10-09",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
         {
           "label": "Minutes (Draft) - October 6, 2026",
           "filename": "Minutes_STBM_20261006_DRAFT.pdf",
