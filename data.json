@@ -12,64 +12,106 @@
         {
           "label": "Regular Meeting Agenda",
           "filename": "Agenda_RTBM_20261012.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBck6vR6nveQa6y7GWTIjWVAbwiZZ1aXOL_vL3lsTyGeQw",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAxz8I_X9DGSoSI49r9NoFlAdOJHXg5UrnDKxW2-5kHeRA",
           "date": "2026-10-12",
           "posted": "2026-10-09",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        }
+      ],
+      "subfolders": [
+        {
+          "name": "3. Minutes",
+          "documents": [
+            {
+              "label": "Minutes (Draft) - October 6, 2026",
+              "filename": "Minutes_STBM_20261006_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCQpO4X5QzdTKI951lgnW-lAVCGQhdRP2-LIYdJ_hakcHc",
+              "date": "2026-10-06",
+              "posted": "2026-10-09",
+              "draft": true
+            },
+            {
+              "label": "Minutes (Draft) - September 14, 2026",
+              "filename": "Minutes_RTBM_20260914_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDDiuLYT3XkQ5ZJrXT6c-wTAWAROVbwpMy-hsC3SLGsP0k",
+              "date": "2026-09-14",
+              "posted": "2026-10-09",
+              "draft": true
+            },
+            {
+              "label": "Minutes Special Town Board Meeting 1 20260910 DRAFT",
+              "filename": "Minutes_STBM-1_20260910_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAOPeSoq82zRanm_aJAlADkAfi4Nib37bJLCyJoZ2e2GZg",
+              "date": "2026-09-10",
+              "posted": "2026-10-09",
+              "draft": true
+            },
+            {
+              "label": "Minutes Special Town Board Meeting 2 20260910 DRAFT",
+              "filename": "Minutes_STBM-2_20260910_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQATuGRRKiOWSZ5N-hAVU5I7Aaas68rrGIAnZNGYIHqRryM",
+              "date": "2026-09-10",
+              "posted": "2026-10-09",
+              "draft": true
+            },
+            {
+              "label": "Minutes (Draft) - September 1, 2026",
+              "filename": "Minutes_STBM_20260901_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBqd87JEJ8FSKNlo7APacAAAWq5xe6JkzuUSdP-iCduGA0",
+              "date": "2026-09-01",
+              "posted": "2026-10-09",
+              "draft": true
+            },
+            {
+              "label": "Minutes (Draft) - August 17, 2026",
+              "filename": "Minutes_RTBM_20260817_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAIaGvHha75Qp41DbRQBTmXAZG4MQuCWSuLDD5BvL7m3Zk",
+              "date": "2026-08-17",
+              "posted": "2026-10-09",
+              "draft": true
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBI_dKnrQjMTZGiReU12o4AAW1UtcH6PDtgroLRYNfifIA"
         },
         {
-          "label": "Minutes (Draft) - October 6, 2026",
-          "filename": "Minutes_STBM_20261006_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCQpO4X5QzdTKI951lgnW-lAVCGQhdRP2-LIYdJ_hakcHc",
-          "date": "2026-10-06",
-          "posted": "2026-10-09",
-          "draft": true,
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+          "name": "4. Reports",
+          "documents": [
+            {
+              "label": "Clerk's Report",
+              "filename": "Report_Clerk_20261012.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA-yv15Wws-So8ciQgMHanHAailrWHN_o0P2n1ufw88_nY",
+              "date": "2026-10-12",
+              "posted": "2026-10-09"
+            },
+            {
+              "label": "NEMSD Report",
+              "filename": "Report_NEMSD_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAEw_Iy5mEHSK1keWiIIzdJAYzyTywEXowQN3UYsw6yVQ8",
+              "date": "2026-10-09",
+              "posted": "2026-10-09"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgA1S_U20LodRYzSUxCE508lASJst_TbIheBdfbQA6L1yNM"
         },
         {
-          "label": "Minutes (Draft) - September 14, 2026",
-          "filename": "Minutes_RTBM_20260914_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDDiuLYT3XkQ5ZJrXT6c-wTAWAROVbwpMy-hsC3SLGsP0k",
-          "date": "2026-09-14",
-          "posted": "2026-10-09",
-          "draft": true,
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Minutes Special Town Board Meeting 1 20260910 DRAFT",
-          "filename": "Minutes_STBM-1_20260910_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAOPeSoq82zRanm_aJAlADkAfi4Nib37bJLCyJoZ2e2GZg",
-          "date": "2026-09-10",
-          "posted": "2026-10-09",
-          "draft": true,
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Minutes Special Town Board Meeting 2 20260910 DRAFT",
-          "filename": "Minutes_STBM-2_20260910_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQATuGRRKiOWSZ5N-hAVU5I7Aaas68rrGIAnZNGYIHqRryM",
-          "date": "2026-09-10",
-          "posted": "2026-10-09",
-          "draft": true,
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Minutes (Draft) - September 1, 2026",
-          "filename": "Minutes_STBM_20260901_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBqd87JEJ8FSKNlo7APacAAAWq5xe6JkzuUSdP-iCduGA0",
-          "date": "2026-09-01",
-          "posted": "2026-10-09",
-          "draft": true,
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Minutes (Draft) - August 17, 2026",
-          "filename": "Minutes_RTBM_20260817_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAIaGvHha75Qp41DbRQBTmXAZG4MQuCWSuLDD5BvL7m3Zk",
-          "date": "2026-08-17",
-          "posted": "2026-10-09",
-          "draft": true,
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+          "name": "7. Discussion-Possible Action",
+          "documents": [
+            {
+              "label": "2026-06 Veterans Day Resolution",
+              "filename": "Resolution_2026-06_Veterans-Day_20261012.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQASTTkGoyD-SooUjyY5CpdiATWIV5WkZ_bCDmQ0SGlO7gw",
+              "date": "2026-10-12",
+              "posted": "2026-10-09"
+            },
+            {
+              "label": "Letter Williams to Winchester Town Board",
+              "filename": "Letter_Williams-to-Winchester-Town-Board_20261006.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBXeyY8aUH8SKniv2WvRX_jAXNM6IcRYbgB-G2TwN8UpBQ",
+              "date": "2026-10-06",
+              "posted": "2026-10-09"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgD6ORbw8OeuS60pAR2rJH8kAaa7q-Cv5ptzuliP2fqcPEM"
         }
       ]
     },
@@ -2879,6 +2921,13 @@
         {
           "name": "Election Inspectors",
           "documents": [
+            {
+              "label": "Letter CLC Mass Challenge Guidance",
+              "filename": "Letter_CLC-Mass-Challenge-Guidance_20261008.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQAz2pCrT-YBR6ZKJ9Szma3JAf8foNNKQ-7M4lAuutIJs10",
+              "date": "2026-10-08",
+              "posted": "2026-10-09"
+            },
             {
               "label": "Pocket Guide Election Day Law Enforcement",
               "filename": "Pocket-Guide_Election-Day-Law-Enforcement_20261002.pdf",

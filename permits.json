@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-09T18:37:54Z",
+  "updated": "2026-10-09T23:01:14Z",
   "permits": [
     {
       "id": "2026-ROW-08",
@@ -1835,7 +1835,7 @@
     {
       "id": "2026-ROW-10",
       "permitNumber": "2026-ROW-10",
-      "status": "received",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
       "pdfUrl": "/public/permits/2026-ROW-10.pdf",

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-09T18:37:54Z",
+  "updated": "2026-10-09T23:01:15Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -239,12 +239,12 @@
       }
     },
     "2026-ROW-10": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
         "Location": "Papoose Lake Rd — 14009 Tonys Boulevard",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Board meeting": "2026-10-09",
+        "Authorized start": "2026-10-08",
+        "Authorized end": "2027-07-01",
         "Conditions": "",
         "Traffic impact": "No traffic impact",
         "Public contact": "William Kurtz — 715-798-7122"
