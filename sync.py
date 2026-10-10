@@ -596,15 +596,21 @@ def _infer_label_core(name):
         label = f"{base} (Draft)" if is_draft else base
         return f"{label} - {date_str}" if date_str else label
 
-    m = re.match(r"Minutes_(?:RTBM|STBM|TBSM)_(\d{8})(_DRAFT)?", name)
+    # Same-day numbered meetings ("Minutes_STBM-1_...", "Minutes_STBM-2_...")
+    # get "(Part N)" to match the numbered agenda labels above; without the
+    # optional "-N" they fell through to the generic fallback.
+    m = re.match(r"Minutes_(?:RTBM|STBM|TBSM)(?:-(\d+))?_(\d{8})(_DRAFT)?", name)
     if m:
-        is_draft = bool(m.group(2))
+        part = m.group(1)
+        is_draft = bool(m.group(3))
         try:
-            date_str = datetime.strptime(m.group(1), "%Y%m%d").strftime("%B %-d, %Y")
+            date_str = datetime.strptime(m.group(2), "%Y%m%d").strftime("%B %-d, %Y")
         except ValueError:
             date_str = None
         label = "Minutes (Draft)" if is_draft else "Minutes"
-        return f"{label} - {date_str}" if date_str else label
+        if date_str:
+            label = f"{label} - {date_str}"
+        return f"{label} (Part {part})" if part else label
 
     m = re.match(r"Report_Clerk_\d{8}", name)
     if m:
@@ -827,7 +833,7 @@ def scan_folder(token, drive_id, folder_path):
                 continue
             sub_path = f"{folder_path}/{name}"
             print(f"    Scanning subfolder: {name}...")
-            sub_docs = scan_subfolder(token, drive_id, sub_path)
+            sub_docs, sub_groups = scan_subfolder(token, drive_id, sub_path, include_nested=True)
             if sub_docs:
                 sub_folder_url = make_folder_link(token, drive_id, sub_path)
                 subfolder_entry = {
@@ -836,6 +842,8 @@ def scan_folder(token, drive_id, folder_path):
                 }
                 if sub_folder_url:
                     subfolder_entry["url"] = sub_folder_url
+                if sub_groups:
+                    subfolder_entry["groups"] = sub_groups
                 subfolders.append(subfolder_entry)
             continue
 
@@ -863,19 +871,46 @@ def scan_folder(token, drive_id, folder_path):
     return docs, subfolders
 
 
-def scan_subfolder(token, drive_id, folder_path):
-    """Scan a subfolder inside a meeting folder for files only.
-    Returns a list of document dicts. Skips any nested subfolders."""
+def scan_subfolder(token, drive_id, folder_path, include_nested=False):
+    """Scan a subfolder inside a meeting folder.
+
+    With include_nested=False: returns a list of document dicts for the
+    files directly in the folder (nested folders are ignored).
+
+    With include_nested=True: returns (docs, groups). Files one folder
+    deeper (e.g. "Financial/October Regular Meeting - Financial Documents")
+    are published too. They are added to the same flat `docs` list, each
+    tagged with "group": <inner folder name>, so every page that counts or
+    searches a meeting's documents keeps working unchanged. `groups` lists
+    the inner folders that had files, in SharePoint order, as
+    {"name": ..., "url": ...}, so the meeting pages can show them as labeled
+    sub-groups. Only one extra level is read, and "Internal Only" folders
+    are always skipped."""
     try:
         children = list_children(token, drive_id, folder_path)
     except Exception as e:
         print(f"    Warning: could not read subfolder {folder_path}: {e}")
-        return []
+        return ([], []) if include_nested else []
 
     docs = []
+    groups = []
     for item in children:
         name = item["name"]
         if "folder" in item:
+            if not include_nested or name.strip().lower() == SKIP_FOLDER_NAME.lower():
+                continue
+            inner_path = f"{folder_path}/{name}"
+            print(f"      Scanning inner folder: {name}...")
+            inner_docs = scan_subfolder(token, drive_id, inner_path)
+            if inner_docs:
+                for d in inner_docs:
+                    d["group"] = name
+                docs.extend(inner_docs)
+                group = {"name": name}
+                inner_url = make_folder_link(token, drive_id, inner_path)
+                if inner_url:
+                    group["url"] = inner_url
+                groups.append(group)
             continue
 
         try:
@@ -893,7 +928,7 @@ def scan_subfolder(token, drive_id, folder_path):
         docs.append(doc)
 
     newest_first(docs)
-    return docs
+    return (docs, groups) if include_nested else docs
 
 
 def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0, max_depth=None):

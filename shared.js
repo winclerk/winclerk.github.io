@@ -61,6 +61,58 @@ function isDraft(filename) {
   return (filename || '').toLowerCase().includes('draft');
 }
 
+function escHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Document type, read from the filename prefix before the first underscore
+// ("Map_...", "Letter_...", "Resolution_..."). A leading "SUPERSEDED-" is
+// ignored. Each type belongs to a color family (shared.css .type-<family>),
+// so a Letter is the same color on every page of the portal. Files without
+// a recognized prefix get no type tag, except older agenda/minutes files,
+// which keep the Agenda/Minutes tag they always had.
+const DOC_TYPES = {
+  'agenda':        ['Agenda', 'agenda'],
+  'minutes':       ['Minutes', 'minutes'],
+  'ordinance':     ['Ordinance', 'legal'],
+  'resolution':    ['Resolution', 'legal'],
+  'policy':        ['Policy', 'legal'],
+  'report':        ['Report', 'finance'],
+  'statement':     ['Statement', 'finance'],
+  'disbursements': ['Disbursements', 'finance'],
+  'fee-schedule':  ['Fee Schedule', 'finance'],
+  'quote':         ['Quote', 'finance'],
+  'letter':        ['Letter', 'corresp'],
+  'email':         ['Email', 'corresp'],
+  'memo':          ['Memo', 'corresp'],
+  'comm':          ['Communication', 'corresp'],
+  'notice':        ['Notice', 'notice'],
+  'form':          ['Form', 'notice'],
+  'permit':        ['Permit', 'notice'],
+  'affidavit':     ['Affidavit', 'notice'],
+  'handbook':      ['Handbook', 'ref'],
+  'guide':         ['Guide', 'ref'],
+  'pocket-guide':  ['Pocket Guide', 'ref'],
+  'proposal':      ['Proposal', 'ref'],
+  'map':           ['Map', 'ref']
+};
+
+function getDocType(filename) {
+  const m = /^(?:SUPERSEDED-)?([A-Za-z-]+)_/i.exec(filename || '');
+  const t = m && DOC_TYPES[m[1].toLowerCase()];
+  if (t) return { label: t[0], family: t[1] };
+  const tag = getDocTag(filename);
+  if (tag === 'agenda') return { label: 'Agenda', family: 'agenda' };
+  if (tag === 'minutes') return { label: 'Minutes', family: 'minutes' };
+  return null;
+}
+
+function typeTagHtml(filename) {
+  const t = getDocType(filename);
+  return t ? `<span class="file-tag type-${t.family}">${t.label}</span>` : '';
+}
+
 function meetingTotalDocs(m) {
   const docs = (m.documents || []).length;
   const sfDocs = (m.subfolders || []).reduce((s, sf) => s + (sf.documents || []).length, 0);
@@ -101,16 +153,18 @@ function renderFileRow(doc) {
   const tag = getDocTag(doc.filename);
   const draft = isDraft(doc.filename);
   const dateStr = doc.updated ? `Updated ${formatDateShort(doc.updated)}` : (doc.date ? formatDateShort(doc.date) : '');
-  const tagHtml = tag !== 'other' ? `<span class="file-tag tag-${tag}">${tag}</span>` : '';
+  const typeHtml = typeTagHtml(doc.filename);
   const draftHtml = draft ? `<span class="file-tag tag-draft">Draft</span>` : '';
+  const dateHtml = dateStr ? `<span class="file-date">${dateStr}</span>` : '';
+  const metaHtml = typeHtml + draftHtml + dateHtml;
 
   return `
     <div class="file-row" data-tag="${tag}">
       <div class="file-left">
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="file-info">
-          <div class="file-name">${doc.label || doc.filename}${tagHtml}${draftHtml}</div>
-          ${dateStr ? `<div class="file-date">${dateStr}</div>` : ''}
+          <div class="file-name">${doc.label || doc.filename}</div>
+          ${metaHtml ? `<div class="file-meta">${metaHtml}</div>` : ''}
         </div>
       </div>
       <a class="file-view" href="${doc.url}" target="_self">View &rarr;</a>
@@ -127,7 +181,13 @@ function renderRecordingRow(rec, metaHtml) {
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const dateStr = rec.date ? formatDateShort(rec.date) : '';
-  const meta = metaHtml != null ? metaHtml : (dateStr ? `<div class="file-date">${dateStr}</div>` : '');
+  const tagHtml = '<span class="file-tag tag-recording">Recording</span>';
+  // Pages that pass their own meta line keep the tag beside the title, as
+  // before; otherwise the tag sits under the title like every file row.
+  const nameHtml = esc(rec.label || rec.title || 'Meeting recording') + (metaHtml != null ? tagHtml : '');
+  const meta = metaHtml != null
+    ? metaHtml
+    : `<div class="file-meta">${tagHtml}${dateStr ? `<span class="file-date">${dateStr}</span>` : ''}</div>`;
   return `
     <div class="file-row" data-tag="recording">
       <div class="file-left">
@@ -135,7 +195,7 @@ function renderRecordingRow(rec, metaHtml) {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
         </div>
         <div class="file-info">
-          <div class="file-name">${esc(rec.label || rec.title || 'Meeting recording')}<span class="file-tag tag-recording">Recording</span></div>
+          <div class="file-name">${nameHtml}</div>
           ${meta}
         </div>
       </div>
@@ -146,9 +206,177 @@ function renderRecordingRow(rec, metaHtml) {
 function filterFiles(tag, el, containerId) {
   el.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById(containerId).querySelectorAll('.file-row').forEach(row => {
-    row.style.display = (tag === 'all' || row.dataset.tag === tag) ? '' : 'none';
+  const root = document.getElementById(containerId);
+  const filtering = tag !== 'all';
+  root.querySelectorAll('.file-row').forEach(row => {
+    row.style.display = (!filtering || row.dataset.tag === tag) ? '' : 'none';
   });
+  const visible = node => Array.from(node.querySelectorAll('.file-row')).filter(r => r.style.display !== 'none').length;
+
+  // Folder sections, inner folder groups and lists with no matching files
+  // are hidden while a filter is on, so no empty boxes are left behind.
+  if (!root.matches('.file-list')) {
+    root.querySelectorAll('.file-list').forEach(list => {
+      if (!list.querySelector('.file-row')) return; // empty lists keep their own state
+      list.hidden = filtering && visible(list) === 0;
+    });
+  }
+  root.querySelectorAll('.doc-group, .subfolder-section').forEach(g => {
+    g.hidden = filtering && visible(g) === 0;
+  });
+  // Agenda item sections: hide the ones with no matches, open the rest so
+  // the matching files are visible, and show the matching count. Clearing
+  // the filter puts every section back the way the visitor left it.
+  root.querySelectorAll('.agenda-item').forEach(sec => {
+    const n = visible(sec);
+    sec.hidden = filtering && n === 0;
+    const count = sec.querySelector('.agenda-count');
+    if (count) count.textContent = docCountText(filtering ? n : Number(sec.dataset.total || 0));
+    setAgendaItemOpen(sec, filtering ? true : sec.dataset.userOpen === 'true');
+  });
+  updateAgendaToggleAll();
+
+  if (!root.matches('.file-list')) {
+    let empty = root.querySelector(':scope > .filter-empty');
+    if (!empty) {
+      empty = document.createElement('div');
+      empty.className = 'file-list filter-empty';
+      empty.innerHTML = '<div class="no-docs">No files match this filter.</div>';
+      root.prepend(empty);
+    }
+    empty.hidden = !(filtering && visible(root) === 0);
+  }
+}
+
+function docCountText(n) {
+  return `${n} document${n === 1 ? '' : 's'}`;
+}
+
+/* ---------------------------------------------------------------------
+   Meeting folders (next-meeting.html, meeting.html)
+   ---------------------------------------------------------------------
+   When a meeting has folders numbered to match the agenda ("3. Minutes",
+   "7. Discussion-Possible Action"), they are shown as collapsible agenda
+   item sections in number order, followed by any unnumbered folders
+   (e.g. "Financial"). Meetings without numbered folders keep the plain
+   folder sections. Files from a folder's own inner folders (sync.py marks
+   them with doc.group) are shown as labeled groups inside that folder.
+   --------------------------------------------------------------------- */
+function splitSectionName(name) {
+  const m = /^\s*(\d+)\s*[.)\-]?\s+(\S.*)$/.exec(name || '');
+  return m ? { num: m[1], title: m[2].trim() } : { num: '', title: (name || '').trim() };
+}
+
+const FOLDER_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
+
+function renderFolderDocs(sf) {
+  const docs = sf.documents || [];
+  const loose = docs.filter(d => !d.group);
+  const order = (sf.groups || []).map(g => g.name);
+  docs.forEach(d => { if (d.group && !order.includes(d.group)) order.push(d.group); });
+  const urls = {};
+  (sf.groups || []).forEach(g => { if (g.url) urls[g.name] = g.url; });
+
+  let html = loose.map(doc => renderFileRow(doc)).join('');
+  order.forEach(name => {
+    const gDocs = docs.filter(d => d.group === name);
+    if (!gDocs.length) return;
+    html += `
+      <div class="doc-group">
+        <div class="doc-group-head">
+          ${FOLDER_SVG}
+          <span class="doc-group-name">${escHtml(name)}</span>
+          <span class="doc-group-count">${docCountText(gDocs.length)}</span>
+          ${urls[name] ? `<a class="doc-group-link" href="${escHtml(urls[name])}" target="_self">Open folder &rarr;</a>` : ''}
+        </div>
+        ${gDocs.map(doc => renderFileRow(doc)).join('')}
+      </div>`;
+  });
+  return html || '<div class="no-docs">No documents in this folder.</div>';
+}
+
+function renderMeetingFolders(subfolders) {
+  const folders = (subfolders || []).map((sf, i) => Object.assign({ i }, splitSectionName(sf.name), { sf }));
+  const accordion = folders.some(f => f.num);
+
+  if (!accordion) {
+    const html = folders.map(({ sf }) => {
+      const n = (sf.documents || []).length;
+      return `
+        <div class="subfolder-section">
+          <div class="subfolder-header">
+            <span class="subfolder-icon">${FOLDER_SVG}</span>
+            <span class="subfolder-name">${escHtml(sf.name)}</span>
+            <span class="subfolder-count">${docCountText(n)}</span>
+            ${sf.url ? `<a class="subfolder-link" href="${escHtml(sf.url)}" target="_self">Open folder &rarr;</a>` : ''}
+          </div>
+          <div class="file-list">${renderFolderDocs(sf)}</div>
+        </div>`;
+    }).join('');
+    return { html, accordion: false };
+  }
+
+  const numbered = folders.filter(f => f.num).sort((a, b) => (Number(a.num) - Number(b.num)) || (a.i - b.i));
+  const others = folders.filter(f => !f.num);
+  const html = '<div class="agenda-items">' + numbered.concat(others).map((f, idx) => {
+    const n = (f.sf.documents || []).length;
+    const badge = f.num
+      ? `<span class="agenda-num" aria-hidden="true">${escHtml(f.num)}</span>`
+      : `<span class="agenda-num agenda-num-folder" aria-hidden="true">${FOLDER_SVG}</span>`;
+    const label = f.num ? `Agenda item ${f.num}: ${f.title}` : f.title;
+    return `
+      <section class="agenda-item" data-total="${n}" data-user-open="false">
+        <h2 class="agenda-item-heading">
+          <button type="button" class="agenda-item-toggle" id="agenda-item-btn-${idx}" aria-expanded="false" aria-controls="agenda-item-panel-${idx}" aria-label="${escHtml(label)}" onclick="toggleAgendaItem(this)">
+            ${badge}
+            <span class="agenda-title">${escHtml(f.title)}</span>
+            <span class="agenda-count">${docCountText(n)}</span>
+            <svg class="agenda-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </h2>
+        <div class="agenda-panel" id="agenda-item-panel-${idx}" role="region" aria-labelledby="agenda-item-btn-${idx}" inert>
+          <div class="agenda-panel-inner">
+            ${renderFolderDocs(f.sf)}
+            ${f.sf.url ? `<div class="agenda-panel-foot"><a href="${escHtml(f.sf.url)}" target="_self">Open folder in SharePoint &rarr;</a></div>` : ''}
+          </div>
+        </div>
+      </section>`;
+  }).join('') + '</div>';
+  return { html, accordion: true };
+}
+
+function setAgendaItemOpen(sec, open) {
+  const btn = sec.querySelector('.agenda-item-toggle');
+  const panel = sec.querySelector('.agenda-panel');
+  sec.classList.toggle('open', open);
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (panel) panel.inert = !open;
+}
+
+function toggleAgendaItem(btn) {
+  const sec = btn.closest('.agenda-item');
+  const open = btn.getAttribute('aria-expanded') !== 'true';
+  sec.dataset.userOpen = open ? 'true' : 'false';
+  setAgendaItemOpen(sec, open);
+  updateAgendaToggleAll();
+}
+
+function agendaToggleAllHtml() {
+  return '<button type="button" class="agenda-toggle-all" onclick="toggleAllAgendaItems()">Expand all</button>';
+}
+
+function toggleAllAgendaItems() {
+  const secs = Array.from(document.querySelectorAll('.agenda-item:not([hidden])'));
+  const open = secs.some(s => !s.classList.contains('open'));
+  secs.forEach(s => { s.dataset.userOpen = open ? 'true' : 'false'; setAgendaItemOpen(s, open); });
+  updateAgendaToggleAll();
+}
+
+function updateAgendaToggleAll() {
+  const btn = document.querySelector('.agenda-toggle-all');
+  if (!btn) return;
+  const secs = Array.from(document.querySelectorAll('.agenda-item:not([hidden])'));
+  btn.textContent = secs.length && secs.every(s => s.classList.contains('open')) ? 'Collapse all' : 'Expand all';
 }
 
 function renderFolderCard(name, meta, count, href) {
@@ -341,7 +569,7 @@ function renderFolderCard(name, meta, count, href) {
     const d = r.d, doc = d.doc;
     const [iconClass, iconLabel] = getIconClass(doc.filename);
     const draft = isDraft(doc.filename) ? '<span class="file-tag tag-draft">Draft</span>' : '';
-    const tag = d.tag !== 'other' ? `<span class="file-tag tag-${d.tag}">${d.tag}</span>` : '';
+    const tag = typeTagHtml(doc.filename);
     const ctx = d.contextHref
       ? `<a href="${esc(d.contextHref)}">${esc(d.context)}</a>`
       : esc(d.context);

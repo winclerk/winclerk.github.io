@@ -833,3 +833,193 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
 @media (max-width: 374px) {
   .portal-brand-sub { display: none; }
 }
+
+/* =====================================================================
+   Document type tags (shared.js getDocType / typeTagHtml)
+   One color per family, used on every page that lists files.
+   ===================================================================== */
+.file-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 5px;
+}
+.file-meta .file-date { margin-top: 0; }
+.file-meta .file-tag { font-weight: 600; }
+.type-agenda  { background: var(--tl); color: var(--tm); }
+.type-minutes { background: #FAEEDA; color: #854F0B; }
+.type-legal   { background: #EEEAF8; color: #4B3A8C; }
+.type-finance { background: var(--green-light); color: var(--green); }
+.type-corresp { background: #F5F2EC; color: #6B5A2E; }
+.type-notice  { background: var(--blue-light); color: var(--blue); }
+.type-ref     { background: #FBEAF2; color: #8A2C5C; }
+
+/* =====================================================================
+   Meeting folders (shared.js renderMeetingFolders)
+   ===================================================================== */
+[hidden] { display: none !important; }
+
+/* Plain folder sections: meetings without numbered folders */
+.subfolder-section { margin-top: 2rem; }
+.subfolder-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+  border-bottom: 2px solid var(--gold);
+}
+.subfolder-icon { display: flex; color: var(--gold); }
+.subfolder-name {
+  font-family: 'Electrolize', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--td);
+  letter-spacing: 0.02em;
+}
+.subfolder-count { font-size: 0.8rem; color: #666; margin-left: auto; }
+.subfolder-link { font-size: 0.8rem; color: var(--tm); text-decoration: none; white-space: nowrap; }
+.subfolder-link:hover { text-decoration: underline; }
+
+/* Inner folder groups (e.g. Financial > October Regular Meeting - Financial Documents) */
+.doc-group-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #F5F2EC;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--td);
+}
+.doc-group-head svg { color: var(--gold); flex-shrink: 0; }
+.doc-group-count { font-weight: 400; color: var(--text-muted); }
+.doc-group-count::before { content: "\00b7\00a0"; }
+.doc-group-link { margin-left: auto; font-weight: 400; color: var(--tm); text-decoration: none; white-space: nowrap; }
+.doc-group-link:hover { text-decoration: underline; }
+/* .file-row:last-child drops the bottom line inside each group, so the next
+   group's header draws the divider instead */
+.doc-group + .doc-group .doc-group-head { border-top: 1px solid var(--border); }
+
+/* Top-of-page documents (the agenda) when the meeting has agenda item sections */
+.file-list-pinned { border-left: 4px solid var(--gold); }
+.filter-empty { margin-bottom: 14px; }
+
+/* Agenda item sections: numbered folders, collapsible */
+.agenda-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+.agenda-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.agenda-item-heading { margin: 0; font-size: inherit; font-weight: inherit; }
+.agenda-item-toggle {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--white);
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.agenda-item-toggle:active { background: #eef3f3; }
+.agenda-item-toggle:focus-visible { outline: 2px solid var(--tm); outline-offset: -2px; }
+@media (hover: hover) and (pointer: fine) {
+  .agenda-item-toggle:hover { background: #fafcfc; }
+}
+/* 32px, the same width as the file icons, so badge and icons line up in one column */
+.agenda-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--td);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Electrolize', sans-serif;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.agenda-num-folder {
+  background: #F5F2EC;
+  color: #7A6A3A;
+  border: 1px solid var(--gold);
+}
+.agenda-title {
+  font-family: 'Electrolize', sans-serif;
+  font-size: 17px;
+  color: var(--td);
+  min-width: 0;
+}
+.agenda-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--tl);
+  border-radius: 12px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.agenda-chevron {
+  color: var(--tm);
+  flex-shrink: 0;
+  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.agenda-item.open .agenda-chevron { transform: rotate(180deg); }
+.agenda-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.agenda-item.open .agenda-panel { grid-template-rows: 1fr; }
+.agenda-panel-inner { min-height: 0; overflow: hidden; }
+.agenda-item.open .agenda-panel-inner { border-top: 1px solid var(--border); }
+.agenda-panel-inner .no-docs { padding: 20px; }
+.agenda-panel-foot {
+  padding: 10px 16px;
+  text-align: right;
+  font-size: 12px;
+}
+/* a group right above the footer keeps its last line as the divider */
+.agenda-panel-inner > .doc-group:nth-last-child(2) .file-row:last-child { border-bottom: 1px solid var(--border); }
+.agenda-panel-foot a { color: var(--tm); text-decoration: none; }
+.agenda-panel-foot a:hover { text-decoration: underline; }
+.agenda-toggle-all {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--tm);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 8px 4px;
+  min-height: 36px;
+  cursor: pointer;
+}
+@media (max-width: 600px) {
+  .doc-group-name { flex-basis: calc(100% - 24px); }
+  .doc-group-count { margin-left: 24px; }
+  .doc-group-count::before { content: none; }
+  .agenda-item-toggle { gap: 10px; }
+  .agenda-title { font-size: 16px; }
+  .agenda-count { padding: 3px 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agenda-panel, .agenda-chevron { transition: none; }
+}

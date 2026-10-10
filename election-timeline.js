@@ -3,7 +3,7 @@
    Edit the dates below for future elections. Everything else is
    automatic:
      • Shows from the first milestone through the day before HIDE_ON
-     • "You are here" marker moves daily between milestones
+     • "We are here" marker moves daily between milestones
      • After Election Day, shows "Election complete" + results link
      • On HIDE_ON (two weeks after the election) it disappears
 
@@ -109,8 +109,8 @@ const ELECTION_TIMELINE = {
 
     const align = st.herePos < 10 ? ' align-left' : (st.herePos > 90 ? ' align-right' : '');
     const hereHtml = (st.complete || st.isElectionDay) ? '' : `
-      <li class="etl-here${align}" style="--pos:${st.herePos}%" aria-label="You are here: today, ${longDate(st.today)}">
-        <span class="etl-here-tag" aria-hidden="true">You are here<span class="etl-here-date"> &middot; ${shortDate(st.today)}</span></span>
+      <li class="etl-here${align}" style="--pos:${st.herePos}%" aria-label="We are here: today, ${longDate(st.today)}">
+        <span class="etl-here-tag" aria-hidden="true">We are here<span class="etl-here-date"> &middot; ${shortDate(st.today)}</span></span>
         <span class="etl-here-dot"></span>
       </li>`;
 
