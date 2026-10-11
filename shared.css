@@ -177,10 +177,8 @@ a { text-decoration: none; color: inherit; }
   border-radius: 8px;
   padding: 16px 18px;
 }
-.stat-tile-accent {
-  border-left: 4px solid var(--gold);
-  border-radius: 0 8px 8px 0;
-}
+/* .stat-tile-accent no longer draws a bar; the class stays so pages that
+   style it further (e.g. elections.html) keep working. */
 /* A stat tile that opens a page (e.g. Next meeting -> its folder page) */
 a.stat-tile-link {
   display: block;

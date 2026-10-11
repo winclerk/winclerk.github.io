@@ -80,15 +80,14 @@
       padding: 12px 14px;
       background: var(--white);
       border: 1px solid var(--border);
-      border-left: 3px solid var(--gold);
-      border-radius: 0 8px 8px 0;
+      border-radius: 8px;
       color: var(--td);
       transition: border-color 150ms ease, transform 120ms ease-out;
     }
     .hero-page-btn:active { transform: scale(0.98); }
     .hero-page-btn:focus-visible { outline: 2px solid var(--tm); outline-offset: 2px; }
     @media (hover: hover) and (pointer: fine) {
-      .hero-page-btn:hover { border-color: var(--tm); border-left-color: var(--gold); }
+      .hero-page-btn:hover { border-color: var(--tm); }
     }
     .hero-page-text { display: flex; flex-direction: column; min-width: 0; }
     .hero-page-name {

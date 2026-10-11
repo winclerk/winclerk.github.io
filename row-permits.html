@@ -43,9 +43,9 @@ h3{font-size:14px;font-weight:700;color:var(--td);margin-bottom:6px}
 .section-label{font-family:'Electrolize',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin:32px 0 14px}
 .section-label:first-child{margin-top:0}
 
-.note{border-left:4px solid var(--gold);background:var(--tan);padding:14px 18px;border-radius:0 4px 4px 0;font-size:13px;line-height:1.65;margin:16px 0}
-.note.info{border-left-color:var(--tm);background:var(--tl)}
-.note.warn{border-left-color:#A32D2D;background:#FCEBEB}
+.note{background:var(--tan);padding:14px 18px;border-radius:4px;font-size:13px;line-height:1.65;margin:16px 0}
+.note.info{background:var(--tl)}
+.note.warn{background:#FCEBEB}
 .note strong{color:var(--td)}
 .ref{display:inline-block;font-family:'Electrolize',sans-serif;font-size:10px;background:var(--tl);color:var(--tm);padding:2px 7px;border-radius:3px;white-space:nowrap;vertical-align:1px}
 ul,ol{margin:8px 0 0 20px}
@@ -63,11 +63,7 @@ li+li{margin-top:6px}
 .legend span.d{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px}
 
 /* ── Work list ── */
-.job{border:1px solid var(--g200);border-radius:var(--radius);padding:16px 18px;margin-bottom:10px;border-left:4px solid var(--g300);background:#fff}
-.job[data-s="active"]{border-left-color:var(--st-active)}
-.job[data-s="upcoming"]{border-left-color:var(--st-upcoming)}
-.job[data-s="complete"]{border-left-color:var(--st-complete)}
-.job[data-s="proposed"]{border-left-color:var(--st-proposed)}
+.job{border:1px solid var(--g200);border-radius:var(--radius);padding:16px 18px;margin-bottom:10px;background:#fff}
 .job-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
 .job-title{font-weight:700;font-size:14px;color:var(--td)}
 .job-org{font-size:12px;color:var(--g600);margin-top:2px}
