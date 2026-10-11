@@ -117,8 +117,8 @@ function typeTagHtml(filename) {
   return t ? `<span class="file-tag type-${t.family}">${t.label}</span>` : '';
 }
 
-// Type + Draft tags. Every page shows them in one place: at the start of
-// the line under the file title, next to the date.
+// Type + Draft tags. Every page shows them in one place: on the line under
+// the file title, after the date.
 function docTagsHtml(filename) {
   return typeTagHtml(filename) + (isDraft(filename) ? '<span class="file-tag tag-draft">Draft</span>' : '');
 }
@@ -180,7 +180,7 @@ function renderFileRow(doc) {
   const tag = getDocTag(doc.filename);
   const dateStr = doc.updated ? `Updated ${formatDateShort(doc.updated)}` : (doc.date ? formatDateShort(doc.date) : '');
   const dateHtml = dateStr ? `<span class="file-date">${dateStr}</span>` : '';
-  const metaHtml = docTagsHtml(doc.filename) + dateHtml;
+  const metaHtml = dateHtml + docTagsHtml(doc.filename);
   const label = docLabel(doc);
 
   return `
@@ -213,7 +213,7 @@ function renderRecordingRow(rec, metaHtml) {
   const nameHtml = esc(rec.label || rec.title || 'Meeting recording');
   const meta = metaHtml != null
     ? metaHtml
-    : `<div class="file-meta">${RECORDING_TAG}${dateStr ? `<span class="file-date">${dateStr}</span>` : ''}</div>`;
+    : `<div class="file-meta">${dateStr ? `<span class="file-date">${dateStr}</span>` : ''}${RECORDING_TAG}</div>`;
   return `
     <div class="file-row" data-tag="recording">
       <div class="file-left">
@@ -600,7 +600,7 @@ function renderFolderCard(name, meta, count, href) {
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="ps-result-body">
           <a class="ps-result-title" href="${esc(doc.url)}">${highlight(docLabel(doc), ts)}</a>
-          <div class="ps-result-meta">${tags ? `<span class="tag-group">${tags}</span>` : ''}<span class="ps-chip">${esc(SECTION_LABELS[d.section] || '')}</span>${ctx}${date}</div>
+          <div class="ps-result-meta"><span class="ps-chip">${esc(SECTION_LABELS[d.section] || '')}</span>${ctx}${date}${tags ? `<span class="tag-group">${tags}</span>` : ''}</div>
           ${snip ? `<div class="ps-snippet">${snip}</div>` : ''}
         </div>
       </div>`;

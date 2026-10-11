@@ -133,7 +133,7 @@ function renderQuickList(filter) {
             <div class="file-icon icon-video"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></div>
             <div>
               <div class="quick-name">Meeting recording</div>
-              <div class="quick-meta file-meta">${RECORDING_TAG}${rec.date ? `<span class="file-date">${formatDateShort(rec.date)}</span>` : ''}</div>
+              <div class="quick-meta file-meta">${rec.date ? `<span class="file-date">${formatDateShort(rec.date)}</span>` : ''}${RECORDING_TAG}</div>
             </div>
           </div>
           <a class="quick-view" href="${rec.url}" target="_blank" rel="noopener">Watch${BTN_ARROW}</a>
@@ -148,7 +148,7 @@ function renderQuickList(filter) {
             <div class="file-icon ${iconClass}">${iconLabel}</div>
             <div>
               <div class="quick-name">${docLabel(doc)}</div>
-              <div class="quick-meta file-meta">${docTagsHtml(doc.filename)}${dateStr ? `<span class="file-date">${dateStr}</span>` : ''}</div>
+              <div class="quick-meta file-meta">${dateStr ? `<span class="file-date">${dateStr}</span>` : ''}${docTagsHtml(doc.filename)}</div>
             </div>
           </div>
           <a class="quick-view" href="${doc.url}">View${BTN_ARROW}</a>

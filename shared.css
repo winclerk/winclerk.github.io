@@ -422,13 +422,13 @@ a.stat-tile-link:focus-visible { outline: 2px solid var(--tm); outline-offset: 2
   white-space: nowrap;
   vertical-align: middle;
 }
-/* Tags inside a line of text (search results, All Agendas & Minutes):
-   centered on the text, 6px apart, 6px before the rest of the line */
+/* Tags at the end of a line of text (search results, All Agendas &
+   Minutes): centered on the text, 6px apart and 6px after the date */
 .tag-group {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-right: 6px;
+  margin-left: 6px;
   vertical-align: middle;
 }
 .tag-agenda { background: var(--tl); color: var(--tm); }

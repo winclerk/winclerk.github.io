@@ -285,7 +285,7 @@ function renderRow(it) {
     const dateHtml = it.date ? `${labelHtml ? ' &middot; ' : ''}${formatDate(it.date)}` : '';
     return renderRecordingRow(
       { title: it.doc.label, url: it.doc.url, date: it.date },
-      `<div class="file-meta-line"><span class="tag-group">${RECORDING_TAG}</span><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}</div>`
+      `<div class="file-meta-line"><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}<span class="tag-group">${RECORDING_TAG}</span></div>`
     );
   }
   const doc = it.doc;
@@ -301,7 +301,7 @@ function renderRow(it) {
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="file-info">
           <div class="file-name">${escapeHtml(docLabel(doc))}</div>
-          <div class="file-meta-line">${tagsHtml}<span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}</div>
+          <div class="file-meta-line"><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}${tagsHtml}</div>
         </div>
       </div>
       <a class="file-view" href="${escapeHtml(doc.url)}" target="_self">View${BTN_ARROW}</a>
