@@ -252,14 +252,41 @@ function committeeLabel(doc) {
 }
 
 // Committees that have their own page, keyed by library name in data.json.
+// Each one gets a button in the header and beside its section.
+// To add the Planning Commission later, add a line like:
+//   'Planning Commission': { href: 'planning-commission.html', name: 'Planning Commission', sub: 'Plans, zoning & more', label: 'Visit Planning Commission page' },
 const COMMITTEE_PAGES = {
-  'Winchester Town Lakes Committee (WTLC)': { href: 'lakes-committee.html', label: 'Visit WTLC page' }
+  'Winchester Town Lakes Committee (WTLC)': {
+    href: 'lakes-committee.html',
+    name: 'WTLC',
+    sub: 'Winchester Town Lakes Committee',
+    label: 'Visit WTLC page'
+  }
 };
+
+const BTN_ARROW_SVG = '<svg class="btn-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg>';
+
+// Header buttons. Drawn right away (not after data.json loads) so they
+// work even if the documents fail to load.
+function renderHeroPages() {
+  const nav = document.getElementById('hero-pages');
+  const pages = Object.values(COMMITTEE_PAGES);
+  if (!pages.length) return;
+  nav.innerHTML = '<div class="hero-pages-label">Committee pages</div>' + pages.map(p => `
+    <a class="hero-page-btn" href="${p.href}">
+      <span class="hero-page-text">
+        <span class="hero-page-name">${escapeHtml(p.name)}</span>
+        <span class="hero-page-sub">${escapeHtml(p.sub)}</span>
+      </span>
+      ${BTN_ARROW_SVG}
+    </a>`).join('');
+  nav.hidden = false;
+}
 
 function committeePageButton(lib) {
   const page = COMMITTEE_PAGES[lib.name];
   if (!page) return '';
-  return `<a class="file-view" href="${page.href}">${escapeHtml(page.label)}<svg class="btn-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg></a>`;
+  return `<a class="file-view" href="${page.href}">${escapeHtml(page.label)}${BTN_ARROW_SVG}</a>`;
 }
 
 function renderLibrarySection(lib, recordings) {
@@ -343,6 +370,7 @@ async function init() {
   }
 }
 
+renderHeroPages();
 init();
 </script>
 </body>
