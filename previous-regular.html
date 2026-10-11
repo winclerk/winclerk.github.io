@@ -45,9 +45,10 @@
   <div id="stat-tiles-container"></div>
   <div class="page-body">
     <div class="section-label">Select a meeting</div>
-    <div class="folder-grid" id="folder-grid">
+    <div class="folder-grid" id="folder-grid" style="margin-bottom:0">
       <div class="no-docs">Loading&hellip;</div>
     </div>
+    <div id="see-all-slot"></div>
   </div>
 </main>
 <footer>
@@ -73,15 +74,30 @@ async function init() {
       document.getElementById('folder-grid').innerHTML = '<div class="no-docs">No previous regular meetings on record.</div>';
       return;
     }
-    document.getElementById('folder-grid').innerHTML = regular.map(m => {
-      const docCount = meetingTotalDocs(m);
-      return renderFolderCard(
-        m.title,
-        formatDate(m.date),
-        `${docCount} document${docCount !== 1 ? 's' : ''}`,
-        `meeting.html?id=${encodeURIComponent(m.id)}`
-      );
-    }).join('');
+    // 5 most recent meetings first; "See all" shows the rest.
+    let showAll = false;
+    const grid = document.getElementById('folder-grid');
+    const more = document.getElementById('see-all-slot');
+    const draw = () => {
+      const shown = showAll ? regular : regular.slice(0, RECENT_MEETINGS);
+      grid.innerHTML = shown.map(m => {
+        const docCount = meetingTotalDocs(m);
+        return renderFolderCard(
+          m.title,
+          formatDate(m.date),
+          `${docCount} document${docCount !== 1 ? 's' : ''}`,
+          `meeting.html?id=${encodeURIComponent(m.id)}`
+        );
+      }).join('');
+      more.innerHTML = seeAllHtml(regular.length, showAll);
+    };
+    more.addEventListener('click', e => {
+      if (!e.target.closest('.see-all')) return;
+      showAll = !showAll;
+      draw();
+      if (!showAll) grid.scrollIntoView({ block: 'nearest' });
+    });
+    draw();
   } catch (e) {
     document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load meetings. Please try again later.</div>';
   }

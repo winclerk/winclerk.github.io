@@ -89,12 +89,23 @@
 <script src="shared.js"></script>
 <script>
 let allMeetings = [];
+let quickFilter = 'all';
+let showAllMeetings = false;   // 5 most recent until "See all" is clicked
 
 function filterQuick(type, el) {
   document.querySelectorAll('.filter-bar .filter-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
+  quickFilter = type;
+  showAllMeetings = false;
   renderQuickList(type);
 }
+
+document.getElementById('quick-list').addEventListener('click', e => {
+  if (!e.target.closest('.see-all')) return;
+  showAllMeetings = !showAllMeetings;
+  renderQuickList(quickFilter);
+  if (!showAllMeetings) document.querySelector('.quick-section').scrollIntoView({ block: 'start' });
+});
 
 // Recording(s) of a meeting, from data.json "recordings". When two meetings
 // share a date, a recording only goes with the one its title matches.
@@ -122,7 +133,8 @@ function renderQuickList(filter) {
     return;
   }
 
-  list.innerHTML = agendaMinutes.map(m => {
+  const shown = showAllMeetings ? agendaMinutes : agendaMinutes.slice(0, RECENT_MEETINGS);
+  list.innerHTML = shown.map(m => {
     const isUpcoming = m.status === 'upcoming';
     let badgeClass = 'badge-complete', badgeLabel = 'Complete';
     if (isUpcoming) { badgeClass = 'badge-upcoming'; badgeLabel = 'Upcoming'; }
@@ -166,7 +178,7 @@ function renderQuickList(filter) {
         </div>
         ${rows}
       </div>`;
-  }).join('');
+  }).join('') + seeAllHtml(agendaMinutes.length, showAllMeetings);
 }
 
 async function init() {

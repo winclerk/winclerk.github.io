@@ -300,6 +300,28 @@ a.stat-tile-link:focus-visible { outline: 2px solid var(--tm); outline-offset: 2
 .filter-btn.active { background: var(--td); color: #fff; border-color: var(--td); }
 
 .quick-section { margin-top: 36px; }
+
+/* "See all meetings" button under a list cut to the 5 most recent
+   (seeAllHtml in shared.js) */
+.see-all-wrap { display: flex; justify-content: center; margin-top: 12px; }
+.see-all {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  height: 32px;
+  padding: 0 18px;
+  border-radius: 20px;
+  border: 1px solid var(--tm);
+  background: var(--white);
+  color: var(--tm);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, transform 120ms ease-out;
+}
+.see-all:active { transform: scale(0.97); }
+.see-all:focus-visible { outline: 2px solid var(--tm); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .see-all:hover { background: var(--tm); color: #fff; }
+}
 .quick-card {
   background: var(--white);
   border: 1px solid var(--border);

@@ -417,6 +417,37 @@ function renderFolderCard(name, meta, count, href) {
     </a>`;
 }
 
+/* ---------- Recent meetings + "See all" ----------
+   Meeting lists show the 5 most recent meetings first, with a "See all"
+   button under the list. Each page keeps a show-all flag, cuts its list
+   with firstMeetings(), and puts seeAllHtml() after it. */
+const RECENT_MEETINGS = 5;
+
+// Keeps the items that belong to the first `n` meetings (items are newest
+// first; keyFn says which meeting an item belongs to).
+function firstMeetings(items, keyFn, n) {
+  const keys = new Set();
+  const limit = n == null ? RECENT_MEETINGS : n;
+  return items.filter(it => {
+    const k = keyFn(it);
+    if (keys.has(k)) return true;
+    if (keys.size >= limit) return false;
+    keys.add(k);
+    return true;
+  });
+}
+
+function countMeetings(items, keyFn) {
+  return new Set(items.map(keyFn)).size;
+}
+
+// The button under a cut list. Empty when there is nothing more to show.
+function seeAllHtml(totalMeetings, showingAll) {
+  if (totalMeetings <= RECENT_MEETINGS) return '';
+  const label = showingAll ? 'Show recent meetings only' : `See all meetings (${totalMeetings})`;
+  return `<div class="see-all-wrap"><button type="button" class="see-all" aria-expanded="${showingAll ? 'true' : 'false'}">${label}</button></div>`;
+}
+
 /* =====================================================================
    Site-wide search
    ---------------------------------------------------------------------

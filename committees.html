@@ -288,6 +288,12 @@ function committeePageButton(lib) {
   return `<a class="file-view" href="${page.href}">${escapeHtml(page.label)}${BTN_ARROW_SVG}</a>`;
 }
 
+// Committees whose list is showing every meeting ("See all" clicked).
+// Otherwise each committee shows its 5 most recent meetings.
+const expandedLibs = new Set();
+let pageLibraries = [];
+let pageRecordings = [];
+
 function renderLibrarySection(lib, recordings) {
   const docs = sortNewestFirst(lib.documents || []).map(d => Object.assign({}, d, { label: committeeLabel(d) }));
   // Recordings for this committee, placed with their meeting date
@@ -304,8 +310,12 @@ function renderLibrarySection(lib, recordings) {
     }));
   const rows = docs.map(d => ({ doc: d, date: d.date || '' })).concat(recs)
     .sort((a, b) => b.date.localeCompare(a.date) || ((a.rec ? 0 : 1) - (b.rec ? 0 : 1)));
+  // Rows from the same meeting share a date.
+  const showAll = expandedLibs.has(lib.name);
+  const totalMeetings = countMeetings(rows, r => r.date);
+  const shown = showAll ? rows : firstMeetings(rows, r => r.date);
   const body = rows.length
-    ? rows.map(r => r.rec ? renderRecordingRow(r.rec) : renderFileRow(r.doc)).join('')
+    ? shown.map(r => r.rec ? renderRecordingRow(r.rec) : renderFileRow(r.doc)).join('')
     : '<div class="no-docs">No agendas, minutes, or recordings posted yet.</div>';
 
   return `
@@ -315,6 +325,7 @@ function renderLibrarySection(lib, recordings) {
         ${committeePageButton(lib)}
       </div>
       <div class="file-list">${body}</div>
+      ${seeAllHtml(totalMeetings, showAll)}
     </div>`;
 }
 
@@ -358,7 +369,23 @@ async function init() {
       history.replaceState(null, '', btn.dataset.group === 'all' ? location.pathname : '#lib-' + btn.dataset.group);
     });
 
+    pageLibraries = libraries;
+    pageRecordings = recordings;
     sections.innerHTML = libraries.map(lib => renderLibrarySection(lib, recordings)).join('');
+    sections.addEventListener('click', e => {
+      if (!e.target.closest('.see-all')) return;
+      const sec = e.target.closest('.lib-section');
+      const lib = pageLibraries.find(l => 'lib-' + slugify(l.name) === sec.id);
+      if (!lib) return;
+      if (expandedLibs.has(lib.name)) expandedLibs.delete(lib.name); else expandedLibs.add(lib.name);
+      const hidden = sec.hidden;
+      sec.outerHTML = renderLibrarySection(lib, pageRecordings);
+      const fresh = document.getElementById(sec.id);
+      fresh.hidden = hidden;
+      if (!expandedLibs.has(lib.name)) fresh.scrollIntoView({ block: 'start' });
+      const btn = fresh.querySelector('.see-all');
+      if (btn) btn.focus({ preventScroll: true });
+    });
 
     // Links from search results and the homepage use #lib-<slug>.
     const hash = location.hash.replace(/^#lib-/, '');

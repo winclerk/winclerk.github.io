@@ -37,7 +37,8 @@
       margin: 4px 0 20px;
     }
     .year-section { margin-bottom: 32px; }
-    .year-section:last-child { margin-bottom: 0; }
+    .year-section:last-child,
+    .year-section:has(+ .see-all-wrap) { margin-bottom: 0; }
     .file-meta-line {
       display: flex;
       align-items: center;
@@ -147,7 +148,11 @@
 //     from the Video column on winchesterwi.com), listed as their own type.
 // New files appear automatically after each sync.
 
-const state = { items: [], type: 'all', body: 'all' };
+// showAll: false shows the 5 most recent meetings, true shows every one.
+const state = { items: [], type: 'all', body: 'all', showAll: false };
+
+// Which meeting a row belongs to: the same body on the same date.
+const meetingKey = it => it.body + '|' + (it.date || '');
 
 function escapeHtml(s) {
   return String(s == null ? '' : s)
@@ -349,9 +354,12 @@ function renderList() {
     return;
   }
 
+  const totalMeetings = countMeetings(shown, meetingKey);
+  const visible = state.showAll ? shown : firstMeetings(shown, meetingKey);
+
   const years = [];
   const byYear = {};
-  shown.forEach(it => {
+  visible.forEach(it => {
     const y = (it.date || '').slice(0, 4) || 'Undated';
     if (!byYear[y]) { byYear[y] = []; years.push(y); }
     byYear[y].push(it);
@@ -361,7 +369,7 @@ function renderList() {
     <div class="year-section">
       <div class="section-label">${y}</div>
       <div class="file-list">${byYear[y].map(renderRow).join('')}</div>
-    </div>`).join('');
+    </div>`).join('') + seeAllHtml(totalMeetings, state.showAll);
 }
 
 function renderStats(allItems) {
@@ -414,6 +422,7 @@ function setupFilters(items) {
       bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state[key] = btn.dataset[attr];
+      state.showAll = false;
       renderList();
     });
   }
@@ -427,6 +436,12 @@ async function init() {
     state.items = collectItems(data);
     document.getElementById('stat-tiles-container').innerHTML = renderStats(state.items);
     setupFilters(state.items);
+    document.getElementById('doc-list').addEventListener('click', e => {
+      if (!e.target.closest('.see-all')) return;
+      state.showAll = !state.showAll;
+      renderList();
+      if (!state.showAll) document.getElementById('doc-list').scrollIntoView({ block: 'start' });
+    });
     renderList();
   } catch (e) {
     document.getElementById('doc-list').innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';
