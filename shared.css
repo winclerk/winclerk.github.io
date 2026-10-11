@@ -310,17 +310,29 @@ a { text-decoration: none; color: inherit; }
   color: #fff;
   letter-spacing: 0.02em;
 }
-.meeting-badge {
+/* Status badge and the Town Board page's Watch chip (.quick-watch) are
+   the same size so the meeting headers line up. */
+.meeting-badge,
+.quick-watch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-sizing: border-box;
+  min-width: 84px;
+  height: 22px;
+  padding: 0 10px;
   font-size: 10px;
   font-weight: 500;
-  padding: 3px 10px;
+  line-height: 1;
   border-radius: 3px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
   flex-shrink: 0;
 }
-.badge-upcoming { background: var(--gold); color: var(--td); }
+/* darker gold than var(--gold) so the white text stays readable */
+.badge-upcoming { background: #7A6A3A; color: #fff; }
 .badge-complete { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
 .badge-special { background: var(--tm); color: #fff; }
 
@@ -389,18 +401,37 @@ a { text-decoration: none; color: inherit; }
 .tag-minutes { background: #FAEEDA; color: #854F0B; }
 .tag-draft { background: var(--red-light); color: var(--red); }
 .tag-recording { background: #F5F2EC; color: #7A6A3A; }
-.file-view {
+/* View / Watch buttons: one size everywhere (.file-view in file lists,
+   .quick-view on the Town Board page), with the arrow drawn as an icon
+   (BTN_ARROW in shared.js) and centered on the text. */
+.file-view,
+.quick-view {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  min-width: 84px;
+  height: 30px;
+  padding: 0 12px;
   font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
   color: var(--tm);
   border: 1px solid var(--tm);
-  padding: 5px 14px;
   border-radius: 4px;
   white-space: nowrap;
-  transition: all 0.15s;
   flex-shrink: 0;
   text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, transform 120ms ease-out;
 }
-.file-view:hover { background: var(--tm); color: #fff; }
+.file-view:active,
+.quick-view:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .file-view:hover,
+  .quick-view:hover { background: var(--tm); color: #fff; }
+}
+.btn-arrow { flex-shrink: 0; display: block; }
 
 .no-docs {
   padding: 40px 20px;
@@ -427,18 +458,6 @@ a { text-decoration: none; color: inherit; }
 }
 .quick-name { font-size: 13px; color: var(--text); font-weight: 500; }
 .quick-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.quick-view {
-  font-size: 12px;
-  color: var(--tm);
-  border: 1px solid var(--tm);
-  padding: 4px 12px;
-  border-radius: 4px;
-  white-space: nowrap;
-  transition: all 0.15s;
-  flex-shrink: 0;
-  text-decoration: none;
-}
-.quick-view:hover { background: var(--tm); color: #fff; }
 
 .error-msg {
   text-align: center;

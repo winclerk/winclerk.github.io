@@ -1045,7 +1045,7 @@ def parse_folder_name(name, mtype):
     dt = datetime.strptime(date_str, "%Y-%m-%d")
     if mtype == "regular":
         return {"id": f"regular-{date_str}",
-                "title": f"Regular Town Board Meeting - {dt.strftime('%B %Y')}",
+                "title": f"Regular Town Board Meeting - {dt.strftime('%B %-d, %Y')}",
                 "date": date_str}
     else:
         # Folders in Previous Special Meetings are usually STBM_YYYYMMDD, but
@@ -1101,7 +1101,7 @@ def build_data(token, drive_id):
             dt = datetime.strptime(next_date, "%Y-%m-%d")
             if "RTBM" in fn:
                 next_type = "regular"
-                next_title = f"Regular Town Board Meeting - {dt.strftime('%B %Y')}"
+                next_title = f"Regular Town Board Meeting - {dt.strftime('%B %-d, %Y')}"
             elif "STBM" in fn or "TBSM" in fn:
                 next_type = "special"
                 next_title = f"Special Town Board Meeting - {dt.strftime('%B %-d, %Y')}"

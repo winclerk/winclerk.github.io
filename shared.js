@@ -1,5 +1,9 @@
 const MEETINGS_JSON = 'data.json';
 
+// Arrow used in every View / Watch button: a drawn icon instead of the
+// "\u2192" text character, so it is centered and the same in every font.
+const BTN_ARROW = '<svg class="btn-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg>';
+
 async function loadData() {
   const res = await fetch(MEETINGS_JSON + '?t=' + Date.now());
   if (!res.ok) throw new Error('Failed to load');
@@ -175,7 +179,7 @@ function renderFileRow(doc) {
           ${metaHtml ? `<div class="file-meta">${metaHtml}</div>` : ''}
         </div>
       </div>
-      <a class="file-view" href="${doc.url}" target="_self">View &rarr;</a>
+      <a class="file-view" href="${doc.url}" target="_self">View${BTN_ARROW}</a>
     </div>`;
 }
 
@@ -207,7 +211,7 @@ function renderRecordingRow(rec, metaHtml) {
           ${meta}
         </div>
       </div>
-      <a class="file-view" href="${esc(rec.url)}" target="_blank" rel="noopener">Watch &rarr;</a>
+      <a class="file-view" href="${esc(rec.url)}" target="_blank" rel="noopener">Watch${BTN_ARROW}</a>
     </div>`;
 }
 
