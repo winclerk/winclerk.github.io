@@ -47,6 +47,62 @@
       margin-bottom: 14px;
     }
     .lib-head .section-label { margin-bottom: 0; }
+
+    /* Committee page buttons on the right side of the hero.
+       Built from COMMITTEE_PAGES, so a new committee page is one line. */
+    .hero-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+    .hero-main { min-width: 0; }
+    .hero-pages {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+      width: 280px;
+    }
+    .hero-pages[hidden] { display: none; }
+    .hero-pages-label {
+      font-family: 'Electrolize', monospace;
+      font-size: 11px;
+      color: var(--tm);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .hero-page-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      color: var(--td);
+      transition: border-color 150ms ease, transform 120ms ease-out;
+    }
+    .hero-page-btn:active { transform: scale(0.98); }
+    .hero-page-btn:focus-visible { outline: 2px solid var(--tm); outline-offset: 2px; }
+    @media (hover: hover) and (pointer: fine) {
+      .hero-page-btn:hover { border-color: var(--tm); border-left-color: var(--gold); }
+    }
+    .hero-page-text { display: flex; flex-direction: column; min-width: 0; }
+    .hero-page-name {
+      font-family: 'Electrolize', monospace;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+    .hero-page-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .hero-page-btn .btn-arrow { color: var(--tm); }
+
+    @media (max-width: 800px) {
+      .hero-row { flex-direction: column; align-items: stretch; gap: 20px; }
+      .hero-pages { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -69,14 +125,19 @@
 </div>
 
 <div class="hero">
-  <div class="hero-label">Public records</div>
-  <h1>Committees &amp; Commissions</h1>
-  <p>Agendas, minutes, and meeting recordings for the Planning Commission, Winchester Town Lakes Committee (WTLC), Northwoods EMS District, and Fire &amp; Rescue.</p>
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a href="index.html">Home</a>
-    <span>/</span>
-    <span class="crumb-current">Committees &amp; Commissions</span>
-  </nav>
+  <div class="hero-row">
+    <div class="hero-main">
+      <div class="hero-label">Public records</div>
+      <h1>Committees &amp; Commissions</h1>
+      <p>Agendas, minutes, and meeting recordings for the Planning Commission, Winchester Town Lakes Committee (WTLC), Northwoods EMS District, and Fire &amp; Rescue.</p>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <span class="crumb-current">Committees &amp; Commissions</span>
+      </nav>
+    </div>
+    <nav class="hero-pages" id="hero-pages" aria-label="Committee pages" hidden></nav>
+  </div>
 </div>
 
 <main>
