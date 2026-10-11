@@ -776,15 +776,21 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   text-decoration-color: rgba(0,80,90,0.3);
   text-underline-offset: 2px;
 }
+/* Same box and text size as .file-tag (16px tall, 9px caps) */
 .ps-chip {
-  display: inline-block;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 16px;
+  padding: 0 6px;
+  font-size: 9px;
+  line-height: 1;
   font-weight: 400;
   color: var(--td);
   background: var(--tl);
   border-radius: 3px;
-  padding: 1px 6px;
   margin-right: 6px;
+  vertical-align: middle;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -1007,13 +1013,19 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   color: var(--td);
   min-width: 0;
 }
+/* Same box and text size as .file-tag (16px tall, 9px caps) */
 .agenda-count {
   margin-left: auto;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 16px;
+  font-size: 9px;
+  line-height: 1;
   color: var(--text-muted);
   background: var(--tl);
-  border-radius: 12px;
-  padding: 3px 10px;
+  border-radius: 3px;
+  padding: 0 6px;
   white-space: nowrap;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1052,7 +1064,6 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   .doc-group-count::before { content: none; }
   .agenda-item-toggle { gap: 10px; }
   .agenda-title { font-size: 16px; }
-  .agenda-count { padding: 3px 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .agenda-panel, .agenda-chevron { transition: none; }
