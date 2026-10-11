@@ -30,6 +30,79 @@ function updateNextDot(data) {
   dot.classList.toggle('active', active);
 }
 
+/* ---------- Next meeting banner ----------
+   The bar under the header ("Next meeting — date · time · place").
+   It only shows when a meeting is coming up (today or later) AND its
+   agenda has been uploaded; otherwise it stays hidden.
+
+   scope:
+     'townBoard'  – the next Town Board meeting (Town Board pages)
+     'committees' – the next meeting of any committee (committees page)
+     'all'        – the soonest of Town Board and committees
+     a library name, e.g. 'Winchester Town Lakes Committee (WTLC)' –
+                    that committee only (its own page)
+   Committee meetings come from agendas named Agenda_<Body>_YYYYMMDD,
+   since their meetings are not listed in data.json. */
+function todayIso() {
+  const t = new Date();
+  return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+}
+
+function nextMeetings(data, scope) {
+  const today = todayIso();
+  const found = [];
+
+  if (scope === 'townBoard' || scope === 'all') {
+    (data.meetings || []).forEach(m => {
+      if (m.status !== 'upcoming' || !m.date || m.date < today) return;
+      const docs = (m.documents || []).slice();
+      (m.subfolders || []).forEach(sf => (sf.documents || []).forEach(d => docs.push(d)));
+      const agenda = docs.find(d => getDocTag(d.filename) === 'agenda');
+      if (!agenda) return;
+      found.push({ date: m.date, body: 'Town Board', time: m.time, location: m.location, agendaUrl: agenda.url });
+    });
+  }
+
+  if (scope !== 'townBoard') {
+    const libs = (data.sites && data.sites.boardsCommissions && data.sites.boardsCommissions.libraries) || [];
+    libs.forEach(lib => {
+      if (scope !== 'all' && scope !== 'committees' && lib.name !== scope) return;
+      (lib.documents || []).forEach(d => {
+        if (getDocTag(d.filename) !== 'agenda' || !d.date || d.date < today) return;
+        found.push({ date: d.date, body: lib.name, agendaUrl: d.url });
+      });
+    });
+  }
+
+  return found.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function renderNextBar(data, scope) {
+  const bar = document.getElementById('next-bar');
+  const text = document.getElementById('next-text');
+  if (!bar || !text) return;
+  const next = nextMeetings(data || {}, scope)[0];
+  if (!next) { bar.style.display = 'none'; return; }
+
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  // Name the body on pages that cover more than one
+  const showBody = scope === 'all' || scope === 'committees';
+  const parts = [next.time, next.location].filter(Boolean).map(esc).join(' &middot; ');
+  text.innerHTML =
+    `Next meeting &mdash; ${showBody ? esc(next.body) + ' &middot; ' : ''}<strong>${formatDate(next.date)}</strong>` +
+    (parts ? ' &middot; ' + parts : '') +
+    `<a class="next-link" href="${esc(next.agendaUrl)}">View agenda &rarr;</a>`;
+  bar.style.display = 'flex';
+
+  // The dot pulses when the meeting is within 7 days
+  const dot = bar.querySelector('.next-dot');
+  if (dot) {
+    const days = Math.round((new Date(next.date + 'T00:00:00') - new Date(todayIso() + 'T00:00:00')) / 86400000);
+    dot.classList.toggle('active', days >= 0 && days <= 7);
+  }
+}
+
 function formatDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T00:00:00');

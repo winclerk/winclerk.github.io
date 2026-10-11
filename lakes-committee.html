@@ -221,6 +221,11 @@
   </nav>
 </div>
 
+<div class="next-bar" id="next-bar" style="display:none;">
+  <div class="next-dot"></div>
+  <div class="next-text" id="next-text"></div>
+</div>
+
 <main>
   <div id="stat-tiles-container"></div>
 
@@ -268,6 +273,11 @@
 </footer>
 
 <script src="shared.js"></script>
+<script>
+// Next WTLC meeting banner: shows when an Agenda_WTLC_YYYYMMDD file dated
+// today or later is in the WTLC library (via data.json).
+loadData().then(data => renderNextBar(data, 'Winchester Town Lakes Committee (WTLC)')).catch(() => {});
+</script>
 <script>
 (function () {
   // Content copied from winchesterwi.com/your-government/lakes-committee/ (Oct 10, 2026).

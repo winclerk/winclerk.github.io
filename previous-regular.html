@@ -61,12 +61,8 @@ async function init() {
   try {
     const data = await loadData();
     const meetings = data.meetings || [];
-    const upcoming = meetings.find(m => m.status === 'upcoming');
-    if (upcoming) {
-      const parts = [upcoming.time, upcoming.location].filter(Boolean).join(' \u00b7 ');
-      document.getElementById('next-text').innerHTML = `Next meeting &mdash; <strong>${formatDate(upcoming.date)}</strong>${parts ? ' \u00b7 ' + parts : ''}`;
-      document.getElementById('next-bar').style.display = 'flex';
-    }
+    // Shows only when the meeting is today or later and its agenda is uploaded
+    renderNextBar(data, 'townBoard');
     const regular = meetings.filter(m => m.type === 'regular' && m.status === 'complete');
     const totalDocs = regular.reduce((s, m) => s + meetingTotalDocs(m), 0);
     document.getElementById('stat-tiles-container').innerHTML = renderStatTiles(data, totalDocs);

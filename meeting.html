@@ -75,12 +75,8 @@ async function init() {
       <a href="${backHref}">${backLabel}</a>
       <span>/</span>
       <span style="color:rgba(255,255,255,0.8);">${meeting.title}</span>`;
-    const upcoming = meetings.find(m => m.status === 'upcoming');
-    if (upcoming) {
-      const parts = [upcoming.time, upcoming.location].filter(Boolean).join(' \u00b7 ');
-      document.getElementById('next-text').innerHTML = `Next meeting &mdash; <strong>${formatDate(upcoming.date)}</strong>${parts ? ' \u00b7 ' + parts : ''}`;
-      document.getElementById('next-bar').style.display = 'flex';
-    }
+    // Shows only when the meeting is today or later and its agenda is uploaded
+    renderNextBar(data, 'townBoard');
     const docs = meeting.documents || [];
     const subfolders = meeting.subfolders || [];
     const totalDocsHere = docs.length + subfolders.reduce((sum, sf) => sum + (sf.documents || []).length, 0);

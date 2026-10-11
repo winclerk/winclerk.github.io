@@ -187,13 +187,8 @@ async function init() {
     allMeetings = data.meetings || [];
 
     const upcoming = allMeetings.find(m => m.status === 'upcoming');
-    if (upcoming) {
-      const nextBar = document.getElementById('next-bar');
-      const nextText = document.getElementById('next-text');
-      const parts = [upcoming.time, upcoming.location].filter(Boolean).join(' &middot; ');
-      nextText.innerHTML = `Next meeting &mdash; <strong>${formatDate(upcoming.date)}</strong>${parts ? ' &middot; ' + parts : ''}`;
-      nextBar.style.display = 'flex';
-    }
+    // Shows only when the meeting is today or later and its agenda is uploaded
+    renderNextBar(data, 'townBoard');
 
     // Stat tiles: Next meeting, Most recent meeting, Years available
     const nextDate = upcoming ? formatDate(upcoming.date) : 'TBD';

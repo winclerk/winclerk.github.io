@@ -139,6 +139,11 @@
   </div>
 </div>
 
+<div class="next-bar" id="next-bar" style="display:none;">
+  <div class="next-dot"></div>
+  <div class="next-text" id="next-text"></div>
+</div>
+
 <main>
   <div id="stat-tiles-container"></div>
 
@@ -344,6 +349,8 @@ async function init() {
   const sections = document.getElementById('library-sections');
   try {
     const data = await loadData();
+    // Next committee meeting, from an agenda dated today or later
+    renderNextBar(data, 'committees');
     const libraries = (data.sites && data.sites.boardsCommissions && data.sites.boardsCommissions.libraries) || [];
 
     const recordings = getRecordings(data, r => libraries.some(l => l.name === r.body));

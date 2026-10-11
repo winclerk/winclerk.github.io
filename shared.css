@@ -161,6 +161,13 @@ a { text-decoration: none; color: inherit; }
   color: var(--tm);
 }
 .next-text strong { font-weight: 500; }
+.next-link {
+  margin-left: 12px;
+  font-weight: 500;
+  color: var(--tm);
+  white-space: nowrap;
+}
+.next-link:hover { text-decoration: underline; }
 
 .stat-tiles {
   display: grid;
