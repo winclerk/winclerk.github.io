@@ -878,8 +878,6 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   letter-spacing: 0.02em;
 }
 .subfolder-count { font-size: 0.8rem; color: #666; margin-left: auto; }
-.subfolder-link { font-size: 0.8rem; color: var(--tm); text-decoration: none; white-space: nowrap; }
-.subfolder-link:hover { text-decoration: underline; }
 
 /* Inner folder groups (e.g. Financial > October Regular Meeting - Financial Documents) */
 .doc-group-head {
@@ -897,14 +895,10 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
 .doc-group-head svg { color: var(--gold); flex-shrink: 0; }
 .doc-group-count { font-weight: 400; color: var(--text-muted); }
 .doc-group-count::before { content: "\00b7\00a0"; }
-.doc-group-link { margin-left: auto; font-weight: 400; color: var(--tm); text-decoration: none; white-space: nowrap; }
-.doc-group-link:hover { text-decoration: underline; }
 /* .file-row:last-child drops the bottom line inside each group, so the next
    group's header draws the divider instead */
 .doc-group + .doc-group .doc-group-head { border-top: 1px solid var(--border); }
 
-/* Top-of-page documents (the agenda) when the meeting has agenda item sections */
-.file-list-pinned { border-left: 4px solid var(--gold); }
 .filter-empty { margin-bottom: 14px; }
 
 /* Agenda item sections: numbered folders, collapsible */
@@ -990,15 +984,6 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
 .agenda-panel-inner { min-height: 0; overflow: hidden; }
 .agenda-item.open .agenda-panel-inner { border-top: 1px solid var(--border); }
 .agenda-panel-inner .no-docs { padding: 20px; }
-.agenda-panel-foot {
-  padding: 10px 16px;
-  text-align: right;
-  font-size: 12px;
-}
-/* a group right above the footer keeps its last line as the divider */
-.agenda-panel-inner > .doc-group:nth-last-child(2) .file-row:last-child { border-bottom: 1px solid var(--border); }
-.agenda-panel-foot a { color: var(--tm); text-decoration: none; }
-.agenda-panel-foot a:hover { text-decoration: underline; }
 .agenda-toggle-all {
   margin-left: auto;
   background: none;

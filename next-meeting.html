@@ -88,8 +88,7 @@ async function init() {
     fileList.innerHTML = docs.map(doc => renderFileRow(doc)).join('');
     fileList.hidden = !docs.length;
     // Numbered folders ("3. Minutes") become agenda item sections below the
-    // agenda; otherwise folders (Financial, etc.) show as plain sections.
-    fileList.classList.toggle('file-list-pinned', folders.accordion);
+    // top documents; otherwise folders (Financial, etc.) show as plain sections.
     document.getElementById('subfolders-container').innerHTML = folders.html;
   } catch (e) {
     document.getElementById('file-list').innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';

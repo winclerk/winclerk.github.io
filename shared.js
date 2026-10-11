@@ -157,13 +157,21 @@ function renderFileRow(doc) {
   const draftHtml = draft ? `<span class="file-tag tag-draft">Draft</span>` : '';
   const dateHtml = dateStr ? `<span class="file-date">${dateStr}</span>` : '';
   const metaHtml = typeHtml + draftHtml + dateHtml;
+  // The Draft tag under the title already says it, so drop "(Draft)" or a
+  // standalone "DRAFT" word from the title itself.
+  let label = doc.label || doc.filename;
+  if (draft) {
+    const cleaned = label.replace(/\s*\(draft\)/ig, '').replace(/(^|[\s_-])draft(?=$|[\s_-])/ig, '$1')
+      .replace(/\s{2,}/g, ' ').replace(/\s+-\s*$/, '').trim();
+    if (cleaned) label = cleaned;
+  }
 
   return `
     <div class="file-row" data-tag="${tag}">
       <div class="file-left">
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="file-info">
-          <div class="file-name">${doc.label || doc.filename}</div>
+          <div class="file-name">${label}</div>
           ${metaHtml ? `<div class="file-meta">${metaHtml}</div>` : ''}
         </div>
       </div>
@@ -274,8 +282,6 @@ function renderFolderDocs(sf) {
   const loose = docs.filter(d => !d.group);
   const order = (sf.groups || []).map(g => g.name);
   docs.forEach(d => { if (d.group && !order.includes(d.group)) order.push(d.group); });
-  const urls = {};
-  (sf.groups || []).forEach(g => { if (g.url) urls[g.name] = g.url; });
 
   let html = loose.map(doc => renderFileRow(doc)).join('');
   order.forEach(name => {
@@ -287,7 +293,6 @@ function renderFolderDocs(sf) {
           ${FOLDER_SVG}
           <span class="doc-group-name">${escHtml(name)}</span>
           <span class="doc-group-count">${docCountText(gDocs.length)}</span>
-          ${urls[name] ? `<a class="doc-group-link" href="${escHtml(urls[name])}" target="_self">Open folder &rarr;</a>` : ''}
         </div>
         ${gDocs.map(doc => renderFileRow(doc)).join('')}
       </div>`;
@@ -308,7 +313,6 @@ function renderMeetingFolders(subfolders) {
             <span class="subfolder-icon">${FOLDER_SVG}</span>
             <span class="subfolder-name">${escHtml(sf.name)}</span>
             <span class="subfolder-count">${docCountText(n)}</span>
-            ${sf.url ? `<a class="subfolder-link" href="${escHtml(sf.url)}" target="_self">Open folder &rarr;</a>` : ''}
           </div>
           <div class="file-list">${renderFolderDocs(sf)}</div>
         </div>`;
@@ -337,7 +341,6 @@ function renderMeetingFolders(subfolders) {
         <div class="agenda-panel" id="agenda-item-panel-${idx}" role="region" aria-labelledby="agenda-item-btn-${idx}" inert>
           <div class="agenda-panel-inner">
             ${renderFolderDocs(f.sf)}
-            ${f.sf.url ? `<div class="agenda-panel-foot"><a href="${escHtml(f.sf.url)}" target="_self">Open folder in SharePoint &rarr;</a></div>` : ''}
           </div>
         </div>
       </section>`;
