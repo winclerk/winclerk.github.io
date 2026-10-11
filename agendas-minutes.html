@@ -169,7 +169,7 @@ function dateFromFilename(filename) {
 // meeting when there is no matching meeting in data.json.
 function townBoardKind(filename) {
   const f = (filename || '').toUpperCase();
-  if (/(^|[_\-\s])BOR([_\-\s.]|$)/.test(f)) return { body: 'Board of Review', label: 'Board of Review' };
+  if (/(^|[_\-\s])BOR([_\-\s.]|$)/.test(f)) return { body: 'Town Board', label: 'Board of Review' };
   if (/RTBM/.test(f)) return { body: 'Town Board', label: 'Regular Town Board Meeting' };
   if (/STBM|TBSM|SPECIAL/.test(f)) return { body: 'Town Board', label: 'Special Town Board Meeting' };
   if (/BUDGET/.test(f)) return { body: 'Town Board', label: 'Budget Meeting' };
@@ -245,7 +245,8 @@ function collectItems(data) {
       doc: { filename: '', label: rec.title, url: rec.url, recording: true },
       type: 'recording',
       date: rec.date,
-      body: rec.body,
+      // Board of Review is a Town Board meeting; it has no filter of its own
+      body: rec.body === 'Board of Review' ? 'Town Board' : rec.body,
       label: meeting ? meeting.title : rec.title,
       meetingId: meeting ? meeting.id : null,
       inThisMeeting: true,
@@ -370,7 +371,7 @@ function renderStats(allItems) {
 
 function setupFilters(items) {
   const bodyBar = document.getElementById('body-filter');
-  const order = ['Town Board', 'Board of Review'];
+  const order = ['Town Board'];
   const bodies = Array.from(new Set(items.map(it => it.body)))
     .sort((x, y) => {
       const ix = order.indexOf(x), iy = order.indexOf(y);
@@ -381,7 +382,10 @@ function setupFilters(items) {
     const btn = document.createElement('button');
     btn.className = 'filter-btn';
     btn.dataset.body = b;
-    btn.textContent = b;
+    // A name ending in an abbreviation, e.g. "Winchester Town Lakes
+    // Committee (WTLC)", shows just the abbreviation on its button.
+    const abbr = /\(([A-Z&]{2,})\)\s*$/.exec(b);
+    btn.textContent = abbr ? abbr[1] : b;
     bodyBar.appendChild(btn);
   });
 

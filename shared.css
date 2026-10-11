@@ -193,13 +193,7 @@ a.stat-tile-link:focus-visible { outline: 2px solid var(--tm); outline-offset: 2
 @media (hover: hover) and (pointer: fine) {
   a.stat-tile-link:hover { border-color: var(--gold); }
 }
-.stat-tile-go {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.stat-tile-go .btn-arrow { color: var(--tm); }
+
 .stat-label {
   font-size: 11px;
   color: var(--text-muted);

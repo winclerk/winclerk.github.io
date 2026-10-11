@@ -152,7 +152,7 @@ function renderStatTiles(data, folderDocCount) {
   // Opens the Next Meeting folder page, except on that page itself.
   const onNextPage = /next-meeting\.html$/.test(window.location.pathname);
   const nextInner = `
-        <div class="stat-label${upcoming && !onNextPage ? ' stat-tile-go' : ''}">Next meeting${upcoming && !onNextPage ? BTN_ARROW : ''}</div>
+        <div class="stat-label">Next meeting</div>
         <div class="stat-value">${nextDate}</div>
         ${nextSub ? `<div class="stat-sub">${nextSub}</div>` : ''}`;
   const nextTile = upcoming && !onNextPage

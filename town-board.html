@@ -204,12 +204,12 @@ async function init() {
     document.getElementById('stat-tiles-container').innerHTML = `
       <div class="stat-tiles">
         ${upcoming ? `<a class="stat-tile stat-tile-accent stat-tile-link" href="next-meeting.html">` : `<div class="stat-tile stat-tile-accent">`}
-          <div class="stat-label${upcoming ? ' stat-tile-go' : ''}">Next meeting${upcoming ? BTN_ARROW : ''}</div>
+          <div class="stat-label">Next meeting</div>
           <div class="stat-value">${nextDate}</div>
           ${nextSub ? `<div class="stat-sub">${nextSub}</div>` : ''}
         ${upcoming ? '</a>' : '</div>'}
         ${mostRecent ? `<a class="stat-tile stat-tile-link" href="meeting.html?id=${encodeURIComponent(mostRecent.id)}">` : `<div class="stat-tile">`}
-          <div class="stat-label${mostRecent ? ' stat-tile-go' : ''}">Most recent meeting${mostRecent ? BTN_ARROW : ''}</div>
+          <div class="stat-label">Most recent meeting</div>
           <div class="stat-value">${mostRecentDate}</div>
           ${mostRecentTitle ? `<div class="stat-sub">${mostRecentTitle}</div>` : ''}
         ${mostRecent ? '</a>' : '</div>'}
