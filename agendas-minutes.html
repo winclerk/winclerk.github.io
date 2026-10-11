@@ -40,10 +40,17 @@
     .year-section { margin-bottom: 32px; }
     .year-section:last-child { margin-bottom: 0; }
     .file-meta-line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 8px;
       font-size: 11px;
+      line-height: 16px;
       color: var(--text-muted);
-      margin-top: 3px;
+      margin-top: 5px;
     }
+    .am-date::before { content: "\00b7"; margin-right: 8px; }
+    .am-tags { display: inline-flex; align-items: center; gap: 6px; }
     .file-meta-line a {
       color: var(--tm);
       text-decoration: underline;
@@ -58,9 +65,10 @@
       color: var(--td);
       background: var(--tl);
       border-radius: 3px;
-      padding: 1px 6px;
-      margin-right: 6px;
-      vertical-align: middle;
+      padding: 0 6px;
+      height: 18px;
+      line-height: 18px;
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -278,34 +286,44 @@ function collectItems(data) {
   return items;
 }
 
+// Short name for a meeting body: "Winchester Town Lakes Committee (WTLC)"
+// becomes "WTLC". Used on the filter buttons and the row chips.
+function shortBody(name) {
+  const abbr = /\(([A-Z&]{2,})\)\s*$/.exec(name || '');
+  return abbr ? abbr[1] : (name || '');
+}
+
+// Row layout:
+//   line 1: file title, then the meeting-body chip
+//   line 2: the meeting (linked when it has a page), then the tags.
+//           The date is added only when the meeting name doesn't already
+//           include it.
 function renderRow(it) {
-  if (it.type === 'recording') {
-    const labelHtml = it.meetingId
-      ? `<a href="meeting.html?id=${encodeURIComponent(it.meetingId)}">${escapeHtml(it.label)}</a>`
-      : '';
-    const dateHtml = it.date ? `${labelHtml ? ' &middot; ' : ''}${formatDate(it.date)}` : '';
-    return renderRecordingRow(
-      { title: it.doc.label, url: it.doc.url, date: it.date },
-      `<div class="file-meta-line"><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}<span class="tag-group">${RECORDING_TAG}</span></div>`
-    );
-  }
   const doc = it.doc;
-  const [iconClass, iconLabel] = getIconClass(doc.filename);
-  const tagsHtml = `<span class="tag-group">${docTagsHtml(doc.filename) || `<span class="file-tag type-${it.type}">${it.type === 'agenda' ? 'Agenda' : 'Minutes'}</span>`}</span>`;
-  const labelHtml = it.meetingId
+  const isRec = it.type === 'recording';
+  const [iconClass, iconLabel] = isRec ? ['icon-video', '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>'] : getIconClass(doc.filename);
+  const title = isRec ? (doc.label || 'Meeting recording') : docLabel(doc);
+  const tags = isRec
+    ? RECORDING_TAG
+    : (docTagsHtml(doc.filename) || `<span class="file-tag type-${it.type}">${it.type === 'agenda' ? 'Agenda' : 'Minutes'}</span>`);
+  const meetingHtml = it.meetingId
     ? `<a href="meeting.html?id=${encodeURIComponent(it.meetingId)}">${escapeHtml(it.label)}</a>`
-    : escapeHtml(it.label);
-  const dateHtml = it.date ? ` &middot; ${formatDate(it.date)}` : '';
+    : `<span>${escapeHtml(it.label)}</span>`;
+  const dateStr = it.date ? formatDate(it.date) : '';
+  const dateHtml = dateStr && !(it.label || '').includes(dateStr) ? `<span class="am-date">${dateStr}</span>` : '';
+  const action = isRec
+    ? `<a class="file-view" href="${escapeHtml(doc.url)}" target="_blank" rel="noopener">Watch${BTN_ARROW}</a>`
+    : `<a class="file-view" href="${escapeHtml(doc.url)}" target="_self">View${BTN_ARROW}</a>`;
   return `
-    <div class="file-row">
+    <div class="file-row" data-tag="${isRec ? 'recording' : it.type}">
       <div class="file-left">
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="file-info">
-          <div class="file-name">${escapeHtml(docLabel(doc))}</div>
-          <div class="file-meta-line"><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}${tagsHtml}</div>
+          <div class="file-name">${escapeHtml(title)}<span class="body-chip">${escapeHtml(shortBody(it.body))}</span></div>
+          <div class="file-meta-line">${meetingHtml}${dateHtml}<span class="am-tags">${tags}</span></div>
         </div>
       </div>
-      <a class="file-view" href="${escapeHtml(doc.url)}" target="_self">View${BTN_ARROW}</a>
+      ${action}
     </div>`;
 }
 
@@ -382,10 +400,7 @@ function setupFilters(items) {
     const btn = document.createElement('button');
     btn.className = 'filter-btn';
     btn.dataset.body = b;
-    // A name ending in an abbreviation, e.g. "Winchester Town Lakes
-    // Committee (WTLC)", shows just the abbreviation on its button.
-    const abbr = /\(([A-Z&]{2,})\)\s*$/.exec(b);
-    btn.textContent = abbr ? abbr[1] : b;
+    btn.textContent = shortBody(b);
     bodyBar.appendChild(btn);
   });
 
