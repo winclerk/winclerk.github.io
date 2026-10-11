@@ -117,6 +117,24 @@ function typeTagHtml(filename) {
   return t ? `<span class="file-tag type-${t.family}">${t.label}</span>` : '';
 }
 
+// Type + Draft tags. Every page shows them in one place: at the start of
+// the line under the file title, next to the date.
+function docTagsHtml(filename) {
+  return typeTagHtml(filename) + (isDraft(filename) ? '<span class="file-tag tag-draft">Draft</span>' : '');
+}
+
+// File title for display. The Draft tag already says it, so a draft's
+// title drops "(Draft)" or a standalone "DRAFT" word.
+function docLabel(doc) {
+  let label = doc.label || doc.filename || '';
+  if (isDraft(doc.filename)) {
+    const cleaned = label.replace(/\s*\(draft\)/ig, '').replace(/(^|[\s_-])draft(?=$|[\s_-])/ig, '$1')
+      .replace(/\s{2,}/g, ' ').replace(/\s+-\s*$/, '').trim();
+    if (cleaned) label = cleaned;
+  }
+  return label;
+}
+
 function meetingTotalDocs(m) {
   const docs = (m.documents || []).length;
   const sfDocs = (m.subfolders || []).reduce((s, sf) => s + (sf.documents || []).length, 0);
@@ -131,14 +149,19 @@ function renderStatTiles(data, folderDocCount) {
   const nextTime = upcoming ? (upcoming.time || '') : '';
   const nextLoc = upcoming ? (upcoming.location || '') : '';
   const nextSub = [nextTime, nextLoc].filter(Boolean).join(' &middot; ');
+  // Opens the Next Meeting folder page, except on that page itself.
+  const onNextPage = /next-meeting\.html$/.test(window.location.pathname);
+  const nextInner = `
+        <div class="stat-label${upcoming && !onNextPage ? ' stat-tile-go' : ''}">Next meeting${upcoming && !onNextPage ? BTN_ARROW : ''}</div>
+        <div class="stat-value">${nextDate}</div>
+        ${nextSub ? `<div class="stat-sub">${nextSub}</div>` : ''}`;
+  const nextTile = upcoming && !onNextPage
+    ? `<a class="stat-tile stat-tile-accent stat-tile-link" href="next-meeting.html">${nextInner}</a>`
+    : `<div class="stat-tile stat-tile-accent">${nextInner}</div>`;
 
   return `
     <div class="stat-tiles">
-      <div class="stat-tile stat-tile-accent">
-        <div class="stat-label">Next meeting</div>
-        <div class="stat-value">${nextDate}</div>
-        ${nextSub ? `<div class="stat-sub">${nextSub}</div>` : ''}
-      </div>
+      ${nextTile}
       <div class="stat-tile">
         <div class="stat-label">Documents here</div>
         <div class="stat-value">${folderDocCount}</div>
@@ -155,20 +178,10 @@ function renderStatTiles(data, folderDocCount) {
 function renderFileRow(doc) {
   const [iconClass, iconLabel] = getIconClass(doc.filename);
   const tag = getDocTag(doc.filename);
-  const draft = isDraft(doc.filename);
   const dateStr = doc.updated ? `Updated ${formatDateShort(doc.updated)}` : (doc.date ? formatDateShort(doc.date) : '');
-  const typeHtml = typeTagHtml(doc.filename);
-  const draftHtml = draft ? `<span class="file-tag tag-draft">Draft</span>` : '';
   const dateHtml = dateStr ? `<span class="file-date">${dateStr}</span>` : '';
-  const metaHtml = typeHtml + draftHtml + dateHtml;
-  // The Draft tag under the title already says it, so drop "(Draft)" or a
-  // standalone "DRAFT" word from the title itself.
-  let label = doc.label || doc.filename;
-  if (draft) {
-    const cleaned = label.replace(/\s*\(draft\)/ig, '').replace(/(^|[\s_-])draft(?=$|[\s_-])/ig, '$1')
-      .replace(/\s{2,}/g, ' ').replace(/\s+-\s*$/, '').trim();
-    if (cleaned) label = cleaned;
-  }
+  const metaHtml = docTagsHtml(doc.filename) + dateHtml;
+  const label = docLabel(doc);
 
   return `
     <div class="file-row" data-tag="${tag}">
@@ -185,6 +198,8 @@ function renderFileRow(doc) {
 
 // Meeting recordings come from data.json "recordings" (collected by sync.py
 // from the Video column on winchesterwi.com). Each is {date, title, url, body}.
+const RECORDING_TAG = '<span class="file-tag tag-recording">Recording</span>';
+
 function getRecordings(data, test) {
   return (data.recordings || []).filter(r => r && r.url && (!test || test(r)));
 }
@@ -193,13 +208,12 @@ function renderRecordingRow(rec, metaHtml) {
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const dateStr = rec.date ? formatDateShort(rec.date) : '';
-  const tagHtml = '<span class="file-tag tag-recording">Recording</span>';
-  // Pages that pass their own meta line keep the tag beside the title, as
-  // before; otherwise the tag sits under the title like every file row.
-  const nameHtml = esc(rec.label || rec.title || 'Meeting recording') + (metaHtml != null ? tagHtml : '');
+  // The Recording tag sits on the line under the title like every file row.
+  // A page passing its own meta line includes the tag in it (RECORDING_TAG).
+  const nameHtml = esc(rec.label || rec.title || 'Meeting recording');
   const meta = metaHtml != null
     ? metaHtml
-    : `<div class="file-meta">${tagHtml}${dateStr ? `<span class="file-date">${dateStr}</span>` : ''}</div>`;
+    : `<div class="file-meta">${RECORDING_TAG}${dateStr ? `<span class="file-date">${dateStr}</span>` : ''}</div>`;
   return `
     <div class="file-row" data-tag="recording">
       <div class="file-left">
@@ -575,8 +589,7 @@ function renderFolderCard(name, meta, count, href) {
   function renderResult(r, ts, phrase, i, animate) {
     const d = r.d, doc = d.doc;
     const [iconClass, iconLabel] = getIconClass(doc.filename);
-    const draft = isDraft(doc.filename) ? '<span class="file-tag tag-draft">Draft</span>' : '';
-    const tag = typeTagHtml(doc.filename);
+    const tags = docTagsHtml(doc.filename);
     const ctx = d.contextHref
       ? `<a href="${esc(d.contextHref)}">${esc(d.context)}</a>`
       : esc(d.context);
@@ -586,8 +599,8 @@ function renderFolderCard(name, meta, count, href) {
       <div class="ps-result${animate && i < 6 ? ' ps-enter' : ''}"${animate && i < 6 ? ` style="animation-delay:${i * 25}ms"` : ''}>
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="ps-result-body">
-          <a class="ps-result-title" href="${esc(doc.url)}">${highlight(doc.label || doc.filename, ts)}</a>${tag}${draft}
-          <div class="ps-result-meta"><span class="ps-chip">${esc(SECTION_LABELS[d.section] || '')}</span>${ctx}${date}</div>
+          <a class="ps-result-title" href="${esc(doc.url)}">${highlight(docLabel(doc), ts)}</a>
+          <div class="ps-result-meta">${tags ? `<span class="tag-group">${tags}</span>` : ''}<span class="ps-chip">${esc(SECTION_LABELS[d.section] || '')}</span>${ctx}${date}</div>
           ${snip ? `<div class="ps-snippet">${snip}</div>` : ''}
         </div>
       </div>`;

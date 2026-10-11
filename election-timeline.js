@@ -1,31 +1,62 @@
 /* ═══════════════════════════════════════════════════════════════
    Election timeline — Town of Winchester Records Portal
-   Edit the dates below for future elections. Everything else is
-   automatic:
-     • Shows from the first milestone through the day before HIDE_ON
-     • "We are here" marker moves daily between milestones
-     • After Election Day, shows "Election complete" + results link
-     • On HIDE_ON (two weeks after the election) it disappears
+   Fully automatic — nothing to edit before each election:
+     • Election Days come from the Wisconsin election calendar below
+       (Spring Election every April; Partisan Primary and General
+       Election in even-numbered years).
+     • Every milestone is counted back from Election Day using the
+       same number of days each election (MILESTONES below).
+     • The timeline appears on the first milestone (absentee voting
+       starts) and disappears two weeks after Election Day.
+     • "We are here" moves daily; after Election Day it shows
+       "Election complete" + the Vilas County results link.
 
    Preview any date by adding ?today=YYYY-MM-DD to the page URL,
    e.g. elections.html?today=2026-11-05
    ═══════════════════════════════════════════════════════════════ */
 
 const ELECTION_TIMELINE = {
-  title: 'November 3, 2026 General Election',
-  hideOn: '2026-11-17',
   resultsUrl: 'https://www.vilascountywi.gov/residents/elections/election_results.php',
-  // In-person absentee hours note (shown under the timeline through hoursNoteUntil)
-  hoursNote: '<strong>In-person absentee voting:</strong> Walk-in hours are <strong>Monday, October 26, 10:00 AM \u2013 1:00 PM</strong> at Winchester Town Hall, or by appointment. Call <a href="tel:+17156862123">(715) 686-2123</a> to schedule.',
-  hoursNoteUntil: '2026-10-30',
+  hideAfterDays: 14,          // days after Election Day the timeline stays up
+  // Milestones, in days before Election Day (0 = Election Day).
   milestones: [
-    { date: '2026-09-17', name: 'Absentee Voting Starts',                short: 'Absentee starts' },
-    { date: '2026-10-20', name: 'In-Person Absentee Voting Begins',      short: 'In-person early voting opens' },
-    { date: '2026-10-26', name: 'In-Person Absentee Hours',              short: 'Walk-in 10am\u20131pm', detail: '10:00 AM \u2013 1:00 PM' },
-    { date: '2026-10-30', name: 'Last Day for In-Person Absentee Voting', short: 'Last in-person day' },
-    { date: '2026-11-03', name: 'Election Day',                           short: 'Election Day', electionDay: true }
-  ]
+    { daysBefore: 47, name: 'Absentee Voting Starts',                short: 'Absentee starts' },
+    { daysBefore: 14, name: 'In-Person Absentee Voting Begins',      short: 'In-person early voting opens' },
+    { daysBefore: 8,  name: 'In-Person Absentee Hours',              short: 'Walk-in 10am\u20131pm', detail: '10:00 AM \u2013 1:00 PM', walkIn: true },
+    { daysBefore: 4,  name: 'Last Day for In-Person Absentee Voting', short: 'Last in-person day', lastInPerson: true },
+    { daysBefore: 0,  name: 'Election Day',                           short: 'Election Day', electionDay: true }
+  ],
+  // In-person absentee hours note, shown under the timeline through the
+  // last in-person absentee day. {walkIn} becomes the walk-in day's date.
+  hoursNote: '<strong>In-person absentee voting:</strong> Walk-in hours are <strong>{walkIn}, 10:00 AM \u2013 1:00 PM</strong> at Winchester Town Hall, or by appointment. Call <a href="tel:+17156862123">(715) 686-2123</a> to schedule.'
 };
+
+/* Wisconsin election calendar (shared with elections.html). */
+function nthWeekdayOfMonth(year, month, weekday, n) {
+  const d = new Date(year, month, 1);
+  let count = 0;
+  while (true) {
+    if (d.getDay() === weekday) {
+      count++;
+      if (count === n) return new Date(d);
+    }
+    d.setDate(d.getDate() + 1);
+  }
+}
+
+function getWisconsinElections(year) {
+  const elections = [
+    { name: 'Spring Election', date: nthWeekdayOfMonth(year, 3, 2, 1) }
+  ];
+  if (year % 2 === 0) {
+    elections.push({ name: 'Partisan Primary', date: nthWeekdayOfMonth(year, 7, 2, 2) });
+    const firstMonday = nthWeekdayOfMonth(year, 10, 1, 1);
+    const general = new Date(firstMonday);
+    general.setDate(general.getDate() + 1);
+    elections.push({ name: 'General Election', date: general });
+  }
+  return elections;
+}
 
 (function () {
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -50,15 +81,36 @@ const ELECTION_TIMELINE = {
 
   // Works out where "today" sits. Milestones are spaced evenly so labels
   // never collide; today is placed proportionally inside its segment.
+  function addDays(d, n) {
+    const x = new Date(d);
+    x.setDate(x.getDate() + n);
+    return x;
+  }
+  const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  // Picks the election whose window (first milestone through
+  // hideAfterDays after Election Day) contains today, if any.
+  function currentElection(today) {
+    const cfg = ELECTION_TIMELINE;
+    const lead = Math.max.apply(null, cfg.milestones.map(m => m.daysBefore));
+    const y = today.getFullYear();
+    const all = [y - 1, y, y + 1].reduce((list, yr) => list.concat(getWisconsinElections(yr)), []);
+    return all.find(e => today >= addDays(e.date, -lead) && today < addDays(e.date, cfg.hideAfterDays)) || null;
+  }
+
+  // Works out where "today" sits. Milestones are spaced evenly so labels
+  // never collide; today is placed proportionally inside its segment.
   function computeState() {
     const cfg = ELECTION_TIMELINE;
     const today = getToday();
-    const stops = cfg.milestones.map(m => Object.assign({}, m, { day: parseDay(m.date) }));
-    const first = stops[0].day;
-    const electionDay = stops[stops.length - 1].day;
-    const hideOn = parseDay(cfg.hideOn);
+    const election = currentElection(today);
+    if (!election) return null;
+    const electionDay = election.date;
 
-    if (today < first || today >= hideOn) return null;
+    const stops = cfg.milestones
+      .slice()
+      .sort((a, b) => b.daysBefore - a.daysBefore)
+      .map(m => Object.assign({}, m, { day: addDays(electionDay, -m.daysBefore) }));
 
     const n = stops.length;
     const step = 100 / (n - 1);
@@ -76,9 +128,20 @@ const ELECTION_TIMELINE = {
       }
     }
 
+    const walkIn = stops.find(s => s.walkIn);
+    const lastInPerson = stops.find(s => s.lastInPerson);
+    const title = `${MONTHS_LONG[electionDay.getMonth()]} ${electionDay.getDate()}, ${electionDay.getFullYear()} ${election.name}`;
+    const hoursNote = walkIn && cfg.hoursNote
+      ? cfg.hoursNote.replace('{walkIn}', `${WEEKDAYS[walkIn.day.getDay()]}, ${longDate(walkIn.day)}`)
+      : '';
+
     const complete = today > electionDay;
     const next = stops.find(s => s.day >= today) || null;
-    return { cfg, today, stops, herePos, complete, next, isElectionDay: +today === +electionDay };
+    return {
+      cfg, today, stops, herePos, complete, next, title, hoursNote,
+      hoursNoteUntil: lastInPerson ? lastInPerson.day : electionDay,
+      isElectionDay: +today === +electionDay
+    };
   }
 
   /* ── Full timeline (elections.html) ── */
@@ -91,8 +154,9 @@ const ELECTION_TIMELINE = {
     const last = st.stops.length - 1;
     const stopsHtml = st.stops.map((s, i) => {
       const cls = ['etl-stop', s.past ? 'is-past' : '', i === 0 ? 'is-first' : '', i === last ? 'is-last' : ''].join(' ').trim();
+      // Election Day box stays empty until the election is over
       const marker = s.electionDay
-        ? `<span class="etl-check${st.isElectionDay ? ' is-today' : ''}">${CHECK_SVG(15, 3)}</span>`
+        ? `<span class="etl-check${st.isElectionDay ? ' is-today' : ''}${st.complete ? '' : ' is-unchecked'}">${st.complete ? CHECK_SVG(15, 3) : ''}</span>`
         : `<span class="etl-dot"></span>`;
       const status = s.past ? (+s.day === +st.today ? 'today' : 'passed') : 'upcoming';
       return `
@@ -114,11 +178,11 @@ const ELECTION_TIMELINE = {
         <span class="etl-here-dot"></span>
       </li>`;
 
-    const showHours = !st.complete && st.cfg.hoursNote && st.today <= parseDay(st.cfg.hoursNoteUntil);
+    const showHours = !st.complete && st.hoursNote && st.today <= st.hoursNoteUntil;
     const hoursHtml = showHours ? `
         <div class="etl-notice etl-hours">
           <svg class="etl-notice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-          <div>${st.cfg.hoursNote}</div>
+          <div>${st.hoursNote}</div>
         </div>` : '';
 
     const footer = st.complete
@@ -141,8 +205,8 @@ const ELECTION_TIMELINE = {
       <div class="section-label">Election timeline</div>
       <div class="etl-card">
         <div class="etl-card-head">
-          <div class="etl-card-title">${st.cfg.title}</div>
-          <div class="etl-card-sub">${st.complete ? 'Election complete' : (st.isElectionDay ? 'Today is Election Day' : 'Key absentee voting dates')}</div>
+          <div class="etl-card-title">${st.title}</div>
+          ${st.complete || st.isElectionDay ? `<div class="etl-card-sub">${st.complete ? 'Election complete' : 'Today is Election Day'}</div>` : ''}
         </div>
         <div class="etl-body">
           <ol class="etl-track" style="--fill:${st.herePos}%">

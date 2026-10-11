@@ -335,7 +335,7 @@
     <!-- Results -->
     <div class="guide-section">
       <div class="results-callout">
-        <div class="results-callout-text">Looking for election results? Vilas County posts results and provisional ballot info as soon as they're available.</div>
+        <div class="results-callout-text">Vilas County posts results and provisional ballot info as soon as they're available.</div>
         <a class="results-callout-btn" href="https://www.vilascountywi.gov/residents/elections/election_results.php" target="_blank" rel="noopener">See Election Results &rarr;</a>
       </div>
     </div>
@@ -410,33 +410,7 @@
 <script src="shared.js"></script>
 <script src="election-timeline.js"></script>
 <script>
-// Wisconsin statutory election date calculator
-function nthWeekdayOfMonth(year, month, weekday, n) {
-  const d = new Date(year, month, 1);
-  let count = 0;
-  while (true) {
-    if (d.getDay() === weekday) {
-      count++;
-      if (count === n) return new Date(d);
-    }
-    d.setDate(d.getDate() + 1);
-  }
-}
-
-function getWisconsinElections(year) {
-  const elections = [
-    { name: 'Spring Election', date: nthWeekdayOfMonth(year, 3, 2, 1) }
-  ];
-  if (year % 2 === 0) {
-    elections.push({ name: 'Partisan Primary', date: nthWeekdayOfMonth(year, 7, 2, 2) });
-    const firstMonday = nthWeekdayOfMonth(year, 10, 1, 1);
-    const general = new Date(firstMonday);
-    general.setDate(general.getDate() + 1);
-    elections.push({ name: 'General Election', date: general });
-  }
-  return elections;
-}
-
+// Wisconsin election calendar: getWisconsinElections() lives in election-timeline.js
 function getNextElection() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);

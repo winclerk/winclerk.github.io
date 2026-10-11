@@ -95,6 +95,7 @@
   justify-content: center;
 }
 .etl-check svg { display: block; }
+.etl-check.is-unchecked { background: #fff; }
 
 .etl-label {
   position: absolute;

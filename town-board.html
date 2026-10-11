@@ -132,27 +132,23 @@ function renderQuickList(filter) {
           <div class="quick-left">
             <div class="file-icon icon-video"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></div>
             <div>
-              <div class="quick-name">Meeting recording <span class="file-tag tag-recording">Recording</span></div>
-              ${rec.date ? `<div class="quick-meta">${formatDateShort(rec.date)}</div>` : ''}
+              <div class="quick-name">Meeting recording</div>
+              <div class="quick-meta file-meta">${RECORDING_TAG}${rec.date ? `<span class="file-date">${formatDateShort(rec.date)}</span>` : ''}</div>
             </div>
           </div>
           <a class="quick-view" href="${rec.url}" target="_blank" rel="noopener">Watch${BTN_ARROW}</a>
         </div>`).join('');
 
     const rows = recRows + m.documents.map(doc => {
-      const tag = getDocTag(doc.filename);
-      const draft = isDraft(doc.filename);
       const dateStr = doc.updated ? `Updated ${formatDateShort(doc.updated)}` : (doc.date ? formatDateShort(doc.date) : '');
-      const tagHtml = `<span class="file-tag tag-${tag}">${tag}</span>`;
-      const draftHtml = draft ? `<span class="file-tag tag-draft">Draft</span>` : '';
       const [iconClass, iconLabel] = getIconClass(doc.filename);
       return `
         <div class="quick-row">
           <div class="quick-left">
             <div class="file-icon ${iconClass}">${iconLabel}</div>
             <div>
-              <div class="quick-name">${doc.label || doc.filename} ${tagHtml}${draftHtml}</div>
-              ${dateStr ? `<div class="quick-meta">${dateStr}</div>` : ''}
+              <div class="quick-name">${docLabel(doc)}</div>
+              <div class="quick-meta file-meta">${docTagsHtml(doc.filename)}${dateStr ? `<span class="file-date">${dateStr}</span>` : ''}</div>
             </div>
           </div>
           <a class="quick-view" href="${doc.url}">View${BTN_ARROW}</a>
@@ -195,6 +191,7 @@ async function init() {
 
     const completeMeetings = allMeetings.filter(m => m.status === 'complete');
     completeMeetings.sort((a, b) => b.date.localeCompare(a.date));
+    const mostRecent = completeMeetings[0] || null;
     const mostRecentDate = completeMeetings.length ? formatDate(completeMeetings[0].date) : 'None yet';
     const mostRecentTitle = completeMeetings.length ? (completeMeetings[0].type === 'special' ? 'Special meeting' : 'Regular meeting') : '';
 
@@ -206,16 +203,16 @@ async function init() {
 
     document.getElementById('stat-tiles-container').innerHTML = `
       <div class="stat-tiles">
-        <div class="stat-tile stat-tile-accent">
-          <div class="stat-label">Next meeting</div>
+        ${upcoming ? `<a class="stat-tile stat-tile-accent stat-tile-link" href="next-meeting.html">` : `<div class="stat-tile stat-tile-accent">`}
+          <div class="stat-label${upcoming ? ' stat-tile-go' : ''}">Next meeting${upcoming ? BTN_ARROW : ''}</div>
           <div class="stat-value">${nextDate}</div>
           ${nextSub ? `<div class="stat-sub">${nextSub}</div>` : ''}
-        </div>
-        <div class="stat-tile">
-          <div class="stat-label">Most recent meeting</div>
+        ${upcoming ? '</a>' : '</div>'}
+        ${mostRecent ? `<a class="stat-tile stat-tile-link" href="meeting.html?id=${encodeURIComponent(mostRecent.id)}">` : `<div class="stat-tile">`}
+          <div class="stat-label${mostRecent ? ' stat-tile-go' : ''}">Most recent meeting${mostRecent ? BTN_ARROW : ''}</div>
           <div class="stat-value">${mostRecentDate}</div>
           ${mostRecentTitle ? `<div class="stat-sub">${mostRecentTitle}</div>` : ''}
-        </div>
+        ${mostRecent ? '</a>' : '</div>'}
         <div class="stat-tile">
           <div class="stat-label">Years available</div>
           <div class="stat-value">${yearsStr}</div>

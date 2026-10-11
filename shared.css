@@ -181,6 +181,25 @@ a { text-decoration: none; color: inherit; }
   border-left: 4px solid var(--gold);
   border-radius: 0 8px 8px 0;
 }
+/* A stat tile that opens a page (e.g. Next meeting -> its folder page) */
+a.stat-tile-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 150ms ease, transform 120ms ease-out;
+}
+a.stat-tile-link:active { transform: scale(0.99); }
+a.stat-tile-link:focus-visible { outline: 2px solid var(--tm); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  a.stat-tile-link:hover { border-color: var(--gold); }
+}
+.stat-tile-go {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.stat-tile-go .btn-arrow { color: var(--tm); }
 .stat-label {
   font-size: 11px;
   color: var(--text-muted);
@@ -389,13 +408,28 @@ a { text-decoration: none; color: inherit; }
 }
 .file-date { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 .file-tag {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 16px;
+  padding: 0 6px;
   font-size: 9px;
-  padding: 2px 6px;
+  line-height: 1;
   border-radius: 3px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
+  vertical-align: middle;
+}
+/* Tags inside a line of text (search results, All Agendas & Minutes):
+   centered on the text, 6px apart, 6px before the rest of the line */
+.tag-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 6px;
+  vertical-align: middle;
 }
 .tag-agenda { background: var(--tl); color: var(--tm); }
 .tag-minutes { background: #FAEEDA; color: #854F0B; }
@@ -848,7 +882,6 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   .ps-panel { left: 8px; right: 8px; }
   .ps-body { padding: 12px 14px 16px; }
 }
-.ps-result .file-tag { margin-left: 6px; vertical-align: 2px; }
 @media (max-width: 374px) {
   .portal-brand-sub { display: none; }
 }
@@ -865,7 +898,6 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   margin-top: 5px;
 }
 .file-meta .file-date { margin-top: 0; }
-.file-meta .file-tag { font-weight: 600; }
 .type-agenda  { background: var(--tl); color: var(--tm); }
 .type-minutes { background: #FAEEDA; color: #854F0B; }
 .type-legal   { background: #EEEAF8; color: #4B3A8C; }

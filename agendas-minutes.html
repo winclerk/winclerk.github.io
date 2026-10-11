@@ -60,6 +60,7 @@
       border-radius: 3px;
       padding: 1px 6px;
       margin-right: 6px;
+      vertical-align: middle;
     }
   </style>
 </head>
@@ -284,14 +285,12 @@ function renderRow(it) {
     const dateHtml = it.date ? `${labelHtml ? ' &middot; ' : ''}${formatDate(it.date)}` : '';
     return renderRecordingRow(
       { title: it.doc.label, url: it.doc.url, date: it.date },
-      `<div class="file-meta-line"><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}</div>`
+      `<div class="file-meta-line"><span class="tag-group">${RECORDING_TAG}</span><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}</div>`
     );
   }
   const doc = it.doc;
   const [iconClass, iconLabel] = getIconClass(doc.filename);
-  const draft = isDraft(doc.filename);
-  const tagHtml = `<span class="file-tag tag-${it.type}">${it.type === 'agenda' ? 'Agenda' : 'Minutes'}</span>`;
-  const draftHtml = draft ? `<span class="file-tag tag-draft">Draft</span>` : '';
+  const tagsHtml = `<span class="tag-group">${docTagsHtml(doc.filename) || `<span class="file-tag type-${it.type}">${it.type === 'agenda' ? 'Agenda' : 'Minutes'}</span>`}</span>`;
   const labelHtml = it.meetingId
     ? `<a href="meeting.html?id=${encodeURIComponent(it.meetingId)}">${escapeHtml(it.label)}</a>`
     : escapeHtml(it.label);
@@ -301,8 +300,8 @@ function renderRow(it) {
       <div class="file-left">
         <div class="file-icon ${iconClass}">${iconLabel}</div>
         <div class="file-info">
-          <div class="file-name">${escapeHtml(doc.label || doc.filename)}${tagHtml}${draftHtml}</div>
-          <div class="file-meta-line"><span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}</div>
+          <div class="file-name">${escapeHtml(docLabel(doc))}</div>
+          <div class="file-meta-line">${tagsHtml}<span class="body-chip">${escapeHtml(it.body)}</span>${labelHtml}${dateHtml}</div>
         </div>
       </div>
       <a class="file-view" href="${escapeHtml(doc.url)}" target="_self">View${BTN_ARROW}</a>
