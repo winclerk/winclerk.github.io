@@ -36,6 +36,17 @@
     .lib-section { scroll-margin-top: 24px; margin-bottom: 36px; }
     .lib-section:last-child { margin-bottom: 0; }
     .lib-section[hidden] { display: none; }
+
+    /* Committees with their own page get a button beside the section name */
+    .lib-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .lib-head .section-label { margin-bottom: 0; }
   </style>
 </head>
 <body>
@@ -179,6 +190,17 @@ function committeeLabel(doc) {
   return sub + type + (date ? ' \u2013 ' + date : '');
 }
 
+// Committees that have their own page, keyed by library name in data.json.
+const COMMITTEE_PAGES = {
+  'Winchester Town Lakes Committee (WTLC)': { href: 'lakes-committee.html', label: 'Visit WTLC page' }
+};
+
+function committeePageButton(lib) {
+  const page = COMMITTEE_PAGES[lib.name];
+  if (!page) return '';
+  return `<a class="file-view" href="${page.href}">${escapeHtml(page.label)}<svg class="btn-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg></a>`;
+}
+
 function renderLibrarySection(lib, recordings) {
   const docs = sortNewestFirst(lib.documents || []).map(d => Object.assign({}, d, { label: committeeLabel(d) }));
   // Recordings for this committee, placed with their meeting date
@@ -201,7 +223,10 @@ function renderLibrarySection(lib, recordings) {
 
   return `
     <div class="lib-section" id="lib-${slugify(lib.name)}" data-group="${slugify(lib.name)}">
-      <div class="section-label">${escapeHtml(lib.name)}</div>
+      <div class="lib-head">
+        <div class="section-label">${escapeHtml(lib.name)}</div>
+        ${committeePageButton(lib)}
+      </div>
       <div class="file-list">${body}</div>
     </div>`;
 }

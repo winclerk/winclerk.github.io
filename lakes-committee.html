@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WTLC — Town of Winchester, WI</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="records-portal-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* WTLC sits under Committees & Commissions, so the hero matches that
+       page: warm tan head, mid teal label, dark teal title.
+       Everything else reuses shared.css (stat tiles, folder cards,
+       quick cards, file lists). shared.css is untouched. */
+    .hero {
+      background: #F5F2EC;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-label { color: var(--tm); }
+    .hero h1 { color: var(--td); }
+    .hero p { color: var(--text-muted); }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--td); }
+    .breadcrumb span { color: rgba(25,60,60,0.35); }
+    .breadcrumb .crumb-current { color: var(--td); }
+
+    .page-section { margin-top: 36px; }
+    .page-section:first-child { margin-top: 0; }
+
+    /* Reports left, contacts right, 50/50; stacks on narrow screens */
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .split { grid-template-columns: 1fr; gap: 36px; }
+    }
+
+    /* Resource cards reuse .folder-card; external links get a small note */
+    .folder-icon-wrap svg { display: block; color: var(--gold); }
+
+    /* Recording chip in a meeting header (same as town-board.html) */
+    .quick-head-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .quick-watch {
+      background: #8C7D4E;
+      color: #fff;
+      text-decoration: none;
+      transition: background-color 150ms ease;
+    }
+    .quick-watch svg { display: block; }
+    @media (hover: hover) and (pointer: fine) {
+      .quick-watch:hover { background: var(--gold); color: #fff; }
+    }
+    .quick-meta.file-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+    /* See all meetings */
+    .see-all-wrap { display: flex; justify-content: center; margin-top: 6px; }
+    .see-all {
+      font: inherit;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      height: 32px;
+      padding: 0 18px;
+      border-radius: 20px;
+      border: 1px solid var(--tm);
+      background: var(--white);
+      color: var(--tm);
+      cursor: pointer;
+      transition: background-color 150ms ease, color 150ms ease, transform 120ms ease-out;
+    }
+    .see-all:active { transform: scale(0.97); }
+    .see-all:focus-visible { outline: 2px solid var(--tm); outline-offset: 2px; }
+    @media (hover: hover) and (pointer: fine) {
+      .see-all:hover { background: var(--tm); color: #fff; }
+    }
+    .see-all[hidden] { display: none; }
+
+    /* "View all" in the reports and contacts lists: the extra rows open
+       inside the same list, accordion style (height animates 0fr -> 1fr). */
+    .more {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 250ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .more.open { grid-template-rows: 1fr; }
+    .more-inner { overflow: hidden; min-height: 0; }
+    .more-inner > :first-child { border-top: 1px solid var(--border); }
+    .more-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      font: inherit;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 11px 16px;
+      border: none;
+      border-top: 1px solid var(--border);
+      background: #fafcfc;
+      color: var(--tm);
+      cursor: pointer;
+      transition: background-color 150ms ease;
+    }
+    .more-btn:focus-visible { outline: 2px solid var(--tm); outline-offset: -2px; }
+    @media (hover: hover) and (pointer: fine) {
+      .more-btn:hover { background: var(--tl); }
+    }
+    .more-btn svg { transition: transform 250ms cubic-bezier(0.23, 1, 0.32, 1); }
+    .more-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+    @media (prefers-reduced-motion: reduce) {
+      .more, .more-btn svg { transition: none; }
+    }
+
+    /* Representatives: each group is a row in a file list that opens */
+    .acc { border-bottom: 1px solid var(--border); }
+    .acc:last-child { border-bottom: none; }
+    .acc summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      user-select: none;
+      transition: background 0.1s;
+    }
+    .acc summary::-webkit-details-marker { display: none; }
+    .acc summary:focus-visible { outline: 2px solid var(--tm); outline-offset: -2px; }
+    .acc summary:hover { background: #fafcfc; }
+    .acc-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .acc-sub { font-size: 11px; font-weight: 400; color: var(--text-muted); margin-top: 3px; }
+    .acc-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      color: var(--tm);
+      transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .acc[open] .acc-icon { transform: rotate(45deg); }
+    .acc[open] summary { background: #fafcfc; }
+    .acc-body {
+      padding: 4px 16px 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      background: #fafcfc;
+    }
+    .acc[open] .acc-body { animation: accIn 200ms cubic-bezier(0.23, 1, 0.32, 1); }
+    @keyframes accIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .acc-icon { transition: none; }
+      .acc[open] .acc-body { animation: none; }
+    }
+    .person {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .person-name { font-weight: 500; color: var(--td); font-size: 13px; }
+    .person-role { color: var(--text-muted); }
+    .person-addr { color: var(--text-muted); margin-top: 2px; }
+    .person-addr + .person-addr { margin-top: 6px; }
+    .person-links { margin-top: 6px; display: flex; flex-direction: column; gap: 2px; }
+    .person-links a { color: var(--tm); overflow-wrap: anywhere; }
+    .person-links a:hover { text-decoration: underline; }
+    .person-open { font-weight: 500; color: var(--text-muted); letter-spacing: 0.04em; }
+
+    @media (max-width: 700px) {
+      .acc summary { padding: 10px 12px; }
+      .acc-body { padding: 4px 12px 12px; grid-template-columns: 1fr; }
+      .quick-head { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar topbar-portal">
+  <a class="portal-brand" href="index.html" aria-label="Records Portal home">
+    <img src="records-portal-icon.svg" class="portal-brand-icon" alt="" width="36" height="36">
+    <span class="portal-brand-text">
+      <span class="portal-brand-name">Records Portal</span>
+      <span class="portal-brand-sub">Town of Winchester · Public Records</span>
+    </span>
+  </a>
+  <nav class="topbar-links" aria-label="Site">
+    <a class="back-link" href="committees.html">← Back to Committees &amp; Commissions</a>
+    <a class="town-link" href="https://winchesterwi.com">
+      <img src="winchester-logo.png" class="seal-logo" alt="">
+      <span class="town-link-text">winchesterwi.com</span>
+    </a>
+  </nav>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Committees &amp; Commissions</div>
+  <h1>WTLC</h1>
+  <p>Winchester Town Lakes Committee: lake studies and reports, meeting agendas and minutes, and lake representative contacts.</p>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <a href="committees.html">Committees &amp; Commissions</a>
+    <span>/</span>
+    <span class="crumb-current">WTLC</span>
+  </nav>
+</div>
+
+<main>
+  <div id="stat-tiles-container"></div>
+
+  <div class="page-body">
+
+    <section class="page-section">
+      <div class="section-label">Resources</div>
+      <div class="folder-grid" id="resource-grid" style="margin-bottom:0"></div>
+    </section>
+
+    <div class="page-section split">
+      <section>
+        <div class="section-label">Lake reports &amp; studies</div>
+        <div class="file-list">
+          <div id="doc-top"></div>
+          <div class="more" id="doc-more" inert><div class="more-inner" id="doc-rest"></div></div>
+          <button type="button" class="more-btn" id="doc-btn" aria-controls="doc-more" aria-expanded="false" hidden></button>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-label">Representatives &amp; contacts</div>
+        <div class="file-list">
+          <div id="contact-top"></div>
+          <div class="more" id="contact-more" inert><div class="more-inner" id="contact-rest"></div></div>
+          <button type="button" class="more-btn" id="contact-btn" aria-controls="contact-more" aria-expanded="false" hidden></button>
+        </div>
+      </section>
+    </div>
+
+    <section class="page-section quick-section">
+      <div class="section-label">Recent meetings — agendas &amp; minutes</div>
+      <div id="quick-list"></div>
+      <div class="see-all-wrap">
+        <button type="button" class="see-all" id="see-all" hidden></button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <span>Town of Winchester · Winchester, WI 54557 · (715) 686-2123</span>
+  <a href="https://winchesterwi.com">winchesterwi.com →</a>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+(function () {
+  // Content copied from winchesterwi.com/your-government/lakes-committee/ (Oct 10, 2026).
+  const UP = 'https://winchesterwi.com/wp-content/uploads/';
+  const RECENT = 5;
+
+  const DOCUMENTS = [
+    ['Winchester Area Fish Management', '2026/10/Winchester-Lakes-Talk_Share.pdf'],
+    ['Warmwater Habitat Considerations for Wisconsin Fisheries', '2026/07/WinchesterLakesMeeting_6_24_26.pdf'],
+    ['2026 Spiny Water Flea Report', '2026/06/SWF_WinchesterLakes_2026.05.27.pdf'],
+    ['2026 Aquatic Plant Studies Phase III', '2026/05/Winchester_AqPlntStudies_PhIII_Mar31-2026.pdf'],
+    ['2025 Rock Lake Point Intercept Report', '2026/05/Rock_PI_Report_2025.pdf'],
+    ['Cyanobacteria Monitoring', '2026/04/LaLiberte_Cyanobacteria_Monitoring_Winchester_2026-04-22.pdf'],
+    ['2025 Phase III Point Intercept Aquatic Plant Study for North Turtle and South Turtle', '2026/04/Winchester_AqPlntStudies_PhIII_Mar31-2026.pdf'],
+    ['Town Aquatic Invasive Species Partnership Report 2025', '2026/04/TAISP_Annual_Report_2025_Final.pdf'],
+    ['Eurasian Water Milfoil Research and Management', '2025/09/EWM-Mgmt-Options_AUG-27-2025_Town-of-Winchester.pdf'],
+    ['Turtle Chain Yellow Iris Report 2024', '2025/07/Turtle-Chain-YI-Report-2024_Final-1.pdf'],
+    ['Point Intercept Aquatic Plant Survey Report 2024: Rainbow and Tamarack Lakes', '2025/06/Rainbow_Tamarack_PI_Report_2024_Final.pdf'],
+    ['Town Aquatic Invasive Species Partnership Report 2024', '2025/06/TAISP_Annual_Report_2024_Final.pdf'],
+    ['Town Aquatic Invasive Species Partnership Report 2023', '2024/07/TAISP_Annual_Report_2023_Final_compressed26801.pdf'],
+    ['Lakes Comprehensive Management Plan', '2024/02/ComprehensivePlan-Lakes.pdf']
+  ];
+
+  const ICONS = {
+    list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M6.5 17A2.5 2.5 0 0 0 4 19.5 2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+    sprout: '<path d="M12 22V11"/><path d="M12 11C12 7 9 4 4 4c0 5 3 7 8 7z"/><path d="M12 13c0-3.5 2.5-6 7-6 0 4.5-2.5 6-7 6z"/>',
+    sailboat: '<path d="M12 3v13"/><path d="M12 3l7 11h-7"/><path d="M11 6l-6 8h6"/><path d="M3 17h18l-2.5 3.5h-13z"/>'
+  };
+
+  const RESOURCES = [
+    { label: 'Agendas & Minutes', meta: 'All town meetings', href: 'agendas-minutes.html', icon: 'list', ext: false, arrow: 'View page →' },
+    { label: 'Winchester Lake User Guide', meta: 'PDF guide', href: UP + '2025/11/TOWN-OF-WINCHESTER-Lake-User-Guide7-23-25Final.pdf', icon: 'book', ext: true, arrow: 'Open PDF →' },
+    { label: 'Shoreline Restoration', meta: 'PDF guide', href: UP + '2025/04/Winchester-TLC-Shoreline-Restoration-4.22.25.pdf', icon: 'sprout', ext: true, arrow: 'Open PDF →' },
+    { label: 'Public Boat Landings', meta: 'winchesterwi.com', href: 'https://winchesterwi.com/town-services/public-boat-landings-new/', icon: 'sailboat', ext: true, arrow: 'View page →' }
+  ];
+
+  const MEMBER_LIST = UP + '2025/12/WTLC-Committee-Members-12-10-2025.pdf';
+
+  // Each person: name, role?, addr (array of address blocks, each an array of lines), phones, email
+  const CONTACTS = [
+    { group: 'Adelaide Lake', people: [
+      { name: 'Blaze Burton*', addr: [['14018 Adelaide Road', 'Winchester 54557']], phones: ['(715) 892-6568'], email: 'blaze.e.burton@gmail.com' },
+      { name: 'Peter Stemper', addr: [['8405 Old County O', 'Winchester 54557']], phones: ['(414) 690-6940'], email: 'peter@stempers.com' }
+    ]},
+    { group: 'Birch Lake', people: [
+      { name: 'Dave Burger', addr: [['13015 Birch Bay Road', 'Winchester 54557']], phones: ['(608) 628-6161'], email: 'doggunit@gmail.com' },
+      { name: 'Tim Douglas*', addr: [['7700 W. Birch Lake Road', 'Winchester 54557']], phones: ['(920) 619-0889'], email: 'tdman2wish@gmail.com' }
+    ]},
+    { group: 'Circle Lily Lake', people: [
+      { open: true },
+      { name: 'Dave Werren', addr: [['P.O. Box 458', 'Manitowish Waters 54545']], phones: ['(715) 543-2335', '(608) 628-6185'], email: 'dwerren@me.com' }
+    ]},
+    { group: 'Harris Lake', people: [
+      { name: 'Jim Evans*', addr: [['1342 Baytree Lane', 'Neenah, WI 54956']], phones: ['(920) 427-3040'], email: 'jevans6214@gmail.com' },
+      { name: 'Brian Schumaker', addr: [['14213 Harris Creek Lane', 'Winchester 54557']], phones: ['(608) 576-4314'], email: 'brian.schumaker71@gmail.com' }
+    ]},
+    { group: 'Hiawatha Lake', people: [
+      { name: 'Mark Christensen', addr: [['13098 Hiawatha Lake Rd', 'Manitowish Waters 54545'], ['2194 Sunnymede Lane', 'Green Bay 54311']], phones: ['(920) 676-3315'], email: 'machristensen1819@gmail.com' },
+      { name: 'Nancy Russell*', addr: [['5226 Moccasin Lane', 'Manitowish Waters 54545']], phones: ['(715) 686-2500', '(651) 315-4661'], email: 'revnjr2@gmail.com' }
+    ]},
+    { group: 'Little Papoose/Noseeum Lakes', people: [
+      { name: 'Darrell Smith*', addr: [['13220 Papoose Lake Road', 'Manitowish Waters 54545']], phones: ['(715) 686-2398'], email: 'sdarrell770@gmail.com' },
+      { name: 'Jeramiah Dunnett', addr: [['13222 Papoose Lake Rd', 'Winchester 54557']], phones: ['(608) 393-8594'], email: 'jdunnettconstruction@gmail.com' }
+    ]},
+    { group: 'North Turtle Lake', people: [
+      { name: 'Susan Esslinger*', addr: [['20640 Sundance Drive', 'Brookfield, WI 53045']], phones: ['(262) 893-8252'], email: 'susanesslinger@gmail.com' },
+      { name: 'Deb Silvis', addr: [['1247 Bucks Road', 'Winchester, WI 54557']], phones: ['(608) 219-7789'], email: 'dbsilvis1247@gmail.com' }
+    ]},
+    { group: 'Pardee Lake', people: [
+      { name: 'Dan Okray', addr: [['8887 E. Pardee Lake Lane', 'Winchester 54557'], ['W1748 Circle Dr', 'Sullivan, WI 53178']], phones: ['(608) 345-3132'], email: 'danokray@charter.net' },
+      { name: 'Dave Lull*', addr: [['1050 Pardee Lake Lane E', 'Winchester 54557'], ['505 N. East Street', 'Blue River, WI 53518']], phones: ['(715) 686-7530'], email: 'djlull@mwt.net' }
+    ]},
+    { group: 'Papoose Lake', people: [
+      { name: 'Paul Lewandoski', addr: [['12444 Papoose Landing Road', 'Manitowish Waters 54545']], phones: ['(715) 686-7880', '(608) 797-1378'], email: 'plew263@gmail.com' },
+      { name: 'Nate Petreman*', addr: [['6889 County Rd P', 'Manitowish Waters 54545']], phones: ['(608) 609-0008'], email: 'npetreman@gmail.com' }
+    ]},
+    { group: 'Rainbow Lake', people: [
+      { name: 'Jim Logan*', addr: [['8140 Left Fork Lane', 'Winchester 54557']], phones: ['(608) 332-4085'], email: 'jim.jameslogan@gmail.com' },
+      { name: 'Bill Schein', addr: [['4015 Pine Tree Lane', 'Wausau, WI 54403']], phones: ['(715) 675-4791'], email: 'schein4015@gmail.com' }
+    ]},
+    { group: 'Rock Lake', people: [
+      { name: 'Steve Budnik*', addr: [['8666 W. Rock Lake Road', 'Winchester 54557']], phones: ['(715) 686-7852'], email: 'budniksteven@gmail.com' },
+      { name: 'Gary Engstrom', addr: [['8568 W. Rock Lake Road', 'Winchester 54557']], phones: ['(715) 686-2582', '(636) 698-8608'], email: 'ggengstrom@aol.com' }
+    ]},
+    { group: 'South Turtle Lake', people: [
+      { name: 'Arlene Kellett*', addr: [['10299 Co. Hwy. W', 'Winchester 54557']], phones: ['(715) 686-7260'], email: 'arkellett@centurytel.net' },
+      { name: 'Tom Rued', addr: [['2364 Black Forest Road', 'Winchester 54557']], phones: ['(715) 686-2547'], email: 'muskydoctom@gmail.com' }
+    ]},
+    { group: 'Town Board Liaison', people: [
+      { name: 'Robert Silvis', role: 'Town Supervisor', addr: [['7228 CTH W', 'Winchester, WI 54557']], phones: ['(715) 446-8416'], email: 'robert@winchester.wi.gov' }
+    ]},
+    { group: 'Vilas County Lake Conservation Specialist', people: [
+      { name: 'Cathy Higley', addr: [['330 Court Street', 'Eagle River 54521']], phones: ['(715) 479-3738'], email: 'cahigl@co.vilas.wi.us' }
+    ]},
+    { group: 'NLDC Water Program Coordinator', people: [
+      { name: 'Abby Vogt', addr: [['P.O. Box 237', 'Manitowish Waters 54545']], phones: ['(715) 543-2085'], email: 'abby@discoverycenter.net' }
+    ]},
+    { group: 'CLMN DNR Coordinator', people: [
+      { name: 'Chastin Harlow', addr: [['8770 Hwy J', 'Woodruff 54568']], phones: ['(715) 499-5535'], email: 'chastin.harlow@wisconsin.gov' }
+    ]},
+    { group: 'Committee Chair/Vice Chair', people: [
+      { name: 'Gary Engstrom', role: 'Chair' },
+      { name: 'Steve Budnik', role: 'Vice Chair' }
+    ]},
+    { group: 'Emeritus', people: [
+      { name: 'Rolf Ethun', addr: [['7116 Hiawatha Lake Rd', 'Winchester 54557']], phones: ['(715) 686-2139'], email: 'rolfdethun@gmail.com' },
+      { name: 'Glen Wildenberg', addr: [['7510 E. Birch Lake Road', 'Winchester 54557']], phones: ['(920) 323-2728'], email: 'gwildhill14@gmail.com' },
+      { name: 'Tom Kocim', addr: [['7404 W. Birch Lake Road', 'Winchester 54557']], phones: ['(630) 414-1944'], email: 'tkocim@sbcglobal.net' },
+      { name: 'Katie Hein', addr: [['Trout Lake Station', 'Boulder Junction, WI 54512']], phones: ['(608) 890-4704'], email: 'clhein@wisc.edu' }
+    ]}
+  ];
+
+  // Meetings, newest first: [date YYYY-MM-DD (or YYYY for a yearly archive), title, agenda path, minutes path, video URL]
+  // Empty string = nothing posted.
+  const MEETINGS = [
+    ['2026-09-23', 'Lakes Committee Meeting', '2026/09/Agenda-SEPTEMBER-23-2026-Winchester-Town-Lakes-Committee.docx', '2026/09/WTLC-min-9.23.2026.docx', ''],
+    ['2026-08-26', 'Lakes Committee Meeting', '2026/09/Agenda-AUGUST-26-2026-Winchester-Town-Lakes-Committee.docx', '2026/09/WTLC-mins-8.26.2026.docx', ''],
+    ['2026-07-22', 'Lakes Committee Meeting', '2026/07/Agenda-JULY-22-2026-Winchester-Town-Lakes-Committee.docx', '2026/07/WTLCmin6.24.26.docx', ''],
+    ['2026-06-24', 'Lakes Committee Meeting', '2026/06/index.pdf', '2026/06/WTLCmin6.24.26.docx', ''],
+    ['2026-05-27', 'Lakes Committee Meeting', '2026/05/Agenda-May-27-2026-Winchester-Town-Lakes-Committee-2.pdf', '2026/05/WTLC-mtg-05.27.2026.docx', ''],
+    ['2026-04-22', 'Lakes Committee Meeting', '2026/04/Agenda-April-22-2026.pdf', '2026/04/WTLC.minutes.4-22-26.DRAFT_.pdf', ''],
+    ['2026-01-28', 'Lakes Committee Meeting', '2026/01/Agenda-January-28-2026-Winchester-Town-Lakes-Committee.pdf', '2026/01/WTLC-1_28_26-MinutesDraft.docx', ''],
+    ['2025-09-24', 'Lakes Committee Meeting', '2025/09/WTLC.agenda.9.24.25.pdf', '2025/09/WTLC-Mtg-minutes-092425.DRAFT_.pdf', ''],
+    ['2025-08-27', 'Lakes Committee Meeting', '2025/08/WTLC.agenda.8-27-25.pdf', '2025/08/WTLC.minutes.8.27.25.DRAFT_.pdf', ''],
+    ['2025-07-23', 'Lakes Committee Meeting', '2025/07/WTLC.agenda.7.23.25.pdf', '2025/07/WTLC-7-23-2025MinutesDraft.pdf', ''],
+    ['2025-06-25', 'Lakes Committee Meeting', '2025/06/WTLC.agenda.6-25-25.pdf', '2025/06/WTLC.minutes.6.25.25.final_.pdf', ''],
+    ['2025-05-28', 'Lakes Committee Meeting', '2025/05/WTLC.agenda.5-28-25.pdf', '2025/05/WTLC.minutes.5-28-25.final_.pdf', ''],
+    ['2025-04-23', 'Lakes Committee Meeting', '2025/04/WTLC.Agenda.April_.23.2025.pdf', '2025/04/WTLC.minutes.4-23-25.final_.pdf', 'https://youtu.be/BnaUGSXTjD0'],
+    ['2025-01-15', 'Lakes Committee Meeting', '2025/01/Agenda-1-15-25-WTLC.pdf', '2025/02/WTLC.Minutes.1-15-25.DRAFT_.pdf', ''],
+    ['2024-09-25', 'Lakes Committee Meeting', '2024/09/Agenda-9-25-2024-WTLC.pdf', '2025/02/WTLC.9-25-24.Minutes-final.pdf', 'https://youtu.be/I6Qqpa9lrK4'],
+    ['2024-08-28', 'Lakes Committee Meeting', '2024/08/Agenda-8-28-2024-WTLC.pdf', '2024/08/WTLC.minutes.8-24-24.pdf', ''],
+    ['2024-07-24', 'Lakes Committee Meeting', '2024/07/Agenda-7-24-2024-WTLC.pdf', '2024/07/WTLC.minutes.7-24-24.pdf', 'https://youtu.be/lm0I1g4VyJU'],
+    ['2024-06-26', 'Lakes Committee Meeting', '2024/06/Agenda-6-26-24-WTLC-1.pdf', '2024/07/Minutes-6-26-24-WTLC-final.pdf', 'https://youtu.be/IIrkVxZTQPw'],
+    ['2024-05-22', 'Lakes Committee Meeting', '2024/05/Agenda-5-22-24-WTLC.pdf', '2024/07/Minutes-5-22-2024-WTLC.final_.pdf', ''],
+    ['2024-04-24', 'Lakes Committee Meeting', '2024/06/Agenda-4-24-2024-WTLC.pdf', '2024/06/Minutes-4-24-24-WTLCA-final.pdf', ''],
+    ['2024-01-31', 'Lakes Committee Meeting', '2024/02/lakes-Agenda-1-31-2024-WTLC1.pdf', '2024/02/MInutes-1-31-24-WTLCA-final.pdf', ''],
+    ['2023', 'Lakes Committee Minutes Archive', '', '2024/02/WTLC-Archive-2023.pdf', ''],
+    ['2022', 'Lakes Committee Minutes Archive', '', '2024/02/WTLC-Minutes-Archives-2022.pdf', ''],
+    ['2021', 'Lakes Committee Minutes Archive', '', '2024/02/WTLC-Archive-2021.pdf', ''],
+    ['2020-10-01', 'Lakes Committee Meeting', '', '2024/02/WTLC-Minutes-10-01-20.pdf', '']
+  ];
+
+  const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const MONTHS = MONTHS_LONG.map(m => m.slice(0, 3));
+  const ARROW = '<svg class="btn-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg>';
+  const PLAY = '<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M2.5 1.5v7l6-3.5z"/></svg>';
+  const PLAY_LG = '<svg width="14" height="14" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M2.5 1.5v7l6-3.5z"/></svg>';
+
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+  const ext = path => (path.split('.').pop() || '').toLowerCase();
+  const iconClass = e => e === 'pdf' ? 'icon-pdf' : (e === 'doc' || e === 'docx') ? 'icon-doc' : 'icon-file';
+  const iconLabel = e => (e === 'docx' || e === 'doc') ? 'DOC' : (e.toUpperCase() || 'FILE');
+  const isDraft = path => /draft/i.test(path);
+  const isFullDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d);
+  const parts = d => d.split('-').map(Number);
+  const longDate = d => { const [y, m, day] = parts(d); return `${MONTHS_LONG[m - 1]} ${day}, ${y}`; };
+  const shortDate = d => isFullDate(d) ? (() => { const [y, m, day] = parts(d); return `${MONTHS[m - 1]} ${day}, ${y}`; })() : d;
+  const headTitle = m => isFullDate(m[0]) ? `${m[1]} - ${longDate(m[0])}` : `${m[1]} - ${m[0]}`;
+
+  /* ---------- Stat tiles ---------- */
+  function renderStats() {
+    const latest = MEETINGS.filter(m => isFullDate(m[0])).sort((a, b) => b[0].localeCompare(a[0]))[0];
+    const years = MEETINGS.map(m => m[0].slice(0, 4)).sort();
+    document.getElementById('stat-tiles-container').innerHTML = `
+      <div class="stat-tiles">
+        <div class="stat-tile stat-tile-accent">
+          <div class="stat-label">Most recent meeting</div>
+          <div class="stat-value">${esc(longDate(latest[0]))}</div>
+          <div class="stat-sub">${esc(latest[1])}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Lake reports &amp; studies</div>
+          <div class="stat-value">${DOCUMENTS.length}</div>
+          <div class="stat-sub">documents on file</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Years available</div>
+          <div class="stat-value">${years[0]}–${years[years.length - 1]}</div>
+          <div class="stat-sub">${MEETINGS.length} meetings on record</div>
+        </div>
+      </div>`;
+  }
+
+  /* ---------- Resources (folder cards) ---------- */
+  function renderResources() {
+    document.getElementById('resource-grid').innerHTML = RESOURCES.map(r => `
+      <a class="folder-card" href="${esc(r.href)}"${r.ext ? ' target="_blank" rel="noopener"' : ''}>
+        <div class="folder-top">
+          <div class="folder-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[r.icon]}</svg></div>
+          <div class="folder-name">${esc(r.label)}</div>
+        </div>
+        <div class="folder-bottom">
+          <div class="folder-meta">${esc(r.meta)}</div>
+          <div class="folder-arrow">${esc(r.arrow)}</div>
+        </div>
+      </a>`).join('');
+  }
+
+  /* ---------- Meetings (quick cards, like town-board.html) ---------- */
+  let showAll = false;
+
+  function fileQuickRow(name, path, typeClass, typeLabel, dateText) {
+    const e = ext(path);
+    const draft = isDraft(path) ? '<span class="file-tag tag-draft">Draft</span>' : '';
+    return `
+      <div class="quick-row">
+        <div class="quick-left">
+          <div class="file-icon ${iconClass(e)}">${iconLabel(e)}</div>
+          <div>
+            <div class="quick-name">${esc(name)}</div>
+            <div class="quick-meta file-meta"><span class="file-date">${esc(dateText)}</span><span class="file-tag ${typeClass}">${typeLabel}</span>${draft}</div>
+          </div>
+        </div>
+        <a class="quick-view" href="${esc(UP + path)}" target="_blank" rel="noopener">View${ARROW}</a>
+      </div>`;
+  }
+
+  function meetingCard(m) {
+    const [date, title, agenda, minutes, video] = m;
+    const full = headTitle(m);
+    const dateText = shortDate(date);
+    const watch = video
+      ? `<a class="quick-watch" href="${esc(video)}" target="_blank" rel="noopener" aria-label="Watch the recording of ${esc(full)}">${PLAY}Watch</a>` : '';
+    const rows = [];
+    if (video) rows.push(`
+      <div class="quick-row">
+        <div class="quick-left">
+          <div class="file-icon icon-video">${PLAY_LG}</div>
+          <div>
+            <div class="quick-name">Meeting recording</div>
+            <div class="quick-meta file-meta"><span class="file-date">${esc(dateText)}</span><span class="file-tag tag-recording">Recording</span></div>
+          </div>
+        </div>
+        <a class="quick-view" href="${esc(video)}" target="_blank" rel="noopener">Watch${ARROW}</a>
+      </div>`);
+    if (agenda) rows.push(fileQuickRow('Meeting Agenda', agenda, 'type-agenda tag-agenda', 'Agenda', dateText));
+    if (minutes) rows.push(fileQuickRow(isFullDate(date) ? `Minutes - ${longDate(date)}` : `Minutes - ${date}`, minutes, 'type-minutes tag-minutes', 'Minutes', dateText));
+    return `
+      <div class="quick-card">
+        <div class="quick-head">
+          <span class="quick-head-title">${esc(full)}</span>
+          <span class="quick-head-right">${watch}<span class="meeting-badge badge-complete">Complete</span></span>
+        </div>
+        ${rows.join('')}
+      </div>`;
+  }
+
+  function renderMeetings() {
+    const list = showAll ? MEETINGS : MEETINGS.slice(0, RECENT);
+    document.getElementById('quick-list').innerHTML = list.map(meetingCard).join('');
+    const btn = document.getElementById('see-all');
+    btn.hidden = MEETINGS.length <= RECENT;
+    btn.textContent = showAll ? 'Show recent meetings only' : `See all meetings (${MEETINGS.length})`;
+    btn.setAttribute('aria-expanded', String(showAll));
+  }
+
+  document.getElementById('see-all').addEventListener('click', () => {
+    showAll = !showAll;
+    renderMeetings();
+    if (!showAll) document.querySelector('.quick-section').scrollIntoView({ block: 'start' });
+  });
+
+  /* ---------- "View all" expander for the reports and contacts lists ---------- */
+  const CHEVRON = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5"/></svg>';
+
+  function setupExpander(key, topHtml, restHtml, restCount) {
+    document.getElementById(key + '-top').innerHTML = topHtml;
+    document.getElementById(key + '-rest').innerHTML = restHtml;
+    const more = document.getElementById(key + '-more');
+    const btn = document.getElementById(key + '-btn');
+    if (!restCount) { more.hidden = true; return; }
+    const label = open => (open ? 'Show less' : `View all (${restCount} more)`) + CHEVRON;
+    btn.hidden = false;
+    btn.innerHTML = label(false);
+    btn.addEventListener('click', () => {
+      const open = !more.classList.contains('open');
+      more.classList.toggle('open', open);
+      // Rows that are folded away are not focusable or read out
+      if (open) more.removeAttribute('inert'); else more.setAttribute('inert', '');
+      btn.setAttribute('aria-expanded', String(open));
+      btn.innerHTML = label(open);
+    });
+  }
+
+  /* ---------- Lake reports (newest first; 5 shown) ---------- */
+  function docRow([name, path]) {
+    const e = ext(path);
+    return `
+      <div class="file-row">
+        <div class="file-left">
+          <div class="file-icon ${iconClass(e)}">${iconLabel(e)}</div>
+          <div class="file-info"><div class="file-name">${esc(name)}</div></div>
+        </div>
+        <a class="file-view" href="${esc(UP + path)}" target="_blank" rel="noopener">View${ARROW}</a>
+      </div>`;
+  }
+
+  function renderDocs() {
+    const top = DOCUMENTS.slice(0, RECENT);
+    const rest = DOCUMENTS.slice(RECENT);
+    setupExpander('doc', top.map(docRow).join(''), rest.map(docRow).join(''), rest.length);
+  }
+
+  /* ---------- Representatives ---------- */
+  function personHtml(p) {
+    if (p.open) return '<div class="person"><span class="person-open">OPEN</span></div>';
+    const addr = (p.addr || []).map(lines => `<div class="person-addr">${lines.map(esc).join('<br>')}</div>`).join('');
+    const phones = (p.phones || []).map(ph => `<a href="tel:${ph.replace(/[^\d]/g, '')}">${esc(ph)}</a>`).join('');
+    const email = p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '';
+    const links = phones || email ? `<div class="person-links">${phones}${email}</div>` : '';
+    const role = p.role ? ` <span class="person-role">– ${esc(p.role)}</span>` : '';
+    return `<div class="person"><div><span class="person-name">${esc(p.name)}</span>${role}</div>${addr}${links}</div>`;
+  }
+
+  // Shown first, in this order, after the member contact list
+  const CONTACTS_FIRST = [
+    'Committee Chair/Vice Chair',
+    'NLDC Water Program Coordinator',
+    'Vilas County Lake Conservation Specialist',
+    'Town Board Liaison'
+  ];
+
+  function renderContacts() {
+    const memberRow = `
+      <div class="file-row">
+        <div class="file-left">
+          <div class="file-icon icon-pdf">PDF</div>
+          <div class="file-info">
+            <div class="file-name">WTLC Member Contact List</div>
+            <div class="file-date">Every member's contact information</div>
+          </div>
+        </div>
+        <a class="file-view" href="${esc(MEMBER_LIST)}" target="_blank" rel="noopener">View${ARROW}</a>
+      </div>`;
+
+    const first = CONTACTS_FIRST.map(g => CONTACTS.find(c => c.group === g)).filter(Boolean);
+    const rest = CONTACTS.filter(c => !CONTACTS_FIRST.includes(c.group));
+    setupExpander('contact', memberRow + first.map(accHtml).join(''), rest.map(accHtml).join(''), rest.length);
+  }
+
+  function accHtml(c) {
+      const count = c.people.filter(p => !p.open).length;
+      return `
+      <details class="acc">
+        <summary>
+          <span class="acc-left">
+            <span class="file-icon icon-file" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+            <span><span>${esc(c.group)}</span><span class="acc-sub" style="display:block">${count} ${count === 1 ? 'contact' : 'contacts'}</span></span>
+          </span>
+          <svg class="acc-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>
+        </summary>
+        <div class="acc-body">${c.people.map(personHtml).join('')}</div>
+      </details>`;
+  }
+
+  renderStats();
+  renderResources();
+  renderMeetings();
+  renderDocs();
+  renderContacts();
+})();
+</script>
+
+</body>
+</html>
