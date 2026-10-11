@@ -2,7 +2,7 @@
   "meetings": [
     {
       "id": "regular-2026-10-12",
-      "title": "Regular Town Board Meeting - October 2026",
+      "title": "Regular Town Board Meeting - October 12, 2026",
       "type": "regular",
       "status": "upcoming",
       "date": "2026-10-12",
@@ -502,7 +502,7 @@
     },
     {
       "id": "regular-2026-09-14",
-      "title": "Regular Town Board Meeting - September 2026",
+      "title": "Regular Town Board Meeting - September 14, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-09-14",
@@ -1070,7 +1070,7 @@
     },
     {
       "id": "regular-2026-08-17",
-      "title": "Regular Town Board Meeting - August 2026",
+      "title": "Regular Town Board Meeting - August 17, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-08-17",
@@ -1287,7 +1287,7 @@
     },
     {
       "id": "regular-2026-07-15",
-      "title": "Regular Town Board Meeting - July 2026",
+      "title": "Regular Town Board Meeting - July 15, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-07-15",
@@ -1546,7 +1546,7 @@
     },
     {
       "id": "regular-2026-06-08",
-      "title": "Regular Town Board Meeting - June 2026",
+      "title": "Regular Town Board Meeting - June 8, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-06-08",
@@ -2002,7 +2002,7 @@
     },
     {
       "id": "regular-2026-05-11",
-      "title": "Regular Town Board Meeting - May 2026",
+      "title": "Regular Town Board Meeting - May 11, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-05-11",
@@ -2207,7 +2207,7 @@
     },
     {
       "id": "regular-2026-04-13",
-      "title": "Regular Town Board Meeting - April 2026",
+      "title": "Regular Town Board Meeting - April 13, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-04-13",
@@ -2289,7 +2289,7 @@
     },
     {
       "id": "regular-2026-03-09",
-      "title": "Regular Town Board Meeting - March 2026",
+      "title": "Regular Town Board Meeting - March 9, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-03-09",
@@ -2362,7 +2362,7 @@
     },
     {
       "id": "regular-2026-02-09",
-      "title": "Regular Town Board Meeting - February 2026",
+      "title": "Regular Town Board Meeting - February 9, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-02-09",
@@ -2419,7 +2419,7 @@
     },
     {
       "id": "regular-2026-01-12",
-      "title": "Regular Town Board Meeting - January 2026",
+      "title": "Regular Town Board Meeting - January 12, 2026",
       "type": "regular",
       "status": "complete",
       "date": "2026-01-12",
@@ -2573,85 +2573,7 @@
         },
         {
           "name": "Winchester Town Lakes Committee (WTLC)",
-          "documents": [
-            {
-              "label": "WTLC Agenda",
-              "filename": "Agenda_WTLC_20260923.docx",
-              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/BoardsCommitteesCommissions/IQDYEOSKfsEbSYh3I9FkJfACAUVYpKX4hMo9hRNyoC5zVFE",
-              "date": "2026-09-23",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "WTLC Agenda",
-              "filename": "Agenda_WTLC_20260826.docx",
-              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/BoardsCommitteesCommissions/IQCQfBw7H9nYS7eYmFgJ6haTAVuXN-Edf5kQYEaRGvVMB54",
-              "date": "2026-08-26",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "Minutes WTLC",
-              "filename": "Minutes_WTLC_20260826.docx",
-              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/BoardsCommitteesCommissions/IQD8pULfv2cUTqBpbMJuN7E0ASTdXtYlj-_Q64f2ubE59Lc",
-              "date": "2026-08-26",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "WTLC Agenda",
-              "filename": "Agenda_WTLC_20260722.docx",
-              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/BoardsCommitteesCommissions/IQBr-NBqvjJSQIWX6o9XAMX_AYUv-WlOOU2YAEqjBTM2YTI",
-              "date": "2026-07-22",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "Minutes WTLC",
-              "filename": "Minutes_WTLC_20260624.docx",
-              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/BoardsCommitteesCommissions/IQCCtCeLAJn-R5h1UTFvtqzzAbcusmk44C0oIGSvhLuZh04",
-              "date": "2026-06-24",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "WTLC Agenda",
-              "filename": "Agenda_WTLC_20260527.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/BoardsCommitteesCommissions/IQCGtMxupL6sRYfCPTmNjh8sAdWMUWgobU1WTc6QTTZ2kQk",
-              "date": "2026-05-27",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "Minutes WTLC",
-              "filename": "Minutes_WTLC_20260527.docx",
-              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/BoardsCommitteesCommissions/IQDPsOVrfbgeSbO2s4pUK3DLAdSRS5MOjLWR64LmXlYmdK0",
-              "date": "2026-05-27",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "WTLC Agenda",
-              "filename": "Agenda_WTLC_20260422.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/BoardsCommitteesCommissions/IQADh74LEE81T7Vxw7U4vsizAXQSgBgH7TCWFt4ufwxB18w",
-              "date": "2026-04-22",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "Minutes WTLC 20260422 DRAFT",
-              "filename": "Minutes_WTLC_20260422_DRAFT.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/BoardsCommitteesCommissions/IQBIgYucF0wlRrXH6M98vs_hAQxNDVvFW4TGVoswnYb_NOE",
-              "date": "2026-04-22",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "WTLC Agenda",
-              "filename": "Agenda_WTLC_20260128.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/BoardsCommitteesCommissions/IQB8agavnXDQRI6k09W9DdZIAW3uMw3hB4cWnYmFL0TjggU",
-              "date": "2026-01-28",
-              "posted": "2026-09-30"
-            },
-            {
-              "label": "Minutes WTLC 20260128 DRAFT",
-              "filename": "Minutes_WTLC_20260128_DRAFT.docx",
-              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/BoardsCommitteesCommissions/IQCIqdE3HR9JR7GsDwnXcvTVAUkmeVqXIuNZ2xmZsPr8BuA",
-              "date": "2026-01-28",
-              "posted": "2026-09-30"
-            }
-          ]
+          "documents": []
         },
         {
           "name": "Northwoods EMS District",
