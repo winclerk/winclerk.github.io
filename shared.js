@@ -905,3 +905,54 @@ function seeAllHtml(totalMeetings, showingAll) {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();
 })();
+
+/* ---------- Visitor analytics (GoatCounter) ----------
+   Counts page views on every portal page that loads shared.js, plus
+   clicks on documents, recordings, the next-meeting agenda link and
+   search results. Counts show up at the GoatCounter dashboard
+   (https://<GC_CODE>.goatcounter.com). No cookies, no personal data.
+
+   Clicks are recorded as GoatCounter "events" named by kind and label,
+   e.g. "Document: Agenda – October 14, 2026 Regular Meeting", so the
+   dashboard lists which files are opened most. */
+(function () {
+  const GC_CODE = 'winchester';
+  const host = location.hostname;
+  if (!host || host === 'localhost' || host === '127.0.0.1') return;
+
+  if (!document.querySelector('script[data-goatcounter]')) {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://gc.zgo.at/count.js';
+    s.setAttribute('data-goatcounter', `https://${GC_CODE}.goatcounter.com/count`);
+    document.head.appendChild(s);
+  }
+
+  const clean = t => String(t || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+
+  function describe(a) {
+    if (a.matches('.file-view')) {
+      const row = a.closest('.file-row');
+      const name = row && row.querySelector('.file-name');
+      const kind = row && row.dataset.tag === 'recording' ? 'Recording' : 'Document';
+      return `${kind}: ${clean(name ? name.textContent : a.href)}`;
+    }
+    if (a.matches('.ps-result-title')) return `Document: ${clean(a.textContent)}`;
+    if (a.matches('.next-link')) return 'Document: Next meeting agenda (banner)';
+    return null;
+  }
+
+  function track(e) {
+    if (e.type === 'auxclick' && e.button !== 1) return;
+    const a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    const name = describe(a);
+    if (!name || !window.goatcounter || typeof window.goatcounter.count !== 'function') return;
+    try {
+      window.goatcounter.count({ path: name, title: document.title, event: true });
+    } catch (err) { /* analytics must never break the page */ }
+  }
+
+  document.addEventListener('click', track, true);
+  document.addEventListener('auxclick', track, true);
+})();
