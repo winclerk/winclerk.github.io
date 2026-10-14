@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-14T03:52:41Z",
+  "updated": "2026-10-14T16:21:25Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -260,6 +260,18 @@
         "Conditions": "",
         "Traffic impact": "Lane closure",
         "Public contact": "Chonburi Thao — 6518704341"
+      }
+    },
+    "2026-ROW-12": {
+      "status": "received",
+      "snapshot": {
+        "Location": "Other Town road — Various",
+        "Board meeting": "",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "Other: off should parking",
+        "Public contact": "Brian Hempel — 715-246-3440"
       }
     }
   }
