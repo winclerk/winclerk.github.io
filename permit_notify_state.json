@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-14T02:45:35Z",
+  "updated": "2026-10-14T03:52:41Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -248,6 +248,18 @@
         "Conditions": "",
         "Traffic impact": "No traffic impact",
         "Public contact": "William Kurtz — 715-798-7122"
+      }
+    },
+    "2026-ROW-11": {
+      "status": "received",
+      "snapshot": {
+        "Location": "N Turtle Dr — 3045 N Turtle Dr",
+        "Board meeting": "",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "Lane closure",
+        "Public contact": "Chonburi Thao — 6518704341"
       }
     }
   }
