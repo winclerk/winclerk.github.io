@@ -3016,6 +3016,34 @@
           "name": "Election Notices",
           "documents": [
             {
+              "label": "Notice B General Election and Sample Ballot",
+              "filename": "Notice-B_General-Election-and-Sample-Ballot_20261015.docx",
+              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/Elections/IQBpPzu13MQARYcLbFVqI9PIAQxkUetmNOaVKS6Mv3qhtHI",
+              "date": "2026-10-15",
+              "posted": "2026-10-15"
+            },
+            {
+              "label": "Notice C Ref for November 2026 General Election",
+              "filename": "Notice-C_Ref-for-November-2026-General-Election_20261015.docx",
+              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/Elections/IQBb-5OIfoiKS6v0W8N6SvOdATlR8spw9_WyCyAwps9It48",
+              "date": "2026-10-15",
+              "posted": "2026-10-15"
+            },
+            {
+              "label": "Notice D Polling Hours & Locations",
+              "filename": "Notice-D_Polling-Hours-&-Locations_20261015.docx",
+              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/Elections/IQDoXW6uOGHHRa05q4nOThfOAcdY75362qF9XzYY3C65kPQ",
+              "date": "2026-10-15",
+              "posted": "2026-10-15"
+            },
+            {
+              "label": "Sample Ballot B Notice",
+              "filename": "Sample-Ballot_B-Notice_20261015.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQD3mFBcPkzYQp1ETr1LqdK5AcT_vvVMuv4uKlIbuHPGTMY",
+              "date": "2026-10-15",
+              "posted": "2026-10-15"
+            },
+            {
               "label": "General Election Type A Notice",
               "filename": "Notice_General-Election-Type-A_20261005.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQD2zPNukPHDRZ6Cfcd5mMLmAb_gW25RYvL8Z_chAaVXLJ4",
@@ -3133,6 +3161,20 @@
         {
           "name": "Election Inspectors",
           "documents": [
+            {
+              "label": "Clerk Use of Federal SAVE System Communication",
+              "filename": "Comm_Clerk-Use-of-Federal-SAVE-System_20261015.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQCTl5WY_uk_SJb03FCCOSOkAXzeRiculmcMVV5z2pbqOMs",
+              "date": "2026-10-15",
+              "posted": "2026-10-15"
+            },
+            {
+              "label": "Law Enforcement & Election Observers at the Polls Communication",
+              "filename": "Comm_Law-Enforcement-&-Election-Observers-at-the-Polls_20261015.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQDW3UxgE1RyS5Ck_teEe9LoAdlP5CmW0WgQ3B2JAf_CKYA",
+              "date": "2026-10-15",
+              "posted": "2026-10-15"
+            },
             {
               "label": "Manual ELAW Rev October 2026",
               "filename": "Manual_ELAW-Rev-October-2026_20261013.pdf",
