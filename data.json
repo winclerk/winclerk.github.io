@@ -16,6 +16,15 @@
           "date": "2026-10-12",
           "posted": "2026-10-10",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
+        },
+        {
+          "label": "Minutes (Draft) - October 12, 2026",
+          "filename": "Minutes_RTBM_20261012_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA4MAmBgr1TQJgkFBUYSDOmAf0cjtIclzPJLrd2xwfK5m4",
+          "date": "2026-10-12",
+          "posted": "2026-10-15",
+          "draft": true,
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
         }
       ],
       "subfolders": [
@@ -158,6 +167,22 @@
           "name": "Financial",
           "documents": [
             {
+              "label": "August Disbursements",
+              "filename": "Report_Disbursements_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBhs3yFt0wDQKUHD4tyoGDzAe-3Thyta0Y1WBUHOjVzXLM",
+              "date": "2026-10-15",
+              "posted": "2026-10-04",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "September Disbursements",
+              "filename": "Report_Disbursements_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAqgl0JLftOR4VLaFZAVuG_AbkxDXim_VknxycejTZs-ec",
+              "date": "2026-10-15",
+              "posted": "2026-10-09",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
               "label": "Reconciliation Checking Report",
               "filename": "Report_Reconciliation-Checking_202608.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDVyXU9n_ySQZr01U1jBgA6AQ2F0R8KgalY9JgIRxKiN38",
@@ -246,14 +271,6 @@
               "group": "October Regular Meeting - Financial Documents"
             },
             {
-              "label": "September Disbursements",
-              "filename": "Report_Disbursements_202609.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAqgl0JLftOR4VLaFZAVuG_AbkxDXim_VknxycejTZs-ec",
-              "date": "2026-10-09",
-              "posted": "2026-10-09",
-              "group": "October Regular Meeting - Financial Documents"
-            },
-            {
               "label": "Treasurer's Report",
               "filename": "Report_Treasurer_202609.xlsx",
               "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQAp8qdgQAzmTZ-OG9SQf6-HATJ6qdE0wIUVXqvp7kFyn38",
@@ -268,14 +285,6 @@
               "date": "2026-10-09",
               "posted": "2026-10-09",
               "group": "October Regular Meeting - Financial Documents"
-            },
-            {
-              "label": "August Disbursements",
-              "filename": "Report_Disbursements_202608.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBhs3yFt0wDQKUHD4tyoGDzAe-3Thyta0Y1WBUHOjVzXLM",
-              "date": "2026-10-08",
-              "posted": "2026-10-04",
-              "group": "September Regular Meeting - Financial Documents"
             },
             {
               "label": "Balance Sheet Report",
@@ -348,12 +357,11 @@
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCV3EwZ3lMgQKARyTemGEFDAWLdFGF47zNYszmSV3O1I8s"
         },
         {
-          "label": "Minutes (Draft) - October 6, 2026",
-          "filename": "Minutes_STBM_20261006_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCJPt4c7tsxT4WvVnbPJiKcAYU8Y7Ymcad9fpOsHLtsDtk",
+          "label": "Minutes - October 6, 2026",
+          "filename": "Minutes_STBM_20261006.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQD8Q__jdY_9RaBgckaiJlJwAV-D9UAwrr3ZVNjqS-uVaHs",
           "date": "2026-10-06",
-          "posted": "2026-10-09",
-          "draft": true,
+          "posted": "2026-10-15",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCV3EwZ3lMgQKARyTemGEFDAWLdFGF47zNYszmSV3O1I8s"
         },
         {
@@ -556,12 +564,11 @@
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBqHxpFqidyTbgkei8y8mWVAWBs1s_xCRUGkBiS3SyX4ME"
         },
         {
-          "label": "Minutes (Draft) - September 14, 2026",
-          "filename": "Minutes_RTBM_20260914_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDOitOFsIAtRKj-_K9JUV_XAR3A-y2n3U5QmcofNWYuEiY",
+          "label": "Minutes - September 14, 2026",
+          "filename": "Minutes_RTBM_20260914.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCRf1KuxuJEQqToa3qmyqbtAVfVL1kAQlVQWDKjAIQk9Wk",
           "date": "2026-09-14",
-          "posted": "2026-09-20",
-          "draft": true,
+          "posted": "2026-10-15",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBqHxpFqidyTbgkei8y8mWVAWBs1s_xCRUGkBiS3SyX4ME"
         },
         {
@@ -676,21 +683,19 @@
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB9wmAmx6D5QrW-aE1mYweRAT6eLa1WI68aubdTWMtHjoQ"
         },
         {
-          "label": "Minutes (Draft) - September 10, 2026 (Part 1)",
-          "filename": "Minutes_STBM-1_20260910_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCO-BQ--MHeRZgpqC1d_6ptAdfwiZzDKvq5h3wOkvmNapM",
+          "label": "Minutes - September 10, 2026 (Part 1)",
+          "filename": "Minutes_STBM-1_20260910.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCgQbyDUt-gS79MKg5XlNE6Af4nv5Qu8680_eWGRbMUsNA",
           "date": "2026-09-10",
-          "posted": "2026-09-20",
-          "draft": true,
+          "posted": "2026-10-15",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB9wmAmx6D5QrW-aE1mYweRAT6eLa1WI68aubdTWMtHjoQ"
         },
         {
-          "label": "Minutes (Draft) - September 10, 2026 (Part 2)",
-          "filename": "Minutes_STBM-2_20260910_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBwI1ojGD_FQLVyBTOP5YgzAVfFOgI8HRo-2hJkICKKfbE",
+          "label": "Minutes - September 10, 2026 (Part 2)",
+          "filename": "Minutes_STBM-2_20260910.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAgG3U538iRR5-MuyMkgoddAUzDBtjTOymFxB985V5mzGk",
           "date": "2026-09-10",
-          "posted": "2026-09-20",
-          "draft": true,
+          "posted": "2026-10-15",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB9wmAmx6D5QrW-aE1mYweRAT6eLa1WI68aubdTWMtHjoQ"
         },
         {
@@ -928,12 +933,11 @@
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDJSkWbqfFGR5iJUZAgigbTARWRvO98M-l40oUwa32VW50"
         },
         {
-          "label": "Minutes (Draft) - September 1, 2026",
-          "filename": "Minutes_STBM_20260901_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA7p0oBZ_T3SK1htfnjo5ZwAZFgP77pxJ2zUwtz8Ppsy2o",
+          "label": "Minutes - September 1, 2026",
+          "filename": "Minutes_STBM_20260901.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAdncUJDKRiTKlPJP8Qu4NTAbKA87I2L3b4C9jkxZSmlq0",
           "date": "2026-09-01",
-          "posted": "2026-09-08",
-          "draft": true,
+          "posted": "2026-10-15",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDJSkWbqfFGR5iJUZAgigbTARWRvO98M-l40oUwa32VW50"
         },
         {
@@ -1108,12 +1112,11 @@
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBZnpr1k42OQrEmjwrTRDIhAX4RMo1KUS32sRjBANuWPAU"
         },
         {
-          "label": "Minutes (Draft) - August 17, 2026",
-          "filename": "Minutes_RTBM_20260817_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCqJDov-IHeRoM8dK19vpbFAVicvnPkES-LZa0KJO7sY4A",
+          "label": "Minutes - August 17, 2026",
+          "filename": "Minutes_RTBM_20260817.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAh1b3-GxS2R4v73wYYs4mIAZa_voKXK22zFIxD9o746qs",
           "date": "2026-08-17",
-          "posted": "2026-08-20",
-          "draft": true,
+          "posted": "2026-10-15",
           "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBZnpr1k42OQrEmjwrTRDIhAX4RMo1KUS32sRjBANuWPAU"
         },
         {
