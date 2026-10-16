@@ -13,6 +13,10 @@ Send rules (all four notifications) — restrictive per Clerk's spec:
   approved conditionally  → only if conditions field is non-empty
   denied                  → only if clerk_notes field is non-empty (denial reason)
 
+Sending hours: emails and Teams posts go out only 8:00 AM–4:00 PM Central
+(NOTIFY_START_HOUR / NOTIFY_END_HOUR). Outside those hours a due notification
+is held (state not advanced) and sent by the first run inside the window.
+
 Multi-type — works for ROW, Driveway, and Road Construction. Email content
 adapts to each permit type. Driveway applicants keep their applicant/email in
 the internal record even though those fields aren't shown publicly.
@@ -44,6 +48,43 @@ CLERK_EMAIL = "clerk@winchester.wi.gov"
 SEND_FROM   = "luke@winchester.wi.gov"
 
 MAKE_WEBHOOK_URL = "https://hook.us2.make.com/gatf2jagb2qfxkmczko6gugq2qx80uxr"
+
+# Sending window (Clerk's request, Oct 2026): applicant emails and Board Teams
+# posts go out only from 8:00 AM up to 4:00 PM Winchester time (America/Chicago,
+# DST-aware). A notification that comes due outside the window is HELD, not
+# dropped: its state is not advanced, so the first sync run inside the next
+# window sends it. Applies to both callers (sync.py and assign_only.py).
+NOTIFY_TZ_NAME     = "America/Chicago"
+NOTIFY_START_HOUR  = 8    # inclusive — 8:00 AM
+NOTIFY_END_HOUR    = 16   # exclusive — sends stop at 4:00 PM
+
+
+def _local_now():
+    try:
+        from zoneinfo import ZoneInfo
+        return datetime.now(ZoneInfo(NOTIFY_TZ_NAME))
+    except Exception as e:
+        # No tz database available — fall back to US Central with a simple
+        # DST rule (2nd Sunday of March 2am to 1st Sunday of November 2am).
+        print(f"   ! timezone lookup failed ({e}); using built-in US Central rule")
+        from datetime import timedelta
+        utc = datetime.now(timezone.utc)
+        y = utc.year
+        def nth_sunday(month, n):
+            d = datetime(y, month, 1, tzinfo=timezone.utc)
+            d += timedelta(days=(6 - d.weekday()) % 7)
+            return d + timedelta(weeks=n - 1)
+        dst_start = nth_sunday(3, 2) + timedelta(hours=8)   # 2am CST = 08:00 UTC
+        dst_end   = nth_sunday(11, 1) + timedelta(hours=7)  # 2am CDT = 07:00 UTC
+        offset = -5 if dst_start <= utc < dst_end else -6
+        return utc.astimezone(timezone(timedelta(hours=offset)))
+
+
+def in_notify_window(now=None):
+    """True when notifications may be sent (8:00 AM to 3:59 PM local)."""
+    now = now or _local_now()
+    return NOTIFY_START_HOUR <= now.hour < NOTIFY_END_HOUR
+
 
 NOTIFY_STATUSES = {"received", "approved", "approved conditionally", "denied"}
 
@@ -619,10 +660,17 @@ def notify_status_changes(token, all_rows_by_source, write_github_fn=None):
 
        Returns (sent_count, skipped_count) for the log."""
     print("── Notifications ──")
+    local_now = _local_now()
+    window_open = in_notify_window(local_now)
+    if not window_open:
+        print(f"   outside sending hours ({local_now:%I:%M %p %Z}; window "
+              f"{NOTIFY_START_HOUR}:00 AM–{NOTIFY_END_HOUR - 12}:00 PM) — "
+              f"emails and Teams posts will be held for the next run in the window")
     state = _load_state()
     new_state = dict(state)
     sent = 0
     skipped = 0
+    held = 0
 
     for source, rows in all_rows_by_source:
         permit_type = source["type"]
@@ -660,6 +708,17 @@ def notify_status_changes(token, all_rows_by_source, write_github_fn=None):
                 skipped += 1
                 continue
 
+            # Outside 8 AM–4 PM: hold this notification. Restore the prior
+            # state so the first run inside the window sends it.
+            if not window_open:
+                print(f"   {key} → {new_status}: held until sending hours")
+                if prev_entry is None:
+                    new_state.pop(key, None)
+                else:
+                    new_state[key] = prev_entry
+                held += 1
+                continue
+
             title = _row_title(row, permit_type)
             short_type = TYPE_DISPLAY.get(permit_type, {}).get("short", "Permit")
             subj_prefix = {
@@ -691,5 +750,5 @@ def notify_status_changes(token, all_rows_by_source, write_github_fn=None):
                 sent += 1
 
     _save_state(new_state, write_github_fn)
-    print(f"   done. sent={sent}, skipped={skipped}")
+    print(f"   done. sent={sent}, skipped={skipped}, held={held}")
     return sent, skipped
