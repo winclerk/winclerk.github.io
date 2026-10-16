@@ -1,162 +1,15 @@
 {
   "meetings": [
     {
-      "id": "regular-2026-10-12",
-      "title": "Regular Town Board Meeting - October 12, 2026",
-      "type": "regular",
+      "id": "special-2026-10-20",
+      "title": "Special Town Board Meeting - October 20, 2026",
+      "type": "special",
       "status": "upcoming",
-      "date": "2026-10-12",
-      "time": "6:00 PM",
+      "date": "2026-10-20",
+      "time": "10:00 AM",
       "location": "Winchester Town Hall",
-      "documents": [
-        {
-          "label": "Regular Meeting Agenda",
-          "filename": "Agenda_RTBM_20261012.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQD6zXxBSwZkRpPMJ1xk8EWOAfEE-lWfypWWl8qVoMBp03c",
-          "date": "2026-10-12",
-          "posted": "2026-10-10",
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        },
-        {
-          "label": "Minutes (Draft) - October 12, 2026",
-          "filename": "Minutes_RTBM_20261012_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA4MAmBgr1TQJgkFBUYSDOmAf0cjtIclzPJLrd2xwfK5m4",
-          "date": "2026-10-12",
-          "posted": "2026-10-15",
-          "draft": true,
-          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCLH13R8Q0wTJNVZJNTDiWCAVnrYrvgneVHuXHH6tDGo_A"
-        }
-      ],
+      "documents": [],
       "subfolders": [
-        {
-          "name": "3. Minutes",
-          "documents": [
-            {
-              "label": "Minutes - October 6, 2026",
-              "filename": "Minutes_STBM_20261006.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCOQaR1iI9YSrspwt3DSOjlAZWhbJXTZNjeFNKsv_O8ksQ",
-              "date": "2026-10-06",
-              "posted": "2026-10-15"
-            },
-            {
-              "label": "Minutes - September 14, 2026",
-              "filename": "Minutes_RTBM_20260914.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQC2gYsqdgI1Sq40hENAVa_MAXFQ8rXJIUOSwB2C2tv-X88",
-              "date": "2026-09-14",
-              "posted": "2026-10-15"
-            },
-            {
-              "label": "Minutes - September 10, 2026 (Part 1)",
-              "filename": "Minutes_STBM-1_20260910.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDWQe5OYaLFS6qR4ZxXcXR2AYB0dnLLDR8HN33IfK9eSk0",
-              "date": "2026-09-10",
-              "posted": "2026-10-15"
-            },
-            {
-              "label": "Minutes - September 10, 2026 (Part 2)",
-              "filename": "Minutes_STBM-2_20260910.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBb2gyRGBdRQaXKRrD1WTYWAbixkN8FK5tLIKzotleGCPk",
-              "date": "2026-09-10",
-              "posted": "2026-10-15"
-            },
-            {
-              "label": "Minutes - September 1, 2026",
-              "filename": "Minutes_STBM_20260901.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCJ9xYYYOsSRZ5ZZ58FljK1Ady3X0tGSLYUz5S6ak6KDcY",
-              "date": "2026-09-01",
-              "posted": "2026-10-15"
-            },
-            {
-              "label": "Minutes - August 17, 2026",
-              "filename": "Minutes_RTBM_20260817.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAG2T95AP1FQ69_NvFJcLZ-Aa2ybfd3TGcUiJ0kQ5h0w-o",
-              "date": "2026-08-17",
-              "posted": "2026-10-15"
-            }
-          ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBI_dKnrQjMTZGiReU12o4AAW1UtcH6PDtgroLRYNfifIA"
-        },
-        {
-          "name": "4. Reports",
-          "documents": [
-            {
-              "label": "Clerk's Report",
-              "filename": "Report_Clerk_20261012.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA-yv15Wws-So8ciQgMHanHAailrWHN_o0P2n1ufw88_nY",
-              "date": "2026-10-12",
-              "posted": "2026-10-09"
-            },
-            {
-              "label": "Treasurer's Report",
-              "filename": "Report_Treasurer_202609.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQC4MvdK0zFAQJluN9ofg0FyAZgfozh-WmExJiXa5pcDvNE",
-              "date": "2026-10-12",
-              "posted": "2026-10-10"
-            },
-            {
-              "label": "NEMSD Report",
-              "filename": "Report_NEMSD_202609.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAEw_Iy5mEHSK1keWiIIzdJAYzyTywEXowQN3UYsw6yVQ8",
-              "date": "2026-10-09",
-              "posted": "2026-10-09"
-            }
-          ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgA1S_U20LodRYzSUxCE508lASJst_TbIheBdfbQA6L1yNM"
-        },
-        {
-          "name": "7. Discussion-Possible Action",
-          "documents": [
-            {
-              "label": "2026-06 Veterans Day Resolution",
-              "filename": "Resolution_2026-06_Veterans-Day_20261012.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAe1J0LhhPjSqtq-foXqJBFASqVI8uwF3ZYjtzQ_0EDA8Y",
-              "date": "2026-10-12",
-              "posted": "2026-10-13"
-            },
-            {
-              "label": "Letter Atty. Lutgen Williams to Winchester Town Board",
-              "filename": "Letter_Atty.-Lutgen-Williams-to-Winchester-Town-Board_20261006.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAxFg2aohOiT7Ioum-cCA_yAZWVqnMZ1YyA8P9rVnURT0Q",
-              "date": "2026-10-06",
-              "posted": "2026-10-10"
-            },
-            {
-              "label": "ToW Employee Handbook (revised)",
-              "filename": "Handbook_ToW-Employee_20260910.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBZvFmE4pthRZX-XFldJiBNAS-OAujM5VU0Zk-IVEhHeKU",
-              "date": "2026-09-10",
-              "posted": "2026-10-10"
-            }
-          ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgD6ORbw8OeuS60pAR2rJH8kAaa7q-Cv5ptzuliP2fqcPEM"
-        },
-        {
-          "name": "8. New Business",
-          "documents": [
-            {
-              "label": "Updated Elections Website - LIVE on winchesterwi.com.url",
-              "filename": "Updated Elections Website - LIVE on winchesterwi.com.url",
-              "url": "https://townofwinchester54557.sharepoint.com/:u:/g/IQAcu7Mizr9ZQpp03AQxjMrqAaxHj2_Zbpx83tjxG56jpr4",
-              "date": "2026-10-10",
-              "posted": "2026-10-10"
-            },
-            {
-              "label": "Map Papoose Winchester Signs",
-              "filename": "Map_Papoose-Winchester-Signs_20261008.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDzJoGEJ8v6SJFM9gWdiJ7HAQiTU6Wo_0qF4wdg4kUYwUY",
-              "date": "2026-10-08",
-              "posted": "2026-10-10"
-            },
-            {
-              "label": "Email S Kutz Letter Request",
-              "filename": "Email_S-Kutz-Letter-Request_20260924.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDCiKG2NjFWQIYEZAxlB7xoAYnIiv3D713VIr47kve5BgE",
-              "date": "2026-09-24",
-              "posted": "2026-10-10"
-            }
-          ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDaxYU5ojdwRYxaYsGC9YniAW7vVtskUboVu5z4DPzG7Y4"
-        },
         {
           "name": "Financial",
           "documents": [
@@ -314,6 +167,323 @@
             {
               "name": "September Regular Meeting - Financial Documents",
               "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgALek0vCFTYS6Oj_Y8gy1QFAUlXTcTd-Gnrjpjk3-cEjSY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "regular-2026-10-12",
+      "title": "Regular Town Board Meeting - October 12, 2026",
+      "type": "regular",
+      "status": "complete",
+      "date": "2026-10-12",
+      "documents": [
+        {
+          "label": "Regular Meeting Agenda",
+          "filename": "Agenda_RTBM_20261012.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBBiM3i9y8LSIkmZAwzMY_KAUbUbd49n2c7cNAFN3Hkg-4",
+          "date": "2026-10-12",
+          "posted": "2026-10-16",
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgA0WkHOG4HJT7NLYGYdPVBkAcea1DVb_k3dCapu3VCrGZo"
+        },
+        {
+          "label": "Minutes (Draft) - October 12, 2026",
+          "filename": "Minutes_RTBM_20261012_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDSIBqajZ64S4gQFkWZ6FFpAV882TdnawMkdi22-J5DZtk",
+          "date": "2026-10-12",
+          "posted": "2026-10-16",
+          "draft": true,
+          "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/g/IgA0WkHOG4HJT7NLYGYdPVBkAcea1DVb_k3dCapu3VCrGZo"
+        }
+      ],
+      "subfolders": [
+        {
+          "name": "3. Minutes",
+          "documents": [
+            {
+              "label": "Minutes - October 6, 2026",
+              "filename": "Minutes_STBM_20261006.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAqME9iB3--Tr6zXsNQdimvAfdftGJbjEEp1C8WLuribKA",
+              "date": "2026-10-06",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Minutes - September 14, 2026",
+              "filename": "Minutes_RTBM_20260914.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCdi1ET0P2jSqRCNe5_rJQ1ATEh537MDbJPNmuU-wS9P78",
+              "date": "2026-09-14",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Minutes - September 10, 2026 (Part 1)",
+              "filename": "Minutes_STBM-1_20260910.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBrePWJLf5XSLSNLd24dJxWAdnz457TfkSVR84Ulw7wUVA",
+              "date": "2026-09-10",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Minutes - September 10, 2026 (Part 2)",
+              "filename": "Minutes_STBM-2_20260910.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDEnRFkJGJiR5cGitodjuGwAbNPx38Qc7SbbAkk8pOqbXg",
+              "date": "2026-09-10",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Minutes - September 1, 2026",
+              "filename": "Minutes_STBM_20260901.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDXalIJhNVPRLd_YCZcPdXQASnHOLE38WUmwPcUI_EV4_c",
+              "date": "2026-09-01",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Minutes - August 17, 2026",
+              "filename": "Minutes_RTBM_20260817.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAkMLzUqLEIRIOWLd7as4PNAX5N7B7xV_8Bu_p77VrIE6Q",
+              "date": "2026-08-17",
+              "posted": "2026-10-16"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCuwtZntQqhQ5KpGamWF9wcATd328EEkqYoaII0nxLwaLM"
+        },
+        {
+          "name": "4. Reports",
+          "documents": [
+            {
+              "label": "NEMSD Report",
+              "filename": "Report_NEMSD_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAfa_p4-rmHRYG9f4QWfAjRASu2SRZ3dk43QrO9ypKETQw",
+              "date": "2026-10-16",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Treasurer's Report",
+              "filename": "Report_Treasurer_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDZUmRsBO--S7mnB5LfZ3qSAV4Az_nlctL51haPtLGSjdw",
+              "date": "2026-10-16",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Clerk's Report",
+              "filename": "Report_Clerk_20261012.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDW2vza6N1uTpVUUyLZhkeKAQ4_lEJXvRrJqXG4wHfq2L4",
+              "date": "2026-10-12",
+              "posted": "2026-10-16"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDYoCGCs9loT5vpcxrGSyB_AZogLFJZZV5lKcHQaMzJsE4"
+        },
+        {
+          "name": "7. Discussion-Possible Action",
+          "documents": [
+            {
+              "label": "2026-06 Veterans Day Resolution",
+              "filename": "Resolution_2026-06_Veterans-Day_20261012.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCQ8iElUnmbRop7tT4rMFoFARpsSYl-SyM8-TobLe9nin8",
+              "date": "2026-10-12",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Letter Atty. Lutgen Williams to Winchester Town Board",
+              "filename": "Letter_Atty.-Lutgen-Williams-to-Winchester-Town-Board_20261006.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAfgQSZLsW7SItAR8LQLqvjAcB3wQ_U6Hu_22AZ6Prz73M",
+              "date": "2026-10-06",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "ToW Employee Handbook (revised)",
+              "filename": "Handbook_ToW-Employee_20260910.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDT4PW25TouQZeM5RyP1YQ4AaqFPlQYQaRcr_1UT-t11tk",
+              "date": "2026-09-10",
+              "posted": "2026-10-16"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgD7__e5UGYuQaW6KlQ9RpbzAbwMyCS8suaPgeFr4SfJFgo"
+        },
+        {
+          "name": "8. New Business",
+          "documents": [
+            {
+              "label": "Updated Elections Website - LIVE on winchesterwi.com.url",
+              "filename": "Updated Elections Website - LIVE on winchesterwi.com.url",
+              "url": "https://townofwinchester54557.sharepoint.com/:u:/g/IQBtkVXNqtxpSpGioJjlhihpAeT1c92UdI5ZpOm0mkwTzrk",
+              "date": "2026-10-16",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Map Papoose Winchester Signs",
+              "filename": "Map_Papoose-Winchester-Signs_20261008.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDVKGIq1yNSQo7IIqJkFtNCARoBbKEuO7HREinztpJnoKk",
+              "date": "2026-10-08",
+              "posted": "2026-10-16"
+            },
+            {
+              "label": "Email S Kutz Letter Request",
+              "filename": "Email_S-Kutz-Letter-Request_20260924.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBy_EvbGCiuTbc335DtA6-LAYXDMMoOwRzYgDtY8zU9FsQ",
+              "date": "2026-09-24",
+              "posted": "2026-10-16"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgARLK1vnlSXQKmVeEUPoG7HASDfeaC9ALIlqUDhR5tZEmY"
+        },
+        {
+          "name": "Financial",
+          "documents": [
+            {
+              "label": "August Disbursements",
+              "filename": "Report_Disbursements_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDrd89OdJCIRKsxNfCLnosoAU5hq4xKoZZjF25GklnDUpQ",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Balance Sheet Report",
+              "filename": "Report_Balance-Sheet_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB7Ng33HEedQ5CMzf9yzlaaAaoNa3YdlT0zn8k0_rtofEw",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Balance Sheet Report",
+              "filename": "Report_Balance-Sheet_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCTgTcF2bRNSYOcpO_fZY_-Aeu4RVY4dyqmGjCzTPpl0kc",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "P&L Report",
+              "filename": "Report_P&L_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAacs13zGQaSqQwGEivMN4YAa7SB-eN3i11_ENSk6NRjDg",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "P&L Report",
+              "filename": "Report_P&L_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBjkiiFSW6uTKJCvOcYwJIlASF6HpY7jaVSLe3VP_34frA",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Reconciliation Checking Report",
+              "filename": "Report_Reconciliation-Checking_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB2GsTZDXY7TaXEdJUcqQXZAXCv2voakdLsoi7zsIMZKss",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Reconciliation Checking Report",
+              "filename": "Report_Reconciliation-Checking_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAkZhhUpetpRZlgSgtToEAaAR2SIUFB_FRPLkAccjFNXTE",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Reconciliation Money Market Report",
+              "filename": "Report_Reconciliation-MM_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCyaWqTxwgHT5tgqrsgXmy5AWuDFIgpNjQpAzw4Om-OdnI",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Reconciliation Money Market Report",
+              "filename": "Report_Reconciliation-MM_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBqbocUb5OYSrz8E23YXTcQAfagMD6QOMsK87ieRieb1L0",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "September Disbursements",
+              "filename": "Report_Disbursements_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCZrATqZdeNQ63vie9u4NDiASm3NtZAqGzLVN3tIyIlrns",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Statement Associated Bank Elan Credit Card",
+              "filename": "Statement_AB-ELAN-CC_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB8KFXIZYWFQbARq2L2fSPPAZ9ASZ7_n5DE8FzjEkBA3KM",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Statement Associated Bank Money Market Checking",
+              "filename": "Statement_AB-MM-Checking_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAZ5OURiXuPRoO61Kafm8vKAemindP3LacrZLKHeIv8PdQ",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Statement Associated Bank Money Market Checking",
+              "filename": "Statement_AB-MM-Checking_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQArg7dIxloHTqdaGMICeEosAYazMHkLpJty5Jwe-zqMgTM",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Statement US Bank Credit Card",
+              "filename": "Statement_USB-CC_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBOCX5VfCBjTaycA8moZ5xaAdZ8UNnLSFEL6s86RCdXBdY",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Statement US Bank Credit Card 202609",
+              "filename": "Statement_USB-CC-202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDmXfwQpEK1TJ7vpho10HbxARINbyKGEValD4SelTPAYc8",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "Treasurer's Report",
+              "filename": "Report_Treasurer_202609.xlsx",
+              "url": "https://townofwinchester54557.sharepoint.com/:x:/g/IQD9-GLqqnVKQ5seMkN2blyRAVf3MgL7vxFsyUpATpBb0ZA",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "YTD Budget vs Actual Report",
+              "filename": "Report_YTD-Budget-vs-Actual_202609.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQD7plRrj3mPSKzhA9e2kMYKAS7WikzgiPjyTONHuu3a1Nc",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "October Regular Meeting - Financial Documents"
+            },
+            {
+              "label": "YTD Budget vs Actual Report",
+              "filename": "Report_YTD-Budget-vs-Actual_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDUHyInqcD-QpoufWwT75DnAQN8mn_r8cPGhWomBAQ0Pbo",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "group": "September Regular Meeting - Financial Documents"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBrDzrAKAeYTJeJmkcv3XtyAVbgtTd3ECn5fwBpLeB2Csk",
+          "groups": [
+            {
+              "name": "October Regular Meeting - Financial Documents",
+              "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgAui7iB6Bn6R4cc1BCgj8DsAadz5JPM8an4USEANVeOE5c"
+            },
+            {
+              "name": "September Regular Meeting - Financial Documents",
+              "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCKAXLQAM2GQq_65NCJ3_hCAQau1DypF2JpP2dfpk-zTY8"
             }
           ]
         }
@@ -3016,6 +3186,15 @@
           "name": "Election Notices",
           "documents": [
             {
+              "label": "Suspicious Mail Found to Be Non Hazardous Following Investigation Communication",
+              "filename": "Comm_Suspicious-Mail-Found-to-Be-Non-Hazardous-Following-Investigation_20261016.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQBxG1CTzEpbT7887ya-tlEmAfEMc6L2kgXRvojkoyeUMGU",
+              "date": "2026-10-16",
+              "posted": "2026-10-16",
+              "folder": "Communications",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Elections/IgAJCN-pZ2JuQqHlRzXXnzegAacQqPGTjRDj4jDcWnrJ7LA"
+            },
+            {
               "label": "Notice B General Election and Sample Ballot",
               "filename": "Notice-B_General-Election-and-Sample-Ballot_20261015.docx",
               "url": "https://townofwinchester54557.sharepoint.com/:w:/s/Elections/IQBpPzu13MQARYcLbFVqI9PIAQxkUetmNOaVKS6Mv3qhtHI",
@@ -3069,7 +3248,9 @@
               "filename": "Comm_Clerk-Notification-USPS-Rule_20260831.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQCr3GqsiylxR64sBX4nwCFLASKr-yIRPchi2x7gbKOjXek",
               "date": "2026-08-31",
-              "posted": "2026-09-18"
+              "posted": "2026-09-18",
+              "folder": "Communications",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/Elections/IgAJCN-pZ2JuQqHlRzXXnzegAacQqPGTjRDj4jDcWnrJ7LA"
             },
             {
               "label": "Type B Ballot Sample Notice",
