@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-16T17:07:54Z",
+  "updated": "2026-10-16T20:17:53Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -251,24 +251,24 @@
       }
     },
     "2026-ROW-11": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
         "Location": "N Turtle Dr — 3045 N Turtle Dr",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Board meeting": "2026-10-16",
+        "Authorized start": "2027-10-26",
+        "Authorized end": "2027-02-26",
         "Conditions": "",
         "Traffic impact": "Lane closure",
         "Public contact": "Chonburi Thao — 6518704341"
       }
     },
     "2026-ROW-12": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
         "Location": "Other Town road — Various",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Board meeting": "2026-10-16",
+        "Authorized start": "2027-04-01",
+        "Authorized end": "2027-12-30",
         "Conditions": "",
         "Traffic impact": "Other: off should parking",
         "Public contact": "Brian Hempel — 715-246-3440"

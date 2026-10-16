@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-16T17:07:54Z",
+  "updated": "2026-10-16T20:17:52Z",
   "permits": [
     {
       "id": "2026-ROW-08",
@@ -1924,15 +1924,15 @@
     {
       "id": "2026-ROW-11",
       "permitNumber": "2026-ROW-11",
-      "status": "received",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
       "pdfUrl": "/public/permits/2026-ROW-11.pdf",
       "title": "OPA Wildfire Pole Replacement",
       "org": "Xcel Energy",
       "location": "3045 N Turtle Dr",
-      "startDate": "2026-10-26",
-      "endDate": "2027-02-26",
+      "startDate": "2027-02-26",
+      "endDate": "2027-10-26",
       "traffic": "Lane closure",
       "contactName": "Chonburi Thao",
       "contactPhone": "6518704341",
@@ -2113,7 +2113,7 @@
     {
       "id": "2026-ROW-12",
       "permitNumber": "2026-ROW-12",
-      "status": "received",
+      "status": "approved",
       "jurisdiction": "town",
       "permitType": "row",
       "pdfUrl": "/public/permits/2026-ROW-12.pdf",
