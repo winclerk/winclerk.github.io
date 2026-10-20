@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-20T01:25:06Z",
+  "updated": "2026-10-20T17:41:11Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -272,6 +272,18 @@
         "Conditions": "",
         "Traffic impact": "Other: off should parking",
         "Public contact": "Brian Hempel — 715-246-3440"
+      }
+    },
+    "2026-ROW-13": {
+      "status": "received",
+      "snapshot": {
+        "Location": "E Circle Lily Rd — asdf",
+        "Board meeting": "",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "No traffic impact",
+        "Public contact": "adsf — asdf"
       }
     }
   }
