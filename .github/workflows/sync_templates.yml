@@ -1,0 +1,75 @@
+name: Sync templates to clerk-files
+
+# Daily at about 6:17 a.m. Central (11:17 UTC; 5:17 a.m. once CST starts).
+# Mirrors Luke's OneDrive TEMPLATES folder into the private winclerk/clerk-files
+# repo under templates/, so cloud Claude sessions can build documents from them.
+# Manual trigger supported for on-demand syncs.
+
+on:
+  schedule:
+    - cron: '17 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-templates:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out this repository (for the script)
+        uses: actions/checkout@v4
+
+      - name: Refuse to run unless clerk-files is private
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          private=$(curl -sf -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/winclerk/clerk-files | python -c "import sys,json; print(json.load(sys.stdin).get('private'))")
+          if [ "$private" != "True" ]; then
+            echo "clerk-files is not private (or GH_PAT cannot read it); not copying templates."
+            exit 1
+          fi
+
+      - name: Check out clerk-files
+        uses: actions/checkout@v4
+        with:
+          repository: winclerk/clerk-files
+          token: ${{ secrets.GH_PAT }}
+          path: clerk-files
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Mirror OneDrive TEMPLATES into clerk-files/templates
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: python sync_templates.py clerk-files/templates
+
+      - name: Commit and push changes
+        working-directory: clerk-files
+        run: |
+          git config user.name "winclerk template sync"
+          git config user.email "luke@winchester.wi.gov"
+          git add -A templates
+          if git diff --cached --quiet; then
+            echo "No template changes."
+          else
+            git commit -q -m "Sync templates from OneDrive [$(date -u +'%Y-%m-%d %H:%M UTC')]"
+            git push -q
+            echo "Pushed template changes."
+          fi
+
+      - name: Send failure email
+        if: failure()
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: python notify_failure.py "Sync templates to clerk-files" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
