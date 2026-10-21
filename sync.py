@@ -767,6 +767,13 @@ def extract_meeting_slug(filename):
     return slug if slug else None
 
 
+def is_template(filename):
+    """True for blank template files (e.g. Template_Agenda_RTBM_20261007.docx).
+    Their 8-digit stamp is the template's version date, not a meeting date,
+    so they must never set the next meeting's date/title or be published."""
+    return "template" in (filename or "").lower()
+
+
 def collect_all_next_meeting_filenames(token, drive_id):
     """List ALL filenames in the Next Meeting folder, including inside
     Internal Only. Used only for date/title extraction — not for publishing.
@@ -786,11 +793,11 @@ def collect_all_next_meeting_filenames(token, drive_id):
             try:
                 sub_children = list_children(token, drive_id, sub_path)
                 for sub in sub_children:
-                    if "folder" not in sub:
+                    if "folder" not in sub and not is_template(sub["name"]):
                         filenames.append(sub["name"])
             except Exception:
                 pass
-        else:
+        elif not is_template(name):
             filenames.append(name)
     return filenames
 
@@ -845,6 +852,10 @@ def scan_folder(token, drive_id, folder_path):
                 if sub_groups:
                     subfolder_entry["groups"] = sub_groups
                 subfolders.append(subfolder_entry)
+            continue
+
+        if is_template(name):
+            print(f"    Skipping template file: {name}")
             continue
 
         try:
@@ -1094,6 +1105,8 @@ def build_data(token, drive_id):
     ]
 
     for fn in all_sources:
+        if is_template(fn):
+            continue
         m = re.search(r"(\d{8})", fn)
         if m:
             raw = m.group(1)
