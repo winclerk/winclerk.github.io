@@ -1340,6 +1340,30 @@ def main():
     print("Writing to GitHub...")
     write_github(data)
     print("Done.")
+
+    # ── Internal Only sharing check ──
+    # Removes any Anyone link that reaches a folder with "Internal Only" in
+    # its name and emails Luke if anything was found. Logged and skipped on
+    # error so it can never block the sync.
+    print("Checking Internal Only folders for public links...")
+    try:
+        import internal_only_audit
+        targets = [(drive_id, "Town Board", "All Town Board Files")]
+        for site_config in FLAT_SITES:
+            try:
+                fs_site_id = get_site_id(token, site_config["path"])
+            except Exception as e:
+                print(f"  Warning: could not find site {site_config['path']}: {e}")
+                continue
+            for lib in site_config["libraries"]:
+                name = _lib_cfg(lib)["name"]
+                try:
+                    targets.append((get_drive_id(token, fs_site_id, name), f"{site_config['key']}/{name}", None))
+                except Exception as e:
+                    print(f"  Warning: {e}")
+        internal_only_audit.run(token, targets)
+    except Exception as e:
+        print(f"  Warning: Internal Only check failed: {e}")
     # ── Full-text search index (search-index.json) ──
     # Only re-reads files that changed since the last run. A failure here is
     # logged and skipped so it can never block data.json or the permit sync.
