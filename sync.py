@@ -161,13 +161,76 @@ def get_root_item(token, drive_id):
     return graph_get(token, url)
 
 
+def is_internal(name):
+    """Any folder with "Internal Only" anywhere in its name is sensitive."""
+    return SKIP_FOLDER_NAME.lower() in (name or "").lower()
+
+
+_internal_cache = {}
+
+
+def folder_contains_internal(token, drive_id, folder_path=None):
+    """True if this folder is, or has anywhere beneath it, a folder whose
+    name contains "Internal Only". An Anyone link on such a folder would let
+    the public browse into the internal files, so it must never be linked."""
+    key = (drive_id, folder_path or "")
+    if key in _internal_cache:
+        return _internal_cache[key]
+    result = False
+    if folder_path and any(is_internal(part) for part in folder_path.split("/")):
+        result = True
+    else:
+        try:
+            children = list_children(token, drive_id, folder_path) if folder_path else list_root(token, drive_id)
+        except Exception as e:
+            # Can't prove it's safe, so treat it as unsafe and don't link it.
+            print(f"    Warning: could not check '{folder_path or '(root)'}' for Internal Only folders: {e}")
+            result = True
+            children = []
+        for c in children:
+            if "folder" not in c:
+                continue
+            sub = f"{folder_path}/{c['name']}" if folder_path else c["name"]
+            if is_internal(c["name"]) or folder_contains_internal(token, drive_id, sub):
+                result = True
+                break
+    _internal_cache[key] = result
+    return result
+
+
+def remove_anon_links(token, drive_id, item_id, label):
+    """Delete any existing Anyone link on an item (used on folders that hold
+    Internal Only content, so links made before this rule existed go away)."""
+    url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/permissions"
+    try:
+        perms = graph_get(token, url).get("value", [])
+    except Exception as e:
+        print(f"    Warning: could not read sharing on '{label}': {e}")
+        return
+    for perm in perms:
+        link = perm.get("link") or {}
+        if link.get("scope") == "anonymous" and not perm.get("inheritedFrom"):
+            r = requests.delete(f"{url}/{perm['id']}", headers={"Authorization": f"Bearer {token}"})
+            if r.ok:
+                print(f"    Removed Anyone link on '{label}' (it contains Internal Only files)")
+            else:
+                print(f"    Warning: could not remove Anyone link on '{label}' ({r.status_code})")
+
+
 def make_folder_link(token, drive_id, folder_path=None):
     """Create (or fetch) a public view link for a folder itself, not a file
     inside it. folder_path=None means the library root. Returns None on
     failure (e.g. anonymous sharing blocked for this site) rather than
-    raising, so callers can degrade gracefully."""
+    raising, so callers can degrade gracefully.
+
+    Never links a folder that is, or contains, an "Internal Only" folder —
+    a public link on it would expose the internal files. Any Anyone link
+    already on such a folder is removed instead."""
     try:
         item = get_item(token, drive_id, folder_path) if folder_path else get_root_item(token, drive_id)
+        if folder_contains_internal(token, drive_id, folder_path):
+            remove_anon_links(token, drive_id, item["id"], folder_path or "(root)")
+            return None
         return make_link(token, drive_id, item["id"])
     except Exception as e:
         print(f"    Warning: could not create folder link for '{folder_path or '(root)'}': {e}")
@@ -836,7 +899,7 @@ def scan_folder(token, drive_id, folder_path):
         name = item["name"]
 
         if "folder" in item:
-            if name.strip().lower() == SKIP_FOLDER_NAME.lower():
+            if is_internal(name):
                 continue
             sub_path = f"{folder_path}/{name}"
             print(f"    Scanning subfolder: {name}...")
@@ -908,7 +971,7 @@ def scan_subfolder(token, drive_id, folder_path, include_nested=False):
     for item in children:
         name = item["name"]
         if "folder" in item:
-            if not include_nested or name.strip().lower() == SKIP_FOLDER_NAME.lower():
+            if not include_nested or is_internal(name):
                 continue
             inner_path = f"{folder_path}/{name}"
             print(f"      Scanning inner folder: {name}...")
@@ -962,7 +1025,7 @@ def scan_library(token, drive_id, folder_path=None, folder_label=None, depth=0, 
         name = item["name"]
 
         if "folder" in item:
-            if name.strip().lower() == SKIP_FOLDER_NAME.lower():
+            if is_internal(name):
                 continue
             limit = MAX_SCAN_DEPTH if max_depth is None else max_depth
             if depth < limit:
