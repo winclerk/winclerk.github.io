@@ -2,21 +2,13 @@
   "meetings": [
     {
       "id": "special-2026-10-22",
-      "title": "Special Town Board Meeting - October 22, 2026",
+      "title": "Town Board Meeting - October 22, 2026",
       "type": "special",
       "status": "upcoming",
       "date": "2026-10-22",
-      "time": "9:00 AM",
+      "time": "6:00 PM",
       "location": "Winchester Town Hall",
-      "documents": [
-        {
-          "label": "Special Meeting Agenda",
-          "filename": "Agenda_STBM_20261022.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCIm2KecEsNSbAU5-O9uR9DAb4glG3idsqnQp8lT_82xX4",
-          "date": "2026-10-22",
-          "posted": "2026-10-21"
-        }
-      ],
+      "documents": [],
       "subfolders": [
         {
           "name": "3. Discussion-Possible Action",
@@ -54,16 +46,82 @@
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBCxo8JbilSS4QPRqi6EPnEAevvMbVBckmyRnzJNlS-p7Y",
               "date": "2026-10-22",
               "posted": "2026-10-21"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDY2dO0Hz_6QKStHgYCQ1qMAUCHg3_Z2mFjMVOIFju6OhE"
+        }
+      ]
+    },
+    {
+      "id": "special-2026-10-22",
+      "title": "Special Town Board Meeting - October 22, 2026",
+      "type": "special",
+      "status": "complete",
+      "date": "2026-10-22",
+      "documents": [
+        {
+          "label": "Special Meeting Agenda",
+          "filename": "Agenda_STBM_20261022.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCgTkeo7O9PSZD9t45lJcZvAQG1i06FnFxIiB5IK8JJjbs",
+          "date": "2026-10-22",
+          "posted": "2026-10-22"
+        },
+        {
+          "label": "Minutes (Draft) - October 22, 2026",
+          "filename": "Minutes_STBM_20261022_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAld2GXUQgDToLzYZkNwcGqAS8u_T9rKJkZd3MhYcCmKZQ",
+          "date": "2026-10-22",
+          "posted": "2026-10-22",
+          "draft": true
+        }
+      ],
+      "subfolders": [
+        {
+          "name": "3. Discussion-Possible Action",
+          "documents": [
+            {
+              "label": "Letter MWVB Termination Notice",
+              "filename": "Letter_MWVB-Termination-Notice_20261022.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBBdhteIo3-Qah-W_wE2grMASAilnO6a7jFLAe2oAXPo8U",
+              "date": "2026-10-22",
+              "posted": "2026-10-22"
+            },
+            {
+              "label": "Letter Presque Isle Chamber Intent",
+              "filename": "Letter_Presque-Isle-Chamber-Intent_20261022.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDbLi5fGo5ATYQLHzwyHvxZAWMzhXUNQBVkBd1woonr4W4",
+              "date": "2026-10-22",
+              "posted": "2026-10-22"
+            },
+            {
+              "label": "Manitowish Waters Winchester Tourism Entity Agreement",
+              "filename": "MW Winchester Tourism Entity Agreement.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQD0Wvo7qgj4QLbHRZDQkkCaAUsI8TsbEvvtgqVUZ4SkBfE",
+              "date": "2026-10-22",
+              "posted": "2026-10-22"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgCwkvBnVa2lQIx89ZWxN7yAAYdPyYiyJ2KTb-eKvcMHMFs"
+        },
+        {
+          "name": "4. New Business",
+          "documents": [
+            {
+              "label": "2026-08 Accommodations Tax Marketplace Reporting Ordinance",
+              "filename": "Ordinance_2026-08_Accommodations-Tax-Marketplace-Reporting_20261022.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBIfX2qeMEETpkyrzkLqku_ARxzG_x0kDBRIJz8NHabcB4",
+              "date": "2026-10-22",
+              "posted": "2026-10-22"
             },
             {
               "label": "2026-09 Temporary Picnic Licenses Ordinance",
               "filename": "Ordinance_2026-09_Temporary-Picnic-Licenses_20261022.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDkpJNBRQLSTaup6KHy0idgASCPyPGZIspKWhDTUI-ABhQ",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCBL5JY6LxbTZ938DYnQWwcAbfoajioDdQxW5OKuVGiq6s",
               "date": "2026-10-22",
-              "posted": "2026-10-21"
+              "posted": "2026-10-22"
             }
           ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDY2dO0Hz_6QKStHgYCQ1qMAUCHg3_Z2mFjMVOIFju6OhE"
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB5ySZE9AwKR5d8dmludYNMASl2sHDaFiZFcpaANvL_pAQ"
         }
       ]
     },
@@ -2737,6 +2795,13 @@
         {
           "name": "Ordinances",
           "documents": [
+            {
+              "label": "2026-09 Temporary Picnic Licenses Ordinance",
+              "filename": "Ordinance_2026-09_Temporary-Picnic-Licenses_20261022.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQB7pAzkBTEcR4t8K304mV_MAceOoNzfWnnJDxG7WYKkwfs",
+              "date": "2026-10-22",
+              "posted": "2026-10-22"
+            },
             {
               "label": "Ordinance 2018 01 Building (Amended 10.6.2026)",
               "filename": "Ordinance_2018-01-Building-(Amended 10.6.2026)_20261006.pdf",
