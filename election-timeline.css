@@ -104,8 +104,8 @@
   transform: translateX(-50%);
   text-align: center;
 }
-.etl-stop.is-first .etl-label { transform: none; left: -10px; text-align: left; }
-.etl-stop.is-last  .etl-label { transform: none; right: -12px; text-align: right; }
+.etl-stop.is-first .etl-label { transform: none; left: -10px; text-align: left; width: 110px; }
+.etl-stop.is-last  .etl-label { transform: none; right: -12px; text-align: right; width: 110px; }
 
 .etl-date {
   font-family: 'Electrolize', monospace;
@@ -257,7 +257,7 @@
 @media (max-width: 700px) {
   .etl-card-head { flex-direction: column; gap: 2px; }
   .etl-body { padding: 18px 18px 34px; }
-  .etl-track { height: 290px; margin-left: 104px; }
+  .etl-track { height: 360px; margin-left: 104px; }
   .etl-here-date { display: none; }
   .etl-line, .etl-fill {
     top: 0; left: 9px;

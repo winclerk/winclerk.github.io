@@ -23,11 +23,14 @@ const ELECTION_TIMELINE = {
     { daysBefore: 47, name: 'Absentee Voting Starts',                short: 'Absentee starts' },
     { daysBefore: 14, name: 'In-Person Absentee Voting Begins',      short: 'In-person early voting opens' },
     { daysBefore: 8,  name: 'In-Person Absentee Hours',              short: 'Walk-in 10am\u20131pm', detail: '10:00 AM \u2013 1:00 PM', walkIn: true },
-    { daysBefore: 4,  name: 'Last Day for In-Person Absentee Voting', short: 'Last in-person day', lastInPerson: true },
+    { daysBefore: 5,  name: 'In-Person Absentee Hours',              short: 'Walk-in 10am\u20131pm', detail: '10:00 AM \u2013 1:00 PM', walkIn: true },
+    { daysBefore: 4,  name: 'Last Day for In-Person Absentee Voting', short: 'Last in-person day, 10am\u20131pm', detail: '10:00 AM \u2013 1:00 PM', walkIn: true, lastInPerson: true },
     { daysBefore: 0,  name: 'Election Day',                           short: 'Election Day', electionDay: true }
   ],
   // In-person absentee hours note, shown under the timeline through the
-  // last in-person absentee day. {walkIn} becomes the walk-in day's date.
+  // last in-person absentee day. {walkIn} becomes the remaining walk-in
+  // days (any milestone marked walkIn: true), e.g. "Thursday, October 29
+  // and Friday, October 30". Days already past drop off automatically.
   hoursNote: '<strong>In-person absentee voting:</strong> Walk-in hours are <strong>{walkIn}, 10:00 AM \u2013 1:00 PM</strong> at Winchester Town Hall, or by appointment. Call <a href="tel:+17156862123">(715) 686-2123</a> to schedule.'
 };
 
@@ -128,11 +131,16 @@ function getWisconsinElections(year) {
       }
     }
 
-    const walkIn = stops.find(s => s.walkIn);
+    // Walk-in days still to come (today included), listed in date order
+    const walkIns = stops.filter(s => s.walkIn && s.day >= today);
     const lastInPerson = stops.find(s => s.lastInPerson);
     const title = `${MONTHS_LONG[electionDay.getMonth()]} ${electionDay.getDate()}, ${electionDay.getFullYear()} ${election.name}`;
-    const hoursNote = walkIn && cfg.hoursNote
-      ? cfg.hoursNote.replace('{walkIn}', `${WEEKDAYS[walkIn.day.getDay()]}, ${longDate(walkIn.day)}`)
+    const walkInDays = walkIns.map(s => `${WEEKDAYS[s.day.getDay()]}, ${longDate(s.day)}`);
+    const walkInText = walkInDays.length <= 2
+      ? walkInDays.join(' and ')
+      : `${walkInDays.slice(0, -1).join('; ')}; and ${walkInDays[walkInDays.length - 1]}`;
+    const hoursNote = walkIns.length && cfg.hoursNote
+      ? cfg.hoursNote.replace('{walkIn}', walkInText)
       : '';
 
     const complete = today > electionDay;
