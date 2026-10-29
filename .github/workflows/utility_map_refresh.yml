@@ -1,0 +1,54 @@
+name: Refresh utility map
+
+# Rebuilds utility-map.html from the newest FCC National Broadband Map data,
+# the PSC electric territories and the Census town boundary.
+# The FCC publishes new data twice a year; checking monthly catches each release.
+# A commit is made only when the rebuilt page differs from the current one.
+
+on:
+  schedule:
+    - cron: '17 13 3 * *'   # 3rd of each month, about 8am Central
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests h3 shapely pyshp
+
+      - name: Rebuild utility-map.html
+        run: python utility_map_build.py
+
+      - name: Commit if the map changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898769+github-actions[bot]@users.noreply.github.com"
+          git add utility-map.html
+          if git diff --cached --quiet; then
+            echo "No change to the utility map."
+          else
+            git commit -m "Refresh utility map data"
+            git push
+          fi
+
+      - name: Send failure email
+        if: failure()
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          GH_PAT:              ${{ secrets.GH_PAT }}
+        run: python notify_failure.py "Refresh utility map" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
