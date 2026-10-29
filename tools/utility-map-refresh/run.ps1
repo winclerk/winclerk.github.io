@@ -12,7 +12,7 @@
 
 $ErrorActionPreference = 'Continue'
 $env:GIT_TERMINAL_PROMPT = '0'   # never wait for a password prompt
-$env:GCM_INTERACTIVE = 'never'   # Git Credential Manager: use the saved token only
+$env:GCM_INTERACTIVE = 'never'   # never open a sign-in window
 $env:PYTHONIOENCODING = 'utf-8'
 
 $Home_ = Join-Path $env:LOCALAPPDATA 'WinchesterUtilityMap'
@@ -34,6 +34,16 @@ function Invoke-Logged([string]$Exe, [string[]]$Arguments) {
     if ($out) { Add-Content -Path $Log -Value $out -Encoding UTF8 }
     return [pscustomobject]@{ Code = $code; Output = @($out) }
 }
+
+# GitHub token saved by setup.ps1 (DPAPI-encrypted, this Windows account only),
+# passed to git as an HTTP header through environment variables.
+$TokenFile = Join-Path $Home_ 'github-token.dpapi'
+$sec = Get-Content -Path $TokenFile | ConvertTo-SecureString
+$tok = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
+$env:GIT_CONFIG_COUNT = '1'
+$env:GIT_CONFIG_KEY_0 = 'http.https://github.com/.extraheader'
+$env:GIT_CONFIG_VALUE_0 = 'AUTHORIZATION: basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes('x-access-token:' + $tok))
+$tok = $null
 
 Set-Location $Repo
 $result = 'ok'

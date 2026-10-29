@@ -3,8 +3,8 @@
 # Right-click this file > "Run with PowerShell". It will:
 #   1. Install Python 3.12 and Git with winget, if they aren't installed yet
 #      (Windows may ask you to approve the installs).
-#   2. Ask for the GitHub token and save it in Windows Credential Manager
-#      (the token is never written to a file).
+#   2. Ask for the GitHub token and save it encrypted (Windows DPAPI), readable
+#      only by this Windows account on this PC.
 #   3. Copy the records portal repo to %LOCALAPPDATA%\WinchesterUtilityMap\repo
 #      and install the map builder's Python packages there.
 #   4. Test that it can reach the FCC and push to GitHub.
@@ -17,12 +17,14 @@
 # 'Continue' so git/pip messages on stderr don't abort Windows PowerShell 5.1;
 # every step checks its own result instead.
 $ErrorActionPreference = 'Continue'
-$RepoUrl  = 'https://x-access-token@github.com/winclerk/winclerk.github.io.git'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$RepoUrl  = 'https://github.com/winclerk/winclerk.github.io.git'
 $TaskName = 'Winchester Utility Map Refresh'
 $Home_    = Join-Path $env:LOCALAPPDATA 'WinchesterUtilityMap'
 $Repo     = Join-Path $Home_ 'repo'
 $Venv     = Join-Path $Home_ 'venv'
 $VenvPy   = Join-Path $Venv 'Scripts\python.exe'
+$TokenFile = Join-Path $Home_ 'github-token.dpapi'
 
 function Step([string]$msg) { Write-Host ''; Write-Host "== $msg" -ForegroundColor Cyan }
 function Done([string]$msg) { Write-Host "   $msg" -ForegroundColor Green }
@@ -41,6 +43,20 @@ function Find-Python {
          Sort-Object FullName -Descending | Select-Object -First 1
     if ($p) { return $p.FullName }
     return $null
+}
+
+function Get-Token {
+    $sec = Get-Content -Path $TokenFile | ConvertTo-SecureString
+    return [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
+}
+function Use-Token {
+    # Pass the token to git as an HTTP header through environment variables
+    # (not on the command line and not in any git config file).
+    $b64 = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes('x-access-token:' + (Get-Token)))
+    $env:GIT_CONFIG_COUNT = '1'
+    $env:GIT_CONFIG_KEY_0 = 'http.https://github.com/.extraheader'
+    $env:GIT_CONFIG_VALUE_0 = "AUTHORIZATION: basic $b64"
+    $env:GCM_INTERACTIVE = 'never'
 }
 
 New-Item -ItemType Directory -Force -Path $Home_ | Out-Null
@@ -71,22 +87,33 @@ if (-not $git) {
 Done "Git: $git"
 
 # ---- 2. GitHub token ----
+# Saved encrypted with Windows DPAPI: only this Windows account on this PC can
+# read it. run.ps1 hands it to git for each run as an HTTP header.
 Step 'Saving the GitHub token'
 $env:GIT_TERMINAL_PROMPT = '0'
-$env:GCM_INTERACTIVE = 'never'
-$have = "protocol=https`nhost=github.com`nusername=x-access-token`n`n" | git -c credential.helper=manager credential fill 2>$null
-if ($LASTEXITCODE -eq 0 -and ($have -match 'password=')) {
+$replace = $true
+if (Test-Path $TokenFile) {
     $ans = Read-Host '   A token is already saved. Replace it? (y/N)'
     $replace = $ans -match '^[yY]'
-} else { $replace = $true }
+}
 if ($replace) {
     $sec = Read-Host '   Paste the GitHub token, then press Enter (it will not show)' -AsSecureString
-    $tok = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
-    if (-not $tok) { Stop-Setup 'No token entered.' }
-    "protocol=https`nhost=github.com`nusername=x-access-token`npassword=$tok`n`n" | git -c credential.helper=manager credential approve
-    $tok = $null
-    Done 'Token saved in Windows Credential Manager.'
+    if ($sec.Length -eq 0) { Stop-Setup 'No token entered.' }
+    ConvertFrom-SecureString $sec | Set-Content -Path $TokenFile -Encoding ASCII
+    Done 'Token saved (encrypted for this Windows account).'
 } else { Done 'Keeping the saved token.' }
+Use-Token
+
+# Check the token with GitHub before going further.
+$tok = Get-Token
+try {
+    $me = Invoke-RestMethod -Uri 'https://api.github.com/repos/winclerk/winclerk.github.io' -Headers @{ Authorization = "Bearer $tok"; 'User-Agent' = 'WinchesterUtilityMap' } -TimeoutSec 60
+    Done "GitHub accepted the token (repo: $($me.full_name))."
+} catch {
+    $code = $_.Exception.Response.StatusCode.value__
+    Stop-Setup "GitHub did not accept the token (HTTP $code). Check that the whole token was pasted (fine-grained tokens start with github_pat_), then run setup again and answer y to replace it."
+}
+$tok = $null
 
 # ---- 3. Repo and Python packages ----
 Step 'Getting the records portal repo'
@@ -94,12 +121,12 @@ if (Test-Path (Join-Path $Repo '.git')) {
     git -C $Repo pull --ff-only --quiet
     Done 'Repo updated.'
 } else {
-    git -c credential.helper=manager clone --quiet $RepoUrl $Repo
+    git clone --quiet $RepoUrl $Repo
     if ($LASTEXITCODE -ne 0) { Stop-Setup 'Could not copy the repo from GitHub. Check that the token has access to winclerk/winclerk.github.io.' }
     Done "Repo copied to $Repo"
 }
 git -C $Repo config core.autocrlf false
-git -C $Repo config credential.helper manager
+git -C $Repo remote set-url origin $RepoUrl
 git -C $Repo config user.name 'Winchester utility map (town office PC)'
 git -C $Repo config user.email 'luke@winchester.wi.gov'
 
