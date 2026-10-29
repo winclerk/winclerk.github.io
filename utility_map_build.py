@@ -114,25 +114,48 @@ def town_boundary():
     return g
 
 
+PSC_CACHE = f'{HERE}/electric_psc_cache.json'
+
+
+def psc_features(town):
+    """PSC territory features touching the town. Tries a GET, then a POST; returns None if PSC refuses."""
+    xmin, ymin, xmax, ymax = town.bounds
+    env = json.dumps({'xmin': xmin, 'ymin': ymin, 'xmax': xmax, 'ymax': ymax, 'spatialReference': {'wkid': 4326}})
+    feats = []
+    for layer in (0, 1, 2):  # municipal, investor-owned, cooperative
+        params = {'geometry': env, 'geometryType': 'esriGeometryEnvelope', 'inSR': 4326,
+                  'spatialRel': 'esriSpatialRelIntersects', 'outFields': 'LABEL,WEB,PSC_ID',
+                  'returnGeometry': 'true', 'outSR': 4326, 'maxAllowableOffset': 0.0002,
+                  'geometryPrecision': 5, 'f': 'geojson'}
+        try:
+            r = requests.get(f'{PSC}/{layer}/query', headers=UA, timeout=120, params=params)
+            if r.status_code != 200:
+                r = requests.post(f'{PSC}/{layer}/query', headers=UA, timeout=120, data=params)
+            r.raise_for_status()
+            feats += r.json().get('features', [])
+        except requests.RequestException as exc:
+            log(f'  PSC server unavailable ({exc}); using the saved copy of the electric territories')
+            return None
+    return feats
+
+
 def electric(town, view):
     out = []
-    geom = json.dumps({'rings': [list(town.exterior.coords)], 'spatialReference': {'wkid': 4326}})
-    for layer in (0, 1, 2):  # municipal, investor-owned, cooperative
-        r = requests.post(f'{PSC}/{layer}/query', headers=UA, timeout=120, data={
-            'geometry': geom, 'geometryType': 'esriGeometryPolygon', 'inSR': 4326,
-            'spatialRel': 'esriSpatialRelIntersects', 'outFields': 'LABEL,WEB,PSC_ID',
-            'returnGeometry': 'true', 'outSR': 4326, 'maxAllowableOffset': 0.0002,
-            'geometryPrecision': 5, 'f': 'geojson'})
-        r.raise_for_status()
-        for f in r.json().get('features', []):
-            g = make_valid(shape(f['geometry'])).intersection(view).simplify(0.0001)
-            if g.is_empty or g.intersection(town).area / town.area < 0.001:
-                continue
-            web = (f['properties'].get('WEB') or '').strip()
-            if web and not web.startswith('http'):
-                web = 'https://' + web
-            out.append({'name': f['properties']['LABEL'], 'url': web, 'geom': g})
-            log(f"  electric: {f['properties']['LABEL']}")
+    feats = psc_features(town)
+    if feats is None:
+        feats = json.load(open(PSC_CACHE))['features']
+    else:
+        with open(PSC_CACHE, 'w') as fh:
+            json.dump({'type': 'FeatureCollection', 'features': feats}, fh, separators=(',', ':'))
+    for f in feats:
+        g = make_valid(shape(f['geometry'])).intersection(view).simplify(0.0001)
+        if g.is_empty or g.intersection(town).area / town.area < 0.001:
+            continue
+        web = (f['properties'].get('WEB') or '').strip()
+        if web and not web.startswith('http'):
+            web = 'https://' + web
+        out.append({'name': f['properties']['LABEL'], 'url': web, 'geom': g})
+        log(f"  electric: {f['properties']['LABEL']}")
     if not out:
         raise RuntimeError('PSC returned no electric territories for the town')
     confirmed = refine_with_line_map(out, town)

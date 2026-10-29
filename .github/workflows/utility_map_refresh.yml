@@ -36,7 +36,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898769+github-actions[bot]@users.noreply.github.com"
-          git add utility-map.html
+          git add utility-map.html electric_psc_cache.json
           if git diff --cached --quiet; then
             echo "No change to the utility map."
           else
