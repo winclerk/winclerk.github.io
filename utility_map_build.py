@@ -24,6 +24,7 @@ import argparse
 import csv
 import io
 import json
+import os
 import re
 import sys
 import zipfile
@@ -36,7 +37,7 @@ from shapely.geometry import Polygon, MultiPolygon, shape, box, mapping
 from shapely.ops import unary_union
 from shapely.validation import make_valid
 
-HERE = __file__.rsplit('/', 1)[0] if '/' in __file__ else '.'
+HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = f'{HERE}/utility_map_template.html'
 OUTPUT = f'{HERE}/utility-map.html'
 
@@ -143,9 +144,9 @@ def electric(town, view):
     out = []
     feats = psc_features(town)
     if feats is None:
-        feats = json.load(open(PSC_CACHE))['features']
+        feats = json.load(open(PSC_CACHE, encoding='utf-8'))['features']
     else:
-        with open(PSC_CACHE, 'w') as fh:
+        with open(PSC_CACHE, 'w', encoding='utf-8', newline='\n') as fh:
             json.dump({'type': 'FeatureCollection', 'features': feats}, fh, separators=(',', ':'))
     for f in feats:
         g = make_valid(shape(f['geometry'])).intersection(view).simplify(0.0001)
@@ -178,7 +179,7 @@ def refine_with_line_map(elec, town):
     import os
     if not os.path.exists(REFINEMENT):
         return None
-    ref = json.load(open(REFINEMENT))
+    ref = json.load(open(REFINEMENT, encoding='utf-8'))
     conf = make_valid(shape(ref['confirmed']))
     checked = make_valid(shape(ref['checked']))
     target = next((e for e in elec if e['name'] == ref['utility']), None)

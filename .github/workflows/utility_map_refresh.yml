@@ -1,21 +1,24 @@
-name: Refresh utility map
+name: Check utility map refresh
 
-# Rebuilds utility-map.html from the newest FCC National Broadband Map data,
-# the PSC electric territories and the Census town boundary.
-# The FCC publishes new data twice a year; checking monthly catches each release.
-# A commit is made only when the rebuilt page differs from the current one.
+# The utility map is rebuilt on the town office PC on the 3rd of each month
+# (tools/utility-map-refresh/run.ps1), because the FCC broadband map refuses
+# requests from GitHub's servers. Each run commits utility_map_last_run.json.
+#
+# This check runs on the 6th and fails (sending the usual failure email) when
+# that file says the run failed, or when no run was recorded in the last 10 days
+# (PC off all week, token expired, task missing).
 
 on:
   schedule:
-    - cron: '17 13 3 * *'   # 3rd of each month, about 8am Central
+    - cron: '41 15 6 * *'   # 6th of each month, about 10:41am Central
   workflow_dispatch:
 
 jobs:
-  refresh:
+  check:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 10
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Check out repository
@@ -27,22 +30,26 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests h3 shapely pyshp
+        run: pip install requests
 
-      - name: Rebuild utility-map.html
-        run: python utility_map_build.py
-
-      - name: Commit if the map changed
+      - name: Check the last office PC run
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898769+github-actions[bot]@users.noreply.github.com"
-          git add utility-map.html electric_psc_cache.json
-          if git diff --cached --quiet; then
-            echo "No change to the utility map."
-          else
-            git commit -m "Refresh utility map data"
-            git push
-          fi
+          python - <<'EOF'
+          import json, sys
+          from datetime import datetime, timezone
+          try:
+              s = json.load(open('utility_map_last_run.json', encoding='utf-8'))
+          except FileNotFoundError:
+              sys.exit('No utility_map_last_run.json: the office PC refresh has never pushed a run.')
+          ran = datetime.strptime(s['ran_at'], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+          age = (datetime.now(timezone.utc) - ran).days
+          print(f"Last run {s['ran_at']} on {s.get('computer')}: {s['result']} {s.get('detail', '')}")
+          if s['result'] != 'ok':
+              sys.exit(f"The last utility map refresh failed: {s.get('detail', '')}")
+          if age > 10:
+              sys.exit(f'No utility map refresh recorded for {age} days. Check the office PC scheduled task.')
+          print('OK')
+          EOF
 
       - name: Send failure email
         if: failure()
@@ -51,4 +58,4 @@ jobs:
           AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           GH_PAT:              ${{ secrets.GH_PAT }}
-        run: python notify_failure.py "Refresh utility map" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        run: python notify_failure.py "Utility map refresh (office PC)" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
