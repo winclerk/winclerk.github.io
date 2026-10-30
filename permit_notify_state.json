@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-30T03:36:29Z",
+  "updated": "2026-10-30T16:00:04Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -275,15 +275,15 @@
       }
     },
     "2026-ROW-13": {
-      "status": "received",
+      "status": "approved",
       "snapshot": {
-        "Location": "E Circle Lily Rd — asdf",
-        "Board meeting": "",
-        "Authorized start": "",
-        "Authorized end": "",
+        "Location": "E Birch Lake Rd — 7811 E Birch Lake Rd",
+        "Board meeting": "2026-10-29",
+        "Authorized start": "2026-11-09",
+        "Authorized end": "2027-03-09",
         "Conditions": "",
-        "Traffic impact": "No traffic impact",
-        "Public contact": "adsf — asdf"
+        "Traffic impact": "Lane closure",
+        "Public contact": "Chonburi Thao — 6518704341"
       }
     }
   }
