@@ -2,6 +2,9 @@ name: Sync SharePoint to data.json
 
 on:
   schedule:
+    # Backup timer only. GitHub skips most scheduled runs, so the reliable
+    # business-hours trigger is the Make scenario "Portal sync - business
+    # hours" (hourly, 8 AM-4 PM Central), which calls workflow_dispatch below.
     # Every hour, 8am-8pm CDT (UTC-5). 13 runs/day: 8,9,...,20 local ->
     # 13,14,...,23,0,1 UTC. NOTE: Wisconsin observes DST — this stays fixed
     # in UTC, so once CST (UTC-6) kicks in this shifts to 7am-7pm local.
@@ -10,6 +13,14 @@ on:
     # drift twice a year doesn't matter.
     - cron: '0 13-23,0-1 * * *'
   workflow_dispatch:
+
+# Only one sync at a time. If a second run is triggered while one is going
+# (Make + GitHub timer, or Sync Portal.bat), it waits instead of colliding
+# on the commit. A newer waiting run replaces an older waiting one, which is
+# fine because each sync reads the latest SharePoint data.
+concurrency:
+  group: portal-sync
+  cancel-in-progress: false
 
 jobs:
   sync:
