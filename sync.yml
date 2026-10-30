@@ -2,8 +2,25 @@ name: Sync SharePoint to data.json
 
 on:
   schedule:
-    - cron: '0 7 * * *'
+    # Backup timer only. GitHub skips most scheduled runs, so the reliable
+    # business-hours trigger is the Make scenario "Portal sync - business
+    # hours" (hourly, 8 AM-4 PM Central), which calls workflow_dispatch below.
+    # Every hour, 8am-8pm CDT (UTC-5). 13 runs/day: 8,9,...,20 local ->
+    # 13,14,...,23,0,1 UTC. NOTE: Wisconsin observes DST — this stays fixed
+    # in UTC, so once CST (UTC-6) kicks in this shifts to 7am-7pm local.
+    # Update to '0 14-23,0-2 * * *' in the fall (or back to this in spring)
+    # to keep it pinned to 8am-8pm local, or leave it as-is if an hour of
+    # drift twice a year doesn't matter.
+    - cron: '0 13-23,0-1 * * *'
   workflow_dispatch:
+
+# Only one sync at a time. If a second run is triggered while one is going
+# (Make + GitHub timer, or Sync Portal.bat), it waits instead of colliding
+# on the commit. A newer waiting run replaces an older waiting one, which is
+# fine because each sync reads the latest SharePoint data.
+concurrency:
+  group: portal-sync
+  cancel-in-progress: false
 
 jobs:
   sync:
@@ -30,12 +47,3 @@ jobs:
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           GH_PAT:              ${{ secrets.GH_PAT }}
         run: python sync.py
-
-      - name: Send failure email
-        if: failure()
-        env:
-          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          GH_PAT:              ${{ secrets.GH_PAT }}
-        run: python notify_failure.py "Sync SharePoint to data.json" "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
