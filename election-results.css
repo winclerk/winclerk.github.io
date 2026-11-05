@@ -222,6 +222,40 @@
 
 .er-margin { font-size: 12px; color: var(--er-ink-soft); margin-top: 8px; }
 
+/* ── Clerk's note ── */
+.er-note {
+  background: #f7f5ef;
+  border: 1px solid #e6e1d3;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+.er-note .er-block-title { margin-bottom: 10px; color: var(--er-ink-soft); }
+.er-note p { font-size: 14px; line-height: 1.7; color: var(--text); margin: 0 0 10px; }
+.er-note a { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
+.er-note a:hover { color: var(--td); }
+.er-note .er-note-sig { font-family: 'Electrolize', monospace; font-size: 13px; color: var(--td); margin: 14px 0 0; }
+
+/* ── Race groups + referendum questions ── */
+.er-group + .er-group { margin-top: 22px; }
+.er-group-title {
+  font-family: 'Electrolize', monospace;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin: 14px 0 10px;
+}
+.er-questions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.er-question { display: flex; flex-direction: column; }
+.er-question .er-race-title { min-height: 3.75em; line-height: 1.25; }
+.er-yn-labels { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 6px 0 6px; }
+.er-yn-word { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.er-yn { display: flex; height: 14px; gap: 2px; border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+.er-yn-yes { background: var(--td); height: 100%; }
+.er-yn-no { background: var(--gold); height: 100%; flex: 1; }
+.er-question .er-margin { margin-top: auto; padding-top: 8px; }
+
 /* ── Footer: source + county link (replaces the old results callout) ── */
 .er-foot {
   display: flex;
@@ -251,6 +285,8 @@
 @media (max-width: 860px) {
   .er-viz-grid { grid-template-columns: 1fr; }
   .er-races { grid-template-columns: 1fr; }
+  .er-questions { grid-template-columns: 1fr; }
+  .er-question .er-race-title { min-height: 0; }
 }
 @media (max-width: 640px) {
   .er-method-list { grid-template-columns: 1fr; gap: 8px; }
