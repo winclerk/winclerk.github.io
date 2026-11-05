@@ -29,6 +29,17 @@ const ELECTION_RESULTS = {
     // by mail / other = total - inPerson
   },
 
+  // Clerk's note shown at the top of the card. {voters} is replaced with totalVoters.
+  // Paragraphs may contain simple links.
+  clerkNote: {
+    paragraphs: [
+      'Thank you to everyone who came out to vote. We had {voters} voters turn out for this election, and that kind of turnout says a lot about our community.',
+      'A reminder for next election: absentee ballots are available to any eligible voter who wants one, no reason needed. You can request yours anytime at <a href="https://myvote.wi.gov/" target="_blank" rel="noopener">MyVote Wisconsin</a>, or give the Clerk\'s office a call and we can help.',
+      'And a huge thank-you to our election inspectors. They put in a long day to make sure every ballot was handled correctly, and none of this would be possible without them.'
+    ],
+    signature: 'Luke Huybrecht, Town Clerk'
+  },
+
   source: 'Town of Winchester Ward 1 Election Night Call-In Return Sheet, November 3, 2026.',
   populationSource: 'Population and voting-age estimates: Wisconsin Department of Administration, Demographic Services Center (final January 1, 2026 estimate).',
   partySource: 'Party affiliations from public candidate coverage (Ballotpedia, Wisconsin Examiner, WPR).',
@@ -36,6 +47,7 @@ const ELECTION_RESULTS = {
 
   races: [
     {
+      group: 'Statewide offices',
       office: 'Governor / Lieutenant Governor',
       candidates: [
         { name: 'Tom Tiffany / David Varnam', party: 'R', votes: 238 },
@@ -48,6 +60,7 @@ const ELECTION_RESULTS = {
       ]
     },
     {
+      group: 'Statewide offices',
       office: 'Attorney General',
       candidates: [
         { name: 'Eric Toney', party: 'R', votes: 231 },
@@ -56,6 +69,7 @@ const ELECTION_RESULTS = {
       writeIns: [['Scattering', 0]]
     },
     {
+      group: 'Statewide offices',
       office: 'Secretary of State',
       candidates: [
         { name: 'Jay Schroeder', party: 'R', votes: 232 },
@@ -65,13 +79,55 @@ const ELECTION_RESULTS = {
       writeIns: [['Michael Chianese', 0], ['Scattering', 0]]
     },
     {
+      group: 'Statewide offices',
       office: 'State Treasurer',
       candidates: [
         { name: 'John S. Leiber', party: 'R', votes: 234 },
         { name: 'Yee Leng Xiong', party: 'D', votes: 127 }
       ],
       writeIns: [['Joseph Kexel', 0], ['Scattering', 1]]
+    },
+    {
+      group: 'Congress & State Assembly',
+      office: 'U.S. Representative, District 7',
+      candidates: [
+        { name: 'Michael Alfonso', party: 'R', votes: 221 },
+        { name: 'Fred Clark', party: 'D', votes: 142 }
+      ],
+      writeIns: [['Scattering', 1]]
+    },
+    {
+      group: 'Congress & State Assembly',
+      office: 'State Assembly, District 34',
+      candidates: [
+        { name: 'Rob Swearingen', party: 'R', votes: 235 },
+        { name: 'Merlin Van Buren', party: 'D', votes: 134 }
+      ],
+      writeIns: [['Scattering', 0]]
+    },
+    {
+      group: 'Vilas County offices',
+      office: 'Vilas County Sheriff',
+      candidates: [
+        { name: 'Gerard T. Ritter', votes: 272 }
+      ],
+      writeIns: [['Scattering', 8]]
+    },
+    {
+      group: 'Vilas County offices',
+      office: 'Vilas County Clerk of Circuit Court',
+      candidates: [
+        { name: 'Beth A. Soltow', votes: 243 }
+      ],
+      writeIns: [['Scattering', 0]]
     }
+  ],
+
+  // Statewide referendum questions (Yes / No)
+  questions: [
+    { title: 'Question 1: Partial Veto', yes: 228, no: 136 },
+    { title: 'Question 2: Freedom to Gather in Places of Worship During an Emergency', yes: 208, no: 154 },
+    { title: 'Question 3: Governmental Entity Discrimination Prohibited', yes: 248, no: 112 }
   ]
 };
 
@@ -83,6 +139,7 @@ const ElectionResults = (function () {
     I: { label: 'Independent', color: 'var(--er-other)' }
   };
   const OTHER_COLOR = 'var(--er-other)';
+  const NONPARTY_COLOR = 'var(--tm)';
   const METHOD_COLORS = ['var(--td)', 'var(--gold)', '#7fa3a6'];
 
   let mode = 'votes';
@@ -235,37 +292,79 @@ const ElectionResults = (function () {
       </div>`;
   }
 
+  function clerkNoteBlock(d) {
+    const n = d.clerkNote;
+    if (!n || !n.paragraphs || !n.paragraphs.length) return '';
+    return `
+      <div class="er-block">
+        <div class="er-note">
+          <div class="er-block-title">A note from the Clerk</div>
+          ${n.paragraphs.map(p => `<p>${p.replace('{voters}', d.totalVoters)}</p>`).join('')}
+          ${n.signature ? `<p class="er-note-sig">${esc(n.signature)}</p>` : ''}
+        </div>
+      </div>`;
+  }
+
+  function contestsHtml(d) {
+    const groups = [];
+    d.races.forEach(r => {
+      const g = r.group || 'Races';
+      let entry = groups.find(x => x.name === g);
+      if (!entry) { entry = { name: g, races: [] }; groups.push(entry); }
+      entry.races.push(r);
+    });
+    const raceGroups = groups.map(g => `
+      <div class="er-group">
+        <h3 class="er-group-title">${esc(g.name)}</h3>
+        <div class="er-races">${g.races.map(raceCard).join('')}</div>
+      </div>`).join('');
+    const qs = (d.questions || []).length ? `
+      <div class="er-group">
+        <h3 class="er-group-title">Statewide referendum questions</h3>
+        <div class="er-questions">${d.questions.map(questionCard).join('')}</div>
+      </div>` : '';
+    return raceGroups + qs;
+  }
+
   function racesBlock(d) {
-    const usedParties = [...new Set(d.races.flatMap(r => r.candidates.map(c => c.party)))];
+    const usedParties = [...new Set(d.races.flatMap(r => r.candidates.map(c => c.party)).filter(Boolean))];
     return `
       <div class="er-block">
         <div class="er-race-bar-head">
-          <div class="er-block-title">Statewide races</div>
+          <div class="er-block-title">All races on the ballot</div>
           <div class="er-toggle" role="group" aria-label="Show results as">
             <button type="button" data-er-mode="votes" aria-pressed="${mode === 'votes'}">Votes</button>
             <button type="button" data-er-mode="pct" aria-pressed="${mode === 'pct'}">Percent</button>
           </div>
         </div>
-        <div class="er-legend" aria-label="Party colors" style="margin-bottom:14px">
+        <div class="er-legend" aria-label="Colors" style="margin-bottom:6px">
           ${usedParties.map(p => `<span><span class="er-dot" style="background:${PARTIES[p].color}"></span>${PARTIES[p].label}</span>`).join('')}
+          <span><span class="er-dot" style="background:${NONPARTY_COLOR}"></span>Unopposed</span>
           <span><span class="er-dot" style="background:${OTHER_COLOR}"></span>Write-ins &amp; scattering</span>
         </div>
-        <div class="er-races" id="er-races">${d.races.map(raceCard).join('')}</div>
+        <div id="er-contests">${contestsHtml(d)}</div>
       </div>`;
   }
 
   function raceCard(r) {
     const s = raceStats(r);
-    const rows = r.candidates.map(c => ({ ...c, color: PARTIES[c.party].color, partyLabel: PARTIES[c.party].label }));
+    const unopposed = r.candidates.length === 1;
+    const rows = r.candidates.map(c => ({
+      ...c,
+      color: c.party ? PARTIES[c.party].color : NONPARTY_COLOR,
+      partyLabel: c.party ? PARTIES[c.party].label : ''
+    }));
     rows.push({ name: 'Write-ins & scattering', votes: s.writeInTotal, color: OTHER_COLOR, writeIns: r.writeIns });
     const max = Math.max(...rows.map(x => x.votes), 1);
+    const blank = ELECTION_RESULTS.totalVoters - s.total;
 
     return `
       <article class="er-race">
         <div class="er-race-title">${esc(r.office)}</div>
-        <div class="er-race-meta">${s.total} votes cast &middot; ${ELECTION_RESULTS.totalVoters - s.total} left blank</div>
+        <div class="er-race-meta">${s.total} votes cast &middot; ${blank} left blank</div>
         ${rows.map(x => {
-          const isLead = x === rows.find(y => y.name === s.leader.name);
+          const isLead = !x.writeIns && x.name === s.leader.name;
+          const tag = isLead ? (unopposed ? '<span class="er-lead">Unopposed</span>' : '<span class="er-lead">Leading</span>') : '';
           const share = pct(x.votes, s.total);
           const primary = mode === 'votes' ? x.votes : share;
           const secondary = mode === 'votes' ? share : `${x.votes} votes`;
@@ -273,16 +372,40 @@ const ElectionResults = (function () {
           return `
             <div class="er-row">
               <div class="er-row-top">
-                <div class="er-name">${esc(x.name)}${isLead ? '<span class="er-lead">Leading</span>' : ''}
+                <div class="er-name">${esc(x.name)}${tag}
                   ${x.partyLabel ? `<span class="er-party"><span class="er-dot" style="background:${x.color}"></span>${x.partyLabel}</span>` : ''}
                 </div>
                 <div class="er-val">${primary}<small>${secondary}</small></div>
               </div>
               <div class="er-track"><div class="er-bar" style="background:${x.color}" data-target="${(100 * x.votes / max).toFixed(2)}%"></div></div>
-              ${x.writeIns ? `<div class="er-writein-detail">${nonzero.length ? nonzero.map(w => `${esc(w[0])}: ${w[1]}`).join(' &middot; ') : `${x.writeIns.length} write-in line${x.writeIns.length === 1 ? '' : 's'} on the ballot, no votes`}</div>` : ''}
+              ${x.writeIns ? `<div class="er-writein-detail">${nonzero.length ? nonzero.map(w => `${esc(w[0])}: ${w[1]}`).join(' &middot; ') : (x.writeIns.length > 1 || x.writeIns[0][0] !== 'Scattering' ? `${x.writeIns.length} write-in line${x.writeIns.length === 1 ? '' : 's'} on the ballot, no votes` : 'No scattering votes')}</div>` : ''}
             </div>`;
         }).join('')}
-        <div class="er-margin">${esc(s.leader.name)} leads by ${s.margin} votes (${s.marginPts.toFixed(1)} points)</div>
+        <div class="er-margin">${unopposed
+          ? `${esc(s.leader.name)} ran unopposed; ${blank} voters left this race blank`
+          : `${esc(s.leader.name)} leads by ${s.margin} votes (${s.marginPts.toFixed(1)} points)`}</div>
+      </article>`;
+  }
+
+  function questionCard(q) {
+    const total = q.yes + q.no;
+    const yesPct = total ? 100 * q.yes / total : 0;
+    const lead = q.yes === q.no ? 'Tied in Winchester'
+      : (q.yes > q.no ? `Yes leads in Winchester by ${q.yes - q.no} votes` : `No leads in Winchester by ${q.no - q.yes} votes`);
+    const val = n => mode === 'votes' ? `${n}<small>${pct(n, total)}</small>` : `${pct(n, total)}<small>${n} votes</small>`;
+    return `
+      <article class="er-race er-question">
+        <div class="er-race-title">${esc(q.title)}</div>
+        <div class="er-race-meta">${total} votes cast &middot; ${ELECTION_RESULTS.totalVoters - total} left blank</div>
+        <div class="er-yn-labels">
+          <div><span class="er-yn-word">Yes</span> <span class="er-val">${val(q.yes)}</span></div>
+          <div style="text-align:right"><span class="er-val">${val(q.no)}</span> <span class="er-yn-word">No</span></div>
+        </div>
+        <div class="er-yn" role="img" aria-label="Yes ${q.yes} (${pct(q.yes, total)}), No ${q.no} (${pct(q.no, total)})">
+          <div class="er-yn-yes" style="width:${yesPct.toFixed(2)}%"></div>
+          <div class="er-yn-no"></div>
+        </div>
+        <div class="er-margin">${lead}</div>
       </article>`;
   }
 
@@ -300,8 +423,8 @@ const ElectionResults = (function () {
       btn.addEventListener('click', () => {
         mode = btn.dataset.erMode;
         root.querySelectorAll('[data-er-mode]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-        const races = root.querySelector('#er-races');
-        races.innerHTML = ELECTION_RESULTS.races.map(raceCard).join('');
+        const races = root.querySelector('#er-contests');
+        races.innerHTML = contestsHtml(ELECTION_RESULTS);
         // Bars are already at full width after a toggle; set them directly.
         races.querySelectorAll('.er-bar').forEach(el => { el.style.transition = 'none'; el.style.width = el.dataset.target; });
       });
@@ -326,6 +449,7 @@ const ElectionResults = (function () {
           <div class="er-head-title">${esc(d.title)} &middot; Town of Winchester</div>
           <span class="er-status">${esc(d.status)} results</span>
         </div>
+        ${clerkNoteBlock(d)}
         <div class="er-block"><div class="er-viz-grid">${turnoutViz(d)}${paceViz(d)}</div></div>
         ${methodBlock(d)}
         ${racesBlock(d)}
