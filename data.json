@@ -49,6 +49,40 @@
             }
           ],
           "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDY2dO0Hz_6QKStHgYCQ1qMAUCHg3_Z2mFjMVOIFju6OhE"
+        },
+        {
+          "name": "Financial",
+          "documents": [
+            {
+              "label": "Reconciliation Money Market Report",
+              "filename": "Report_Reconciliation-MM_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAXhed5ZS0DTp8Cr85spXBOAVAqxCNExGrPONXmXcuDfZk",
+              "date": "2026-11-06",
+              "posted": "2026-11-06"
+            },
+            {
+              "label": "Statement Associated Bank Money Market Checking",
+              "filename": "Statement_AB-MM-Checking_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBYK07wiWPoTYYHWHsaYguBAQZA0i1sjQp7FF6qMVj7eRM",
+              "date": "2026-11-06",
+              "posted": "2026-11-06"
+            },
+            {
+              "label": "Invoice FGJI8R1J 0012",
+              "filename": "Invoice-FGJI8R1J-0012.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBo5Oog8FTXQ6YbecgVwHezAUgaHBu5N6FVaLd7-v7Q4lI",
+              "date": "2026-10-29",
+              "posted": "2026-10-29",
+              "group": "US Bank Credit Card"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgAGfnahinW2SJqJHm5jte--AXHlg4nLOCdRMBrYEDhA7rw",
+          "groups": [
+            {
+              "name": "US Bank Credit Card",
+              "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDDAfsKvM7aSJ14vDmyAS_RAd68cHJlDgp87ivDnQrGpzE"
+            }
+          ]
         }
       ]
     },
