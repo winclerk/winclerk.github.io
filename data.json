@@ -62,11 +62,39 @@
           "name": "Financial",
           "documents": [
             {
-              "label": "Reconciliation Checking Report",
-              "filename": "Report_Reconciliation-Checking_202610.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCRsWWCS5ikRahAxMSrfMevAfH80jqKJOASWoYcySRwz4M",
-              "date": "2026-11-07",
-              "posted": "2026-11-07"
+              "label": "Balance Sheet Report",
+              "filename": "Report_Balance-Sheet_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDZFJPeioO7S7vcKCPMq7T7AXzd72exbIYR2LoKqJmzZrU",
+              "date": "2026-11-08",
+              "posted": "2026-11-08"
+            },
+            {
+              "label": "October Disbursements",
+              "filename": "Report_Disbursements_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBb3Ull3O90QYlLCPOINSd_AYi5KibwuA3dR5zJlYRPnjU",
+              "date": "2026-11-08",
+              "posted": "2026-11-08"
+            },
+            {
+              "label": "P&L Report",
+              "filename": "Report_P&L_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCsi25yOJ8eSLQYeDQOkQsXAWs6ylebAY0XGhsZTtFFCvA",
+              "date": "2026-11-08",
+              "posted": "2026-11-08"
+            },
+            {
+              "label": "Statement US Bank Credit Card",
+              "filename": "Statement_USB-CC_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDGhINCbgTDTIk70FUAbe7oAdQ9Hpds75-sWF4XXGq2jSU",
+              "date": "2026-11-08",
+              "posted": "2026-11-08"
+            },
+            {
+              "label": "YTD Budget vs Actual Report",
+              "filename": "Report_YTD-Budget-vs-Actual_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAeuuM9J9kvQYdsNIVxBJldAaWBGSgEJvyXjKTBdb4aqao",
+              "date": "2026-11-08",
+              "posted": "2026-11-08"
             },
             {
               "label": "Reconciliation Money Market Report",
