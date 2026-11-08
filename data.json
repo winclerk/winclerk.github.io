@@ -19,41 +19,85 @@
       ],
       "subfolders": [
         {
-          "name": "3. Discussion-Possible Action",
+          "name": "3. Minutes",
           "documents": [
             {
-              "label": "Letter MWVB Termination Notice",
-              "filename": "Letter_MWVB-Termination-Notice_20261022.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQD0QROiQ_EsRZO6g3xMJD_vATNSbZhhvpbwFlT52i5GUHs",
+              "label": "Minutes (Draft) - October 22, 2026",
+              "filename": "Minutes_STBM_20261022_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDSVwj97JZ3Sqg7Buq1V4LYAeNZDPZDAdaRYKErEjguCzc",
               "date": "2026-10-22",
-              "posted": "2026-10-21"
+              "posted": "2026-11-08",
+              "draft": true
             },
             {
-              "label": "Letter Presque Isle Chamber Intent",
-              "filename": "Letter_Presque-Isle-Chamber-Intent_20261022.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQABZzVYU2bkRomvvbO8YHd7AThFdMhXCub-fy0IfzmskbE",
-              "date": "2026-10-22",
-              "posted": "2026-10-21"
+              "label": "Minutes (Draft) - October 20, 2026",
+              "filename": "Minutes_STBM_20261020_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAAlAOL1dwCTpHJLdrRL561AepMDyrZNC8d-qyIeJSFzOk",
+              "date": "2026-10-20",
+              "posted": "2026-11-08",
+              "draft": true
             },
             {
-              "label": "Manitowish Waters Winchester Tourism Entity Agreement",
-              "filename": "MW Winchester Tourism Entity Agreement.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDyWNN-rgGbS7T39jGe5frcAbKcDnxSUAIMOcGuUJbNqQ0",
-              "date": "2026-10-21",
-              "posted": "2026-10-21"
+              "label": "Minutes (Draft) - October 12, 2026",
+              "filename": "Minutes_RTBM_20261012_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBrEFo2AnG1QI1PAia39YtyAYx6emlSTM6c9_BOI0snaYA",
+              "date": "2026-10-12",
+              "posted": "2026-11-08",
+              "draft": true
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgAuQL5TCKh5Taajqcl1s9htATtuM60Y21kCfqNdycXHf-8"
+        },
+        {
+          "name": "4. Reports",
+          "documents": [
+            {
+              "label": "NEMSD Report",
+              "filename": "Report_NEMSD_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCa_ScFxTkPRYeZIvkGm4odAVpd3IYUeXEBx0M8q5bOXbs",
+              "date": "2026-11-08",
+              "posted": "2026-11-08"
+            }
+          ],
+          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgB81UckbSR5TqC8uBeoGvQ5AYjYWbvUlrSCjPZWafLcpHw"
+        },
+        {
+          "name": "7. Discussion-Possible Action",
+          "documents": [
+            {
+              "label": "Room Tax revised draft 20261105",
+              "filename": "Room Tax revised draft 20261105.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBVsfz4tAeJSo5z75dEIcf6AeblteIyVIpcdap491Q8_6A",
+              "date": "2026-11-05",
+              "posted": "2026-11-08",
+              "draft": true
+            },
+            {
+              "label": "Letter E Fairbanks Turner Resignation",
+              "filename": "Letter_E-Fairbanks-Turner-Resignation_20261013.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCbGv345loXRby6VLTlnNM_AbvOZ4iMb6CU0mT_aaphhpA",
+              "date": "2026-10-13",
+              "posted": "2026-11-08"
             }
           ],
           "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBIskXuDIaeT5D7gnxxB-mkAWxYtIg85ZbWsGcaNdmnC0U"
         },
         {
-          "name": "4. New Business",
+          "name": "8. New Business",
           "documents": [
             {
-              "label": "2026-08 Accommodations Tax Marketplace Reporting Ordinance",
-              "filename": "Ordinance_2026-08_Accommodations-Tax-Marketplace-Reporting_20261022.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBCxo8JbilSS4QPRqi6EPnEAevvMbVBckmyRnzJNlS-p7Y",
-              "date": "2026-10-22",
-              "posted": "2026-10-21"
+              "label": "Contract ToW Republic Services Exp 20271231",
+              "filename": "Contract_ToW-Republic-Services-Exp-20271231_20230101.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCviYAm7XVURZrzsRU8k9t8AbyLXkZvu1ppiVhckaFuAa4",
+              "date": "2027-12-31",
+              "posted": "2026-11-08"
+            },
+            {
+              "label": "ToW Employee Handbook (revised)",
+              "filename": "Handbook_ToW-Employee_20260910.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBSEcOjxfN_Q5OeztUmqOO7ARAuwbhDkGg-CcMpcDXdj3s",
+              "date": "2026-09-10",
+              "posted": "2026-11-08"
             }
           ],
           "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDY2dO0Hz_6QKStHgYCQ1qMAUCHg3_Z2mFjMVOIFju6OhE"
@@ -69,6 +113,22 @@
               "posted": "2026-11-08"
             },
             {
+              "label": "CanaKit Order # W100513192170",
+              "filename": "CanaKit Order # W100513192170.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCccGom_OZ0QInN6SDxccyUATJYwCrhr3oThXT0caGZP50",
+              "date": "2026-11-08",
+              "posted": "2026-11-08",
+              "group": "US Bank Credit Card"
+            },
+            {
+              "label": "Minocqua Chevrolet TOWN OF WINCHESTER Invoices 2026 SEP",
+              "filename": "Minocqua Chevrolet_TOWN OF WINCHESTER_Invoices_2026_SEP.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA9aCsJo3vORb2LqlXL5RZPAfUGVqN44LXpXV9ElUvPZAc",
+              "date": "2026-11-08",
+              "posted": "2026-11-08",
+              "group": "US Bank Credit Card"
+            },
+            {
               "label": "October Disbursements",
               "filename": "Report_Disbursements_202610.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBb3Ull3O90QYlLCPOINSd_AYi5KibwuA3dR5zJlYRPnjU",
@@ -76,11 +136,35 @@
               "posted": "2026-11-08"
             },
             {
+              "label": "Order details - Walmart Business",
+              "filename": "Order details - Walmart Business.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCSkPVfqgRZRK2SsZrRdN01AZDaJURzt5CKOgNP5fx0XrY",
+              "date": "2026-11-08",
+              "posted": "2026-11-08",
+              "group": "US Bank Credit Card"
+            },
+            {
               "label": "P&L Report",
               "filename": "Report_P&L_202610.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCsi25yOJ8eSLQYeDQOkQsXAWs6ylebAY0XGhsZTtFFCvA",
               "date": "2026-11-08",
               "posted": "2026-11-08"
+            },
+            {
+              "label": "r fstmt 0911123632",
+              "filename": "r_fstmt_0911123632.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAwry1CVmtnTKpqt7IsjXEKARzUPcOWCZ20HYHQD3FE3go",
+              "date": "2026-11-08",
+              "posted": "2026-11-08",
+              "group": "US Bank Credit Card"
+            },
+            {
+              "label": "Receipt 2504 7701",
+              "filename": "Receipt-2504-7701.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBFnUISk0MwT7-PiLdelCzuAS9LKTJDHuff2gTGasfhI7c",
+              "date": "2026-11-08",
+              "posted": "2026-11-08",
+              "group": "US Bank Credit Card"
             },
             {
               "label": "Statement US Bank Credit Card",
