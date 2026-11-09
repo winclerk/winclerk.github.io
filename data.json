@@ -22,6 +22,14 @@
           "name": "3. Minutes",
           "documents": [
             {
+              "label": "Minutes LBOC MBOC 20261103 DRAFT",
+              "filename": "Minutes_LBOC-MBOC_20261103_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCXSq4t4IUMT7XxD8-hmpR2AfDZvbT7qaoyIRHBNkhTNLg",
+              "date": "2026-11-03",
+              "posted": "2026-11-08",
+              "draft": true
+            },
+            {
               "label": "Minutes (Draft) - October 22, 2026",
               "filename": "Minutes_STBM_20261022_DRAFT.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDSVwj97JZ3Sqg7Buq1V4LYAeNZDPZDAdaRYKErEjguCzc",
@@ -55,6 +63,13 @@
               "label": "NEMSD Report",
               "filename": "Report_NEMSD_202610.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCa_ScFxTkPRYeZIvkGm4odAVpd3IYUeXEBx0M8q5bOXbs",
+              "date": "2026-11-08",
+              "posted": "2026-11-08"
+            },
+            {
+              "label": "Treasurer's Report",
+              "filename": "Report_Treasurer_202610.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB8YGoG42h2SZEtGbNA-iOxAUtHV65IP8dUEz-TR6-pHEI",
               "date": "2026-11-08",
               "posted": "2026-11-08"
             }
@@ -105,13 +120,6 @@
         {
           "name": "Financial",
           "documents": [
-            {
-              "label": "Balance Sheet Report",
-              "filename": "Report_Balance-Sheet_202610.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDZFJPeioO7S7vcKCPMq7T7AXzd72exbIYR2LoKqJmzZrU",
-              "date": "2026-11-08",
-              "posted": "2026-11-08"
-            },
             {
               "label": "CanaKit Order # W100513192170",
               "filename": "CanaKit Order # W100513192170.pdf",
