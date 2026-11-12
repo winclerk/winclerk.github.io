@@ -1,70 +1,27 @@
 {
   "meetings": [
     {
-      "id": "special-2026-11-03",
-      "title": "Town Board Meeting - November 3, 2026",
+      "id": "special-2026-11-13",
+      "title": "Special Town Board Meeting - November 13, 2026",
       "type": "special",
       "status": "upcoming",
-      "date": "2026-11-03",
-      "time": "6:00 PM",
+      "date": "2026-11-13",
+      "time": "8:00 AM",
       "location": "Winchester Town Hall",
-      "documents": [],
-      "subfolders": [
+      "documents": [
         {
-          "name": "3. Minutes",
-          "documents": [
-            {
-              "label": "Minutes (Draft) - November 9, 2026",
-              "filename": "Minutes_RTBM_20261109_DRAFT.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDOpdrlscGtSIxrZ3AuhwhqAVzHJf1EMOR6vIPHcXzpPwY",
-              "date": "2026-11-09",
-              "posted": "2026-11-12",
-              "draft": true
-            },
-            {
-              "label": "Minutes LBOC MBOC 20261103 DRAFT",
-              "filename": "Minutes_LBOC-MBOC_20261103_DRAFT.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCXSq4t4IUMT7XxD8-hmpR2AfDZvbT7qaoyIRHBNkhTNLg",
-              "date": "2026-11-03",
-              "posted": "2026-11-08",
-              "draft": true
-            }
-          ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgAuQL5TCKh5Taajqcl1s9htATtuM60Y21kCfqNdycXHf-8"
+          "label": "Special Meeting Agenda",
+          "filename": "Agenda_STBM_20261113.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAE6c4a6TYzQLGg2w7jsCtJAYBO3_CGLz0tu87VqOLtYWk",
+          "date": "2026-11-13",
+          "posted": "2026-11-12"
         },
         {
-          "name": "7. Discussion-Possible Action",
-          "documents": [
-            {
-              "label": "Room Tax revised draft 20261105",
-              "filename": "Room Tax revised draft 20261105.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBVsfz4tAeJSo5z75dEIcf6AeblteIyVIpcdap491Q8_6A",
-              "date": "2026-11-05",
-              "posted": "2026-11-08",
-              "draft": true
-            }
-          ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgBIskXuDIaeT5D7gnxxB-mkAWxYtIg85ZbWsGcaNdmnC0U"
-        },
-        {
-          "name": "8. New Business",
-          "documents": [
-            {
-              "label": "Contract ToW Republic Services Exp 20271231",
-              "filename": "Contract_ToW-Republic-Services-Exp-20271231_20230101.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQCviYAm7XVURZrzsRU8k9t8AbyLXkZvu1ppiVhckaFuAa4",
-              "date": "2027-12-31",
-              "posted": "2026-11-08"
-            },
-            {
-              "label": "ToW Employee Handbook (revised)",
-              "filename": "Handbook_ToW-Employee_20260910.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBSEcOjxfN_Q5OeztUmqOO7ARAuwbhDkGg-CcMpcDXdj3s",
-              "date": "2026-09-10",
-              "posted": "2026-11-08"
-            }
-          ],
-          "url": "https://townofwinchester54557.sharepoint.com/:f:/g/IgDY2dO0Hz_6QKStHgYCQ1qMAUCHg3_Z2mFjMVOIFju6OhE"
+          "label": "Minutes WFD",
+          "filename": "Minutes_WFD_20261110.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAjGk1bCY-NRpyHGVmu5oXOAfBAOTUxGEBI9RuGgbXVVQA",
+          "date": "2026-11-10",
+          "posted": "2026-11-12"
         }
       ]
     },
@@ -3434,7 +3391,15 @@
         },
         {
           "name": "Canvass Results & Certifications",
-          "documents": []
+          "documents": [
+            {
+              "label": "Minutes LBOC MBOC 20261103 DRAFT",
+              "filename": "Minutes_LBOC-MBOC_20261103_DRAFT.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Elections/IQD8VSAr3L_gQpsVBzVl9RMoAfbm6VvfPzw-y-t_aHMiENk",
+              "date": "2026-11-03",
+              "posted": "2026-11-12"
+            }
+          ]
         },
         {
           "name": "Voters",
