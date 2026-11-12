@@ -940,13 +940,6 @@
           "name": "Financial",
           "documents": [
             {
-              "label": "Reconciliation Checking Report",
-              "filename": "Report_Reconciliation-Checking_202608.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDIY97HVIwgRaNKRYqT-1kPAXsb_b_uwZTZv7vQ73wvi10",
-              "date": "2026-09-19",
-              "posted": "2026-09-19"
-            },
-            {
               "label": "Reconciliation Money Market Report",
               "filename": "Report_Reconciliation-MM_202608.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAymlcPmf9CRp_g8DkifLmGAaSFhHCIZptuny0ivEJ5MqM",
@@ -2057,13 +2050,6 @@
               "posted": "2026-06-06"
             },
             {
-              "label": "Budget General Records Schedule",
-              "filename": "Budget GRS.pdf",
-              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA0KT8VDlUVSqg3zDDiWBKrAfg9oEMkB-pIpwILbZFS4vE",
-              "date": "2026-06-06",
-              "posted": "2026-06-06"
-            },
-            {
               "label": "Facilities General Records Schedule",
               "filename": "Facilities GRS.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB0xP6mNGRCRb-YEDPlBL18AUS8iRXLLy8ouYJbAEVUSaM",
@@ -2740,6 +2726,14 @@
               "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/BoardsCommitteesCommissions/IgD6imyAp1fZRr79pITij3BKAT2gN6te3g8JzaZl8lxR8f8"
             },
             {
+              "label": "Planning Commission Agenda",
+              "filename": "Agenda_PC_20260824.docx",
+              "url": "https://townofwinchester54557.sharepoint.com/:w:/s/BoardsCommitteesCommissions/IQCRj1Ha9KnFTIyDlBhqsQ5-Aev2_n1kfqI0NP9R3j5tVj4",
+              "date": "2026-08-24",
+              "posted": "2026-09-30",
+              "folderUrl": "https://townofwinchester54557.sharepoint.com/:f:/s/BoardsCommitteesCommissions/IgD6imyAp1fZRr79pITij3BKAT2gN6te3g8JzaZl8lxR8f8"
+            },
+            {
               "label": "Minutes Planning Commission",
               "filename": "Minutes_PC_20260824.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/s/BoardsCommitteesCommissions/IQDFnWVMLaZkTZLaS-GPPoXWAU7GfVG8u5LXzi10s5eTmjM",
@@ -2931,13 +2925,6 @@
         {
           "name": "Fire & Rescue",
           "documents": [
-            {
-              "label": "Fire Rescue Agenda",
-              "filename": "Agenda_Fire-Rescue_20260908",
-              "url": "https://townofwinchester54557.sharepoint.com/:u:/s/BoardsCommitteesCommissions/IQB1OEPPaQQMQozUps1gx7JCAQctDVrIvE7NZzArptHyfM8",
-              "date": "2026-09-08",
-              "posted": "2026-09-30"
-            },
             {
               "label": "Fire Rescue Agenda",
               "filename": "Agenda_Fire-Rescue_20260811",
