@@ -940,6 +940,13 @@
           "name": "Financial",
           "documents": [
             {
+              "label": "Reconciliation Checking Report",
+              "filename": "Report_Reconciliation-Checking_202608.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQDIY97HVIwgRaNKRYqT-1kPAXsb_b_uwZTZv7vQ73wvi10",
+              "date": "2026-09-19",
+              "posted": "2026-09-19"
+            },
+            {
               "label": "Reconciliation Money Market Report",
               "filename": "Report_Reconciliation-MM_202608.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAymlcPmf9CRp_g8DkifLmGAaSFhHCIZptuny0ivEJ5MqM",
@@ -2050,6 +2057,13 @@
               "posted": "2026-06-06"
             },
             {
+              "label": "Budget General Records Schedule",
+              "filename": "Budget GRS.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA0KT8VDlUVSqg3zDDiWBKrAfg9oEMkB-pIpwILbZFS4vE",
+              "date": "2026-06-06",
+              "posted": "2026-06-06"
+            },
+            {
               "label": "Facilities General Records Schedule",
               "filename": "Facilities GRS.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQB0xP6mNGRCRb-YEDPlBL18AUS8iRXLLy8ouYJbAEVUSaM",
@@ -2925,6 +2939,13 @@
         {
           "name": "Fire & Rescue",
           "documents": [
+            {
+              "label": "Fire Rescue Agenda",
+              "filename": "Agenda_Fire-Rescue_20260908",
+              "url": "https://townofwinchester54557.sharepoint.com/:u:/s/BoardsCommitteesCommissions/IQB1OEPPaQQMQozUps1gx7JCAQctDVrIvE7NZzArptHyfM8",
+              "date": "2026-09-08",
+              "posted": "2026-09-30"
+            },
             {
               "label": "Fire Rescue Agenda",
               "filename": "Agenda_Fire-Rescue_20260811",
