@@ -6,16 +6,9 @@
       "type": "special",
       "status": "upcoming",
       "date": "2026-11-13",
-      "time": "8:00 AM",
+      "time": "6:00 PM",
       "location": "Winchester Town Hall",
       "documents": [
-        {
-          "label": "Special Meeting Agenda",
-          "filename": "Agenda_STBM_20261113.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAE6c4a6TYzQLGg2w7jsCtJAYBO3_CGLz0tu87VqOLtYWk",
-          "date": "2026-11-13",
-          "posted": "2026-11-12"
-        },
         {
           "label": "Minutes (Draft) - November 13, 2026",
           "filename": "Minutes_STBM_20261113_DRAFT.pdf",
@@ -23,13 +16,6 @@
           "date": "2026-11-13",
           "posted": "2026-11-13",
           "draft": true
-        },
-        {
-          "label": "Minutes WFD",
-          "filename": "Minutes_WFD_20261110.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAjGk1bCY-NRpyHGVmu5oXOAfBAOTUxGEBI9RuGgbXVVQA",
-          "date": "2026-11-10",
-          "posted": "2026-11-12"
         }
       ]
     },
