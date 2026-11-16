@@ -1,23 +1,14 @@
 {
   "meetings": [
     {
-      "id": "special-2026-11-13",
-      "title": "Special Town Board Meeting - November 13, 2026",
+      "id": "special-2026-12-02",
+      "title": "2027 Budget Meeting 20261202",
       "type": "special",
       "status": "upcoming",
-      "date": "2026-11-13",
+      "date": "2026-12-02",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
-      "documents": [
-        {
-          "label": "Minutes (Draft) - November 13, 2026",
-          "filename": "Minutes_STBM_20261113_DRAFT.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQBbeqCGmvBdR6uXwBQaGeP7AawYfEw7xm9ByUWxrp0n5Ys",
-          "date": "2026-11-13",
-          "posted": "2026-11-13",
-          "draft": true
-        }
-      ]
+      "documents": []
     },
     {
       "id": "special-2026-11-13",
