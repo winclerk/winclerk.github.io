@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-16T14:06:43Z",
+  "updated": "2026-11-16T14:33:00Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": "approved",
     "P0001": "proposed",
@@ -284,6 +284,18 @@
         "Conditions": "",
         "Traffic impact": "Lane closure",
         "Public contact": "Chonburi Thao — 6518704341"
+      }
+    },
+    "2026-RC-05": {
+      "status": "received",
+      "snapshot": {
+        "Location": "Papoose Lake Rd / Old O",
+        "Board meeting": "",
+        "Authorized start": "",
+        "Authorized end": "",
+        "Conditions": "",
+        "Traffic impact": "Flaggers",
+        "Public contact": "Matt Gaulke — 715-891-2254"
       }
     }
   }
