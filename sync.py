@@ -41,12 +41,13 @@ FLAT_SITES = [
         # SharePoint library ("name"), the heading shown on the portal
         # ("label"), and what to publish:
         #   "folder": only files inside that one folder (no subfolders)
+        #   "folders": only files inside each of these folders (no subfolders)
         #   "max_depth": 0 -> only files at the library root (no subfolders)
         # Anything else in the library (working files, recordings, maps,
         # Internal Only, etc.) is never published.
         "libraries": [
             {"name": "Planning Commission",   "label": "Planning Commission",     "folder": "Agendas & Minutes"},
-            {"name": "WTLC",                  "label": "Winchester Town Lakes Committee (WTLC)", "max_depth": 0},
+            {"name": "WTLC",                  "label": "Winchester Town Lakes Committee (WTLC)", "folders": ["Agendas", "Minutes"]},
             {"name": "NEMSD",                 "label": "Northwoods EMS District", "max_depth": 0},
             {"name": "Fire Department",       "label": "Fire & Rescue",           "max_depth": 0},
         ],
@@ -1066,11 +1067,12 @@ def _lib_cfg(lib):
     """Normalize a FLAT_SITES library entry. Plain strings (Governance,
     Elections) keep the original behavior: whole library, MAX_SCAN_DEPTH."""
     if isinstance(lib, str):
-        return {"name": lib, "label": lib, "folder": None, "max_depth": None}
+        return {"name": lib, "label": lib, "folder": None, "folders": None, "max_depth": None}
     return {
         "name": lib["name"],
         "label": lib.get("label", lib["name"]),
         "folder": lib.get("folder"),
+        "folders": lib.get("folders"),
         "max_depth": lib.get("max_depth"),
     }
 
@@ -1094,7 +1096,14 @@ def build_flat_site_data(token, site_config):
             print(f"    Warning: {e}")
             libraries_out.append({"name": label, "documents": []})
             continue
-        if cfg["folder"]:
+        if cfg["folders"]:
+            # Publish only the files directly inside each named folder
+            # (e.g. WTLC's "Agendas" and "Minutes"), never their subfolders
+            # or the library's other folders.
+            docs = []
+            for folder in cfg["folders"]:
+                docs.extend(scan_library(token, drive_id, folder, None, depth=0, max_depth=0))
+        elif cfg["folder"]:
             # Publish only this folder's files. folder_label stays None so the
             # docs read as the library's own documents, not a sub-group.
             docs = scan_library(token, drive_id, cfg["folder"], None, depth=0, max_depth=0)
