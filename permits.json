@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-16T16:06:38Z",
+  "updated": "2026-11-16T17:06:49Z",
   "permits": [
     {
       "id": "2026-ROW-08",
@@ -1147,59 +1147,6 @@
       ],
       "lat": 46.214402,
       "lng": -89.914427
-    },
-    {
-      "id": "2026-RC-03",
-      "permitNumber": "2026-RC-03",
-      "status": "approved",
-      "jurisdiction": "town",
-      "permitType": "road_construction",
-      "pdfUrl": "/public/permits/2026-RC-03.pdf",
-      "title": "2026 Crack Sealing",
-      "org": "PavementGuard LLC",
-      "location": "Old Hwy W",
-      "startDate": "2026-09-01",
-      "endDate": "2026-12-31",
-      "traffic": "Flaggers",
-      "contactName": "Darren Nyrose",
-      "contactPhone": "(608) 844-9820",
-      "geoType": "line",
-      "coordinates": [
-        [
-          46.242949,
-          -89.836149
-        ],
-        [
-          46.24283,
-          -89.832544
-        ],
-        [
-          46.244017,
-          -89.829454
-        ],
-        [
-          46.24378,
-          -89.824648
-        ],
-        [
-          46.243423,
-          -89.817438
-        ],
-        [
-          46.243898,
-          -89.814863
-        ],
-        [
-          46.243305,
-          -89.806452
-        ],
-        [
-          46.247341,
-          -89.805079
-        ]
-      ],
-      "lat": 46.243423,
-      "lng": -89.817438
     },
     {
       "id": "2026-RC-02",

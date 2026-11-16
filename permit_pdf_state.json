@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-16T16:06:42Z",
+  "updated": "2026-11-16T17:06:54Z",
   "permits": {
     "sub:2026-08-21T00:22:55.508Z": {
       "public": "81eea9c61cafa84d7269cd417331a2942419c1d7730989d49e0b64426899f94a"
@@ -50,7 +50,7 @@
       "public": "9e46e51c6beae2add9b682e7efb3682dfb68b6c4bb4e890b99da555232c259da"
     },
     "2026-RC-03": {
-      "public": "a62cbf3b86c8bf990be2420c7d011ec44e6315f8003fdb302b1f1628881123e2"
+      "public": "1b8e68dc4668a1c235b233994e02cd800a713c0ebdec1e713c303ca63745caa3"
     },
     "2026-RC-02": {
       "public": "c8fc4eb4dbab6b492c1015403ac87478082057ef560ead92f45186daed8f77d7"
@@ -74,7 +74,7 @@
       "public": "209c1e8a83839a40fe322e24e30c032e029c889a13c4e7411b32aa08ca89cbbb"
     },
     "2026-RC-05": {
-      "public": "57947ef4cee763da40e7a3b24484b9bce1554e61fc4a3261739c7c6663d671d4"
+      "public": "93c14826eca82e2398c973d853636f6f8a40fb9d27ea0b7b0c7066d38daefb79"
     }
   }
 }
