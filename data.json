@@ -2,7 +2,7 @@
   "meetings": [
     {
       "id": "special-2026-12-02",
-      "title": "2027 Budget Meeting 20261202",
+      "title": "2027 Budget Meeting",
       "type": "special",
       "status": "upcoming",
       "date": "2026-12-02",
@@ -10,12 +10,11 @@
       "location": "Winchester Town Hall",
       "documents": [
         {
-          "label": "Agenda 2027 Budget Meeting 20261202 DRAFT",
-          "filename": "Agenda_2027-Budget-Meeting_20261202_DRAFT.pdf",
+          "label": "2027 Budget Meeting Agenda",
+          "filename": "Agenda_2027-Budget-Meeting_20261202.pdf",
           "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAE7cYz4HtjTY1Tf-pbrwLQARkBqFIfJF5fHjNYHjumZWo",
           "date": "2026-12-02",
-          "posted": "2026-11-16",
-          "draft": true
+          "posted": "2026-11-16"
         }
       ]
     },
