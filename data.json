@@ -8,7 +8,16 @@
       "date": "2026-12-02",
       "time": "6:00 PM",
       "location": "Winchester Town Hall",
-      "documents": []
+      "documents": [
+        {
+          "label": "Agenda 2027 Budget Meeting 20261202 DRAFT",
+          "filename": "Agenda_2027-Budget-Meeting_20261202_DRAFT.pdf",
+          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAE7cYz4HtjTY1Tf-pbrwLQARkBqFIfJF5fHjNYHjumZWo",
+          "date": "2026-12-02",
+          "posted": "2026-11-16",
+          "draft": true
+        }
+      ]
     },
     {
       "id": "special-2026-11-13",
