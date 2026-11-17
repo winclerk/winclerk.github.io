@@ -1,0 +1,58 @@
+name: Migrate website records to SharePoint
+
+# One-time copy of agendas and minutes from winchesterwi.com into the
+# SharePoint libraries the portal syncs from. Manual trigger only.
+# Leave "dry_run" checked first: it changes nothing and lists every file,
+# where it would go, and its new name in the run summary. Uncheck it to copy.
+# Existing SharePoint files are never overwritten; the website is not changed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: "Manifest to run (migration/manifest_<batch>.json)"
+        default: "2025"
+        required: true
+      dry_run:
+        description: "Dry run: list the plan, copy nothing"
+        type: boolean
+        default: true
+
+concurrency:
+  group: records-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run migration
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          BATCH:   ${{ inputs.batch }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python migration/migrate.py
+
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-report-${{ inputs.batch }}
+          path: migration/report_${{ inputs.batch }}.md
+          if-no-files-found: ignore
