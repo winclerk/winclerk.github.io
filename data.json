@@ -1516,13 +1516,6 @@
           "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQAZK5gvlXYvTaEbjtXYaFB3AZ3Nrd5CTKQ6khZZtmykK2A",
           "date": "2026-07-15",
           "posted": "2026-08-20"
-        },
-        {
-          "label": "Board of Review Minutes - June 8, 2026",
-          "filename": "Minutes_BOR_20260608.pdf",
-          "url": "https://townofwinchester54557.sharepoint.com/:b:/g/IQA4qBFh14UUQYw-11T7jgEEAWSBZGjok-FwL1V4MHhPXts",
-          "date": "2026-06-08",
-          "posted": "2026-08-20"
         }
       ],
       "subfolders": [
@@ -3044,6 +3037,13 @@
           "name": "Ordinances",
           "documents": [
             {
+              "label": "2026-10 Accommodations Tax Ordinance",
+              "filename": "Ordinance_2026-10_Accommodations-Tax_20261119.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQAXq7aUC0Y7QK8PEnX5SSzaAbGvc2UfMMiPZ7Tnw2OFNZs",
+              "date": "2026-11-19",
+              "posted": "2026-11-19"
+            },
+            {
               "label": "2026-09 Temporary Picnic Licenses Ordinance",
               "filename": "Ordinance_2026-09_Temporary-Picnic-Licenses_20261022.pdf",
               "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQB7pAzkBTEcR4t8K304mV_MAceOoNzfWnnJDxG7WYKkwfs",
@@ -3131,6 +3131,14 @@
               "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQBHXHo5EVWgQqwMIr5KxcbwAYLrz-1SGBYce1oV9A7Lo2c",
               "date": "2025-11-05",
               "posted": "2026-08-23"
+            },
+            {
+              "label": "2024-06 Accommodations Tax Ordinance (Superseded)",
+              "filename": "SUPERSEDED-Ordinance_2024-06_Accommodations-Tax_20240904.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/Governance/IQCmj6GZtfRiSLsc-nm3RKn7AT93jgOvCPKsTMSw39WNeyY",
+              "date": "2024-09-04",
+              "posted": "2026-11-19",
+              "folder": "Superseded"
             },
             {
               "label": "2021-03 Land Use Ordinance",
