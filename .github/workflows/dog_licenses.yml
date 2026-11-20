@@ -1,0 +1,43 @@
+name: Dog license emails and certificates
+
+# Sends application confirmations and issued-license certificates for the
+# Dog License Register (see dog_licenses.py).
+#  - Make.com triggers it right after each website submission.
+#  - It also runs every 30 minutes on weekdays during the work day (12:00-23:30 UTC,
+#    about 6 or 7 AM to 5 or 6 PM Central depending on daylight saving time),
+#    so certificates go out soon after the clerk marks a row Issued.
+#  - Anyone with repo access can run it now: Actions > this workflow > Run workflow.
+# Nothing is committed and logs show application numbers only (public repo).
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 12-23 * * 1-5'
+
+concurrency:
+  group: dog-licenses
+  cancel-in-progress: false
+
+jobs:
+  dog_licenses:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests openpyxl reportlab Pillow
+
+      - name: Run dog_licenses.py
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: python dog_licenses.py
