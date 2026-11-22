@@ -2,7 +2,8 @@
 dog_licenses.py: dog license emails and certificates for the Town of Winchester.
 
 Reads the Dog License Register (SharePoint: Records Archive > Permits >
-Dog Licenses > Dog License Register.xlsx, table DogLicenses) and, for each row:
+2026 and Newer > Dog License Register.xlsx, table DogLicenses; found by its
+file ID, so it can be renamed or moved within the library) and, for each row:
 
   1. CONFIRMATION: confirmation_sent is blank and the row has an email
        -> emails "We received your application" (with the QuickBooks pay link
@@ -10,7 +11,7 @@ Dog Licenses > Dog License Register.xlsx, table DogLicenses) and, for each row:
   2. CERTIFICATE: status = Issued, tag_number filled, payment_status = Paid,
      license_cert_sent blank
        -> builds a PDF license certificate, saves it to
-          Dog Licenses/License Certificates/<year>/, links it in
+          2026 and Newer/Dog License Certificates/<year>/, links it in
           license_cert_file, emails it to the owner (if there is an email),
           then stamps license_cert_sent.
 
@@ -41,11 +42,11 @@ from openpyxl import load_workbook
 
 # ── Settings (successor-editable) ─────────────────────────────────────
 DRIVE_ID      = "b!c95LT9gy6kqiItDGFto7RFnHF7mxITJGsCZJt01CCvi1TQvoZoFtT7YMKBgrUG67"  # Records Archive > Permits
-FOLDER        = "Dog Licenses"
-REGISTER_FILE = "Dog License Register.xlsx"
+REGISTER_ID   = "01UVO6XCVWJUVXVDDT6RDLT4IJZSLYJXH5"   # Dog License Register.xlsx (file ID)
 SHEET         = "Register"
 TABLE         = "DogLicenses"
-CERT_FOLDER   = "License Certificates"
+FOLDER        = "2026 and Newer"                       # where certificate PDFs are saved
+CERT_FOLDER   = "Dog License Certificates"
 
 SEND_FROM   = "luke@winchester.wi.gov"     # real mailbox (clerk@ is a forward, not a mailbox)
 CLERK_EMAIL = "clerk@winchester.wi.gov"
@@ -152,8 +153,11 @@ def item_url(*parts):
     return f"{GRAPH}/drives/{DRIVE_ID}/root:/{path_url(*parts)}:"
 
 
+REGISTER_URL = f"{GRAPH}/drives/{DRIVE_ID}/items/{REGISTER_ID}"
+
+
 def fetch_register(token):
-    r = requests.get(item_url(FOLDER, REGISTER_FILE) + "/content",
+    r = requests.get(REGISTER_URL + "/content",
                      headers={"Authorization": f"Bearer {token}"}, timeout=120)
     r.raise_for_status()
     wb = load_workbook(io.BytesIO(r.content), data_only=True)
@@ -171,7 +175,7 @@ def fetch_register(token):
 def current_sheet_row(token, app_id):
     """Find the row's CURRENT sheet row number right before writing: new
        submissions are inserted at the top, which shifts rows down."""
-    r = requests.get(item_url(FOLDER, REGISTER_FILE) + f"/workbook/tables/{TABLE}/columns/application_id",
+    r = requests.get(REGISTER_URL + f"/workbook/tables/{TABLE}/columns/application_id",
                      headers={"Authorization": f"Bearer {token}"}, timeout=60)
     r.raise_for_status()
     values = r.json().get("values", [])
@@ -196,7 +200,7 @@ def write_cells(token, headers, app_id, updates):
             ok = False
             continue
         addr = f"{col_letter(headers.index(col))}{row}"
-        url = (item_url(FOLDER, REGISTER_FILE)
+        url = (REGISTER_URL
                + f"/workbook/worksheets/{urllib.parse.quote(SHEET)}/range(address='{addr}')")
         r = requests.patch(url, headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
                            json={"values": [[value]]}, timeout=60)
@@ -521,5 +525,5 @@ if __name__ == "__main__":
         main()
     except requests.HTTPError as e:
         code = e.response.status_code if e.response is not None else "?"
-        print(f"Graph request failed ({code}). Check that '{FOLDER}/{REGISTER_FILE}' exists in Records Archive > Permits.")
+        print(f"Graph request failed ({code}). Check that the Dog License Register (file ID {REGISTER_ID}) still exists in Records Archive > Permits.")
         sys.exit(1)
