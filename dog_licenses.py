@@ -279,33 +279,34 @@ def confirmation_email(r):
     pending = s(r.get("payment_status")).lower() != "paid"
     late = (as_float(r.get("late_fee")) or 0) > 0
     pay = PAY_LINKS.get((s(r.get("spayed_neutered")) or "No", late), "")
-    body = (f'<p>Thank you, {escape(s(r.get("owner_first")))}. We received the dog license application for '
-            f'<strong>{escape(s(r.get("pet_name")))}</strong>.</p>')
+    body = (f'<p>Hello {escape(s(r.get("owner_first")))}, your dog license application for '
+            f'<strong>{escape(s(r.get("pet_name")))}</strong> has been received and will be reviewed shortly.</p>')
     body += detail_rows([
         ("Application number", s(r.get("application_id"))),
         ("License year", s(r.get("license_year"))),
         ("Dog", " / ".join(x for x in [s(r.get("pet_name")), s(r.get("breed")), s(r.get("color"))] if x)),
         ("Total due", money(r.get("total_due"))),
-        ("Payment", "Received" if not pending else "Not yet received"),
+        ("Payment", "Received" if not pending else "Not yet reviewed"),
     ])
     if pending and pay:
         body += "<p>If you haven't paid yet, you can pay online now:</p>" + button(pay, f"Pay {money(r.get('total_due'))} with QuickBooks")
-    body += ("<p>Once payment is received and your rabies certificate is checked, the Town Clerk issues the tag. "
-             "You'll get your license certificate by email.</p>"
-             f"<p>Questions? Call {escape(CLERK_PHONE)} or reply to this email.</p>")
+    body += ("<p>Once payment is received and your rabies certificate is verified, the Town Clerk will issue the tag. "
+             "You'll receive your license certificate confirmation via email.</p>"
+             f"<p>For any questions, please call {escape(CLERK_PHONE)} or reply to this email.</p>")
     return wrap("Application received", body)
 
 
 def certificate_email(r):
-    body = (f'<p>{escape(s(r.get("owner_first")))}, the {escape(s(r.get("license_year")))} dog license for '
+    body = (f'<p>Hello {escape(s(r.get("owner_first")))}, the {escape(s(r.get("license_year")))} dog license for '
             f'<strong>{escape(s(r.get("pet_name")))}</strong> has been issued. Your certificate is attached.</p>')
     body += detail_rows([
         ("Tag number", s(r.get("tag_number"))),
         ("Valid through", fmt_date(r.get("end_date")) or f"December 31, {s(r.get('license_year'))}"),
         ("Rabies vaccination expires", fmt_date(r.get("rabies_expiration"))),
     ])
-    body += ("<p>Keep the tag on your dog's collar. If you didn't pick up the tag in person, the Town Clerk will get it to you.</p>"
-             f"<p>Questions? Call {escape(CLERK_PHONE)} or reply to this email.</p>")
+    body += ("<p>Keep the tag on your dog's collar. If you didn't pick up the tag in person, call the Town Clerk at "
+             f"{escape(CLERK_PHONE)} to make arrangements or to have it mailed to you.</p>"
+             f"<p>For any questions, please call {escape(CLERK_PHONE)} or reply to this email.</p>")
     return wrap("Your dog license", body)
 
 
