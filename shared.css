@@ -1101,18 +1101,27 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
 .file-row:has(a.file-view),
 .quick-row:has(a.quick-view) { cursor: pointer; }
 
-/* ---------- Search: "Show folder" button on each result ----------
-   Same size and colors as the View buttons. On phones it drops under
-   the result text, lined up with it. */
-.ps-folder {
+/* ---------- Search: "Show folder" and "Share" on each result ----------
+   Same size and colors as the View buttons, stacked on the right of the
+   result. On phones they sit side by side under the result text, lined
+   up with it. */
+.ps-actions {
   align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.ps-folder {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   box-sizing: border-box;
+  min-width: 118px;
   height: 30px;
   padding: 0 12px;
+  font-family: inherit;
   font-size: 12px;
   font-weight: 500;
   line-height: 1;
@@ -1121,20 +1130,30 @@ footer a { font-size: 12px; color: var(--gold); text-decoration: none; }
   border: 1px solid var(--tm);
   border-radius: 4px;
   white-space: nowrap;
-  flex-shrink: 0;
   text-decoration: none;
-  transition: background-color 150ms ease, color 150ms ease, transform 120ms ease-out;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, transform 120ms ease-out;
 }
 .ps-folder svg { flex-shrink: 0; display: block; }
 .ps-folder:active { transform: scale(0.97); }
 .ps-folder:focus-visible { outline: 2px solid var(--tm); outline-offset: 2px; }
+.ps-share.is-copied { background: var(--tl); border-color: var(--tm); color: var(--td); }
 @media (hover: hover) and (pointer: fine) {
   .ps-folder:hover { background: var(--tm); color: #fff; }
+  .ps-share.is-copied:hover { background: var(--tl); color: var(--td); }
+}
+.ps-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 @media (max-width: 600px) {
   .ps-result { flex-wrap: wrap; }
   .ps-result-body { flex-basis: calc(100% - 44px); }
-  .ps-folder { margin-left: 44px; }
+  .ps-actions { flex-direction: row; margin-left: 44px; }
 }
 
 /* ---------- Jump to a file: highlight ----------
