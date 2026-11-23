@@ -160,11 +160,14 @@ const DOC_TYPES = {
   'disbursements': ['Disbursements', 'finance'],
   'fee-schedule':  ['Fee Schedule', 'finance'],
   'quote':         ['Quote', 'finance'],
+  'certification': ['Certification', 'finance'],
+  'contract':      ['Contract', 'legal'],
   'letter':        ['Letter', 'corresp'],
   'email':         ['Email', 'corresp'],
   'memo':          ['Memo', 'corresp'],
   'comm':          ['Communication', 'corresp'],
   'notice':        ['Notice', 'notice'],
+  'notification':  ['Notification', 'notice'],
   'form':          ['Form', 'notice'],
   'permit':        ['Permit', 'notice'],
   'affidavit':     ['Affidavit', 'notice'],
@@ -547,12 +550,14 @@ function seeAllHtml(totalMeetings, showingAll) {
     townBoard: 'Town Board',
     boardsCommissions: 'Committees & Commissions',
     governance: 'Governance',
-    elections: 'Elections'
+    elections: 'Elections',
+    recordsArchive: 'Records Archive'
   };
   const SECTION_PAGES = {
     boardsCommissions: 'committees.html',
     governance: 'governance.html',
-    elections: 'elections.html'
+    elections: 'elections.html',
+    recordsArchive: 'archive.html'
   };
   const PAGE_SECTIONS = {
     'town-board.html': 'townBoard',
@@ -563,6 +568,7 @@ function seeAllHtml(totalMeetings, showingAll) {
     'governance.html': 'governance',
     'elections.html': 'elections',
     'committees.html': 'boardsCommissions',
+    'archive.html': 'recordsArchive',
     'agendas-minutes.html': 'agendas'
   };
   const INITIAL_SHOWN = 8;
