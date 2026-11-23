@@ -539,7 +539,8 @@ function seeAllHtml(totalMeetings, showingAll) {
    file lives with ?doc=<file link> added (e.g. meeting.html?id=...&doc=...
    or governance.html?doc=...#lib-ordinances). The "Jump to a file" code
    further down reads that and scrolls to the file, opens its folder and
-   highlights it.
+   highlights it. The "Share" button under it shares that same link, so
+   whoever opens it lands on the file the same way.
    ===================================================================== */
 (function () {
   const SECTION_LABELS = {
@@ -696,6 +697,41 @@ function seeAllHtml(totalMeetings, showingAll) {
     return (start > 0 ? '&hellip;' : '') + highlight(d.rawText.slice(start, end), ts) + (end < d.rawText.length ? '&hellip;' : '');
   }
 
+  const SHARE_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>';
+  const CHECK_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
+
+  // "Share": phones get their own share menu; computers get the link
+  // copied, and the button says "Link copied" for 2 seconds.
+  async function shareResult(btn) {
+    const url = btn.dataset.url;
+    const title = btn.dataset.title || 'Town of Winchester record';
+    if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
+      try { await navigator.share({ title, url }); } catch (err) { /* closed the menu */ }
+      return;
+    }
+    let ok = false;
+    try { await navigator.clipboard.writeText(url); ok = true; } catch (err) {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+      ta.remove();
+    }
+    if (!ok) { window.prompt('Copy this link:', url); return; }
+    clearTimeout(btn._copiedTimer);
+    btn.classList.add('is-copied');
+    btn.innerHTML = CHECK_SVG + '<span>Link copied</span>';
+    if (S.els.live) S.els.live.textContent = 'Link copied';
+    btn._copiedTimer = setTimeout(() => {
+      btn.classList.remove('is-copied');
+      btn.innerHTML = SHARE_SVG + '<span>Share</span>';
+      if (S.els.live) S.els.live.textContent = '';
+    }, 2000);
+  }
+
   // Page link for "Show folder": the result's page plus ?doc=<file link>,
   // keeping any #lib-... section at the end.
   function folderHref(d) {
@@ -716,8 +752,12 @@ function seeAllHtml(totalMeetings, showingAll) {
     const date = doc.date ? ' &middot; ' + formatDateShort(doc.date) : '';
     const snip = snippet(d, ts, phrase);
     const fHref = folderHref(d);
+    const label = docLabel(doc);
     const folderBtn = fHref
-      ? `<a class="ps-folder" href="${esc(fHref)}" aria-label="Show folder for ${esc(docLabel(doc))}">${FOLDER_SVG}<span>Show folder</span></a>`
+      ? `<div class="ps-actions">
+          <a class="ps-folder" href="${esc(fHref)}" aria-label="Show folder for ${esc(label)}">${FOLDER_SVG}<span>Show folder</span></a>
+          <button type="button" class="ps-folder ps-share" data-url="${esc(new URL(fHref, location.href).href)}" data-title="${esc(label)}" aria-label="Share link to ${esc(label)}">${SHARE_SVG}<span>Share</span></button>
+        </div>`
       : '';
     return `
       <div class="ps-result${animate && i < 6 ? ' ps-enter' : ''}"${animate && i < 6 ? ` style="animation-delay:${i * 25}ms"` : ''}>
@@ -878,13 +918,14 @@ function seeAllHtml(totalMeetings, showingAll) {
     panel.id = 'ps-panel';
     panel.setAttribute('role', 'region');
     panel.setAttribute('aria-label', 'Search results');
-    panel.innerHTML = '<div class="ps-body"></div>';
+    panel.innerHTML = '<div class="ps-body"></div><div class="ps-live" role="status" aria-live="polite"></div>';
     document.body.appendChild(backdrop);
     document.body.appendChild(panel);
 
     S.els = {
       form, backdrop, panel,
       body: panel.querySelector('.ps-body'),
+      live: panel.querySelector('.ps-live'),
       input: form.querySelector('.ps-input'),
       clear: form.querySelector('.ps-clear')
     };
@@ -908,6 +949,8 @@ function seeAllHtml(totalMeetings, showingAll) {
     panel.addEventListener('click', e => {
       const more = e.target.closest('.ps-more');
       if (more) { S.expanded[more.dataset.group] = true; run(); return; }
+      const share = e.target.closest('.ps-share');
+      if (share) { shareResult(share); return; }
       // "Show folder" to the address the visitor is already on (only the
       // #section differs, or nothing does): a normal link would only jump
       // within the page, so load the page again to find the file.
