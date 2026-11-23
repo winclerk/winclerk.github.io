@@ -534,6 +534,12 @@ function seeAllHtml(totalMeetings, showingAll) {
    On the homepage all results are listed together. On an inside page,
    results from that page's section are listed first, followed by
    "Also found elsewhere in the portal".
+
+   Each result has a "Show folder" button. It opens the page where the
+   file lives with ?doc=<file link> added (e.g. meeting.html?id=...&doc=...
+   or governance.html?doc=...#lib-ordinances). The "Jump to a file" code
+   further down reads that and scrolls to the file, opens its folder and
+   highlights it.
    ===================================================================== */
 (function () {
   const SECTION_LABELS = {
@@ -690,6 +696,16 @@ function seeAllHtml(totalMeetings, showingAll) {
     return (start > 0 ? '&hellip;' : '') + highlight(d.rawText.slice(start, end), ts) + (end < d.rawText.length ? '&hellip;' : '');
   }
 
+  // Page link for "Show folder": the result's page plus ?doc=<file link>,
+  // keeping any #lib-... section at the end.
+  function folderHref(d) {
+    if (!d.contextHref) return null;
+    const hashAt = d.contextHref.indexOf('#');
+    const base = hashAt === -1 ? d.contextHref : d.contextHref.slice(0, hashAt);
+    const hash = hashAt === -1 ? '' : d.contextHref.slice(hashAt);
+    return base + (base.indexOf('?') === -1 ? '?' : '&') + 'doc=' + encodeURIComponent(d.doc.url) + hash;
+  }
+
   function renderResult(r, ts, phrase, i, animate) {
     const d = r.d, doc = d.doc;
     const [iconClass, iconLabel] = getIconClass(doc.filename);
@@ -699,6 +715,10 @@ function seeAllHtml(totalMeetings, showingAll) {
       : esc(d.context);
     const date = doc.date ? ' &middot; ' + formatDateShort(doc.date) : '';
     const snip = snippet(d, ts, phrase);
+    const fHref = folderHref(d);
+    const folderBtn = fHref
+      ? `<a class="ps-folder" href="${esc(fHref)}" aria-label="Show folder for ${esc(docLabel(doc))}">${FOLDER_SVG}<span>Show folder</span></a>`
+      : '';
     return `
       <div class="ps-result${animate && i < 6 ? ' ps-enter' : ''}"${animate && i < 6 ? ` style="animation-delay:${i * 25}ms"` : ''}>
         <div class="file-icon ${iconClass}">${iconLabel}</div>
@@ -707,6 +727,7 @@ function seeAllHtml(totalMeetings, showingAll) {
           <div class="ps-result-meta"><span class="ps-chip">${esc(SECTION_LABELS[d.section] || '')}</span>${ctx}${date}${tags ? `<span class="tag-group">${tags}</span>` : ''}</div>
           ${snip ? `<div class="ps-snippet">${snip}</div>` : ''}
         </div>
+        ${folderBtn}
       </div>`;
   }
 
@@ -886,7 +907,19 @@ function seeAllHtml(totalMeetings, showingAll) {
     backdrop.addEventListener('click', closePanel);
     panel.addEventListener('click', e => {
       const more = e.target.closest('.ps-more');
-      if (more) { S.expanded[more.dataset.group] = true; run(); }
+      if (more) { S.expanded[more.dataset.group] = true; run(); return; }
+      // "Show folder" to the address the visitor is already on (only the
+      // #section differs, or nothing does): a normal link would only jump
+      // within the page, so load the page again to find the file.
+      const folder = e.target.closest('.ps-folder');
+      if (folder && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+        const to = new URL(folder.href);
+        if (to.origin + to.pathname + to.search === location.origin + location.pathname + location.search) {
+          e.preventDefault();
+          history.replaceState(null, '', to.href);
+          location.reload();
+        }
+      }
     });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
@@ -904,6 +937,117 @@ function seeAllHtml(totalMeetings, showingAll) {
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();
+})();
+
+/* ---------- Whole document row opens the file ----------
+   Clicking anywhere on a document row (the icon, the title, the date)
+   does the same as its View / Watch button. Other links and buttons
+   inside a row (e.g. the meeting link on All Agendas & Minutes) keep
+   working on their own, and selecting text in a row does not open it.
+   Keyboard users still Tab to the View / Watch button as before. */
+(function () {
+  document.addEventListener('click', e => {
+    if (e.defaultPrevented || e.button !== 0) return;
+    const row = e.target.closest && e.target.closest('.file-row, .quick-row');
+    if (!row) return;
+    if (e.target.closest('a, button, input, select, textarea, label, summary')) return;
+    const link = row.querySelector('a.file-view, a.quick-view');
+    if (!link) return;
+    const sel = window.getSelection && window.getSelection();
+    if (sel && !sel.isCollapsed && row.contains(sel.anchorNode)) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey) {
+      window.open(link.href, '_blank', 'noopener');
+    } else {
+      link.click();   // same as clicking View, so analytics still count it
+    }
+  });
+})();
+
+/* ---------- Jump to a file (from search "Show folder") ----------
+   When a page is opened with ?doc=<file link>, this waits for the page
+   to draw its file list, then:
+     - opens "See all meetings" in that section if the file is older
+       than the recent meetings shown,
+     - opens the agenda item folder the file is in,
+     - scrolls the file into the middle of the screen, highlights it for
+       a few seconds, and puts keyboard focus on its View button.
+   If the file can't be found (e.g. it was removed since the search
+   index was built), the page just scrolls to the section instead. */
+(function () {
+  const target = new URLSearchParams(location.search).get('doc');
+  if (!target) return;
+  let want;
+  try { want = new URL(target, location.href).href; } catch (err) { return; }
+
+  const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const HOLD_MS = 3000;      // how long the highlight stays
+  const FADE_MS = 400;       // how long it takes to fade away
+  const GIVE_UP_MS = 10000;  // stop looking after this long
+  const started = Date.now();
+  let dataAt = 0;            // when data.json finished loading
+  const tried = new Set();
+
+  function section() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    return id ? document.getElementById(id) : null;
+  }
+
+  function findLink() {
+    return Array.from(document.querySelectorAll('a.file-view, a.quick-view')).find(a => a.href === want);
+  }
+
+  function reveal(row, link) {
+    let wait = 0;
+    const item = row.closest('.agenda-item');
+    if (item && !item.classList.contains('open')) {
+      item.dataset.userOpen = 'true';
+      setAgendaItemOpen(item, true);
+      updateAgendaToggleAll();
+      wait = REDUCE ? 0 : 240;   // let the folder finish opening first
+    }
+    setTimeout(() => {
+      row.scrollIntoView({ block: 'center', behavior: REDUCE ? 'auto' : 'smooth' });
+      row.classList.add('doc-target');
+      link.focus({ preventScroll: true });
+      setTimeout(() => {
+        row.classList.add('doc-target-out');
+        row.classList.remove('doc-target');
+        setTimeout(() => row.classList.remove('doc-target-out'), FADE_MS);
+      }, HOLD_MS);
+    }, wait);
+  }
+
+  function tick() {
+    const link = findLink();
+    if (link) { reveal(link.closest('.file-row, .quick-row') || link, link); return; }
+
+    // Once data.json has loaded, the file may be past the most recent
+    // meetings: open "See all" (in the linked section first).
+    let more = null;
+    if (window.__portalData) {
+      if (!dataAt) dataAt = Date.now();
+      const scope = section() || document;
+      const key = b => (b.closest('[id]') ? b.closest('[id]').id : b);
+      more = Array.from(scope.querySelectorAll('.see-all[aria-expanded="false"]'))
+        .find(b => !b.hidden && !tried.has(key(b)));
+      if (more && tried.size < 10) {
+        tried.add(key(more));
+        more.click();
+      }
+    }
+
+    // Not on the page: settle for the section (2 seconds after the page
+    // has its data, or 10 seconds if the data never loads).
+    if ((dataAt && !more && Date.now() - dataAt > 2000) || Date.now() - started > GIVE_UP_MS) {
+      const sec = section();
+      if (sec) sec.scrollIntoView({ block: 'start' });
+      return;
+    }
+    setTimeout(tick, 120);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tick);
+  else tick();
 })();
 
 /* ---------- Visitor analytics (GoatCounter) ----------
