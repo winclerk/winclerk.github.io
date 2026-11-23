@@ -72,6 +72,25 @@ FLAT_SITES = [
             "Election Inspectors",
         ],
     },
+    {
+        "key": "recordsArchive",
+        "path": "/sites/RecordsArchive",
+        # Only these parts of the Records Archive site are public. The
+        # Permits library (permit trackers, Dog License Register, dog
+        # license and rabies certificates, certificates of insurance) holds
+        # residents' personal information and is NEVER published; do not
+        # add it here. Taxes and Infrastructure are folders in the site's
+        # Documents library ("Shared Documents"); its Internal Only folder
+        # is skipped like everywhere else. A "folder" entry with
+        # "max_depth": 1 also publishes one level of subfolders inside it
+        # (e.g. Taxes/2027), shown as a labeled group.
+        "libraries": [
+            {"name": "Contracts",                  "label": "Contracts"},
+            {"name": "Shared Documents",           "label": "Taxes",          "folder": "Taxes",          "max_depth": 1},
+            {"name": "Shared Documents",           "label": "Infrastructure", "folder": "Infrastructure", "max_depth": 1},
+            {"name": "Records Retention Schedule", "label": "Records Retention Schedule"},
+        ],
+    },
 ]
 
 ICAL_URL = "https://winchesterwi.com/?post_type=tribe_events&ical=1&eventDisplay=list"
@@ -1097,7 +1116,9 @@ def build_flat_site_data(token, site_config):
         if cfg["folder"]:
             # Publish only this folder's files. folder_label stays None so the
             # docs read as the library's own documents, not a sub-group.
-            docs = scan_library(token, drive_id, cfg["folder"], None, depth=0, max_depth=0)
+            # max_depth (if given) lets subfolders inside that folder publish too.
+            docs = scan_library(token, drive_id, cfg["folder"], None, depth=0,
+                                max_depth=cfg["max_depth"] if cfg["max_depth"] is not None else 0)
         else:
             docs = scan_library(token, drive_id, max_depth=cfg["max_depth"])
         newest_first(docs)
@@ -1358,7 +1379,10 @@ def main():
             for lib in site_config["libraries"]:
                 name = _lib_cfg(lib)["name"]
                 try:
-                    targets.append((get_drive_id(token, fs_site_id, name), f"{site_config['key']}/{name}", None))
+                    did = get_drive_id(token, fs_site_id, name)
+                    if any(t[0] == did for t in targets):
+                        continue   # same library listed twice (Records Archive Taxes/Infrastructure)
+                    targets.append((did, f"{site_config['key']}/{name}", None))
                 except Exception as e:
                     print(f"  Warning: {e}")
         internal_only_audit.run(token, targets)

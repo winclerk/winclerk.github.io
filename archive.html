@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Records Archive — Town of Winchester, WI</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="records-portal-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* Records Archive matches its homepage tile: light teal head, mid teal
+       badge, dark teal title. The hero and folder cards are light, so text
+       and breadcrumb colors flip to dark. shared.css is untouched. */
+    .hero {
+      background: var(--tl);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-label { color: var(--tm); }
+    .hero h1 { color: var(--td); }
+    .hero p { color: var(--text-muted); }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--td); }
+    .breadcrumb span { color: rgba(25,60,60,0.35); }
+    .breadcrumb .crumb-current { color: var(--td); }
+
+    .folder-top { background: var(--tl); }
+    .folder-name { color: var(--td); }
+
+    .lib-section { scroll-margin-top: 24px; margin-bottom: 36px; }
+    .lib-section:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+<div class="topbar topbar-portal">
+  <a class="portal-brand" href="index.html" aria-label="Records Portal home">
+    <img src="records-portal-icon.svg" class="portal-brand-icon" alt="" width="36" height="36">
+    <span class="portal-brand-text">
+      <span class="portal-brand-name">Records Portal</span>
+      <span class="portal-brand-sub">Town of Winchester &middot; Public Records</span>
+    </span>
+  </a>
+  <nav class="topbar-links" aria-label="Site">
+    <a class="back-link" href="index.html">&#8592; Back to portal home</a>
+    <a class="town-link" href="https://winchesterwi.com">
+      <img src="winchester-logo.png" class="seal-logo" alt="">
+      <span class="town-link-text">winchesterwi.com</span>
+    </a>
+  </nav>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Public records</div>
+  <h1>Records Archive</h1>
+  <p>Contracts, tax levy certifications, infrastructure records, and the Town's records retention schedule.</p>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <span class="crumb-current">Records Archive</span>
+  </nav>
+</div>
+
+<main>
+  <div id="stat-tiles-container"></div>
+
+  <div class="page-body">
+    <div class="section-label">Browse by category</div>
+    <div class="folder-grid" id="folder-grid">
+      <div class="no-docs">Loading&hellip;</div>
+    </div>
+
+    <div id="library-sections"></div>
+  </div>
+</main>
+
+<footer>
+  <span>Town of Winchester &middot; Winchester, WI 54557 &middot; (715) 686-2123</span>
+  <a href="https://winchesterwi.com">winchesterwi.com &rarr;</a>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+/* Records Archive page
+   Lists the public parts of the Records Archive SharePoint site, which
+   sync.py publishes to data.json under sites.recordsArchive (Contracts,
+   Taxes, Infrastructure, Records Retention Schedule). Which parts are
+   public is decided in sync.py (FLAT_SITES), not here. Files in a
+   subfolder (e.g. Taxes/2027) show as a labeled group in their category. */
+
+function slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function getMostRecentDoc(libraries) {
+  let best = null;
+  libraries.forEach(lib => {
+    (lib.documents || []).forEach(doc => {
+      if (doc.date && (!best || doc.date > best.date)) best = { date: doc.date, library: lib.name };
+    });
+  });
+  return best;
+}
+
+// "2026" or "2024–2026", from the dates on file.
+function yearsAvailable(dates) {
+  const years = dates.filter(Boolean).map(d => d.substring(0, 4)).sort();
+  if (!years.length) return '';
+  const first = years[0], last = years[years.length - 1];
+  return first === last ? first : `${first}–${last}`;
+}
+
+function renderArchiveStatTiles(libraries) {
+  const mostRecent = getMostRecentDoc(libraries);
+  const dates = [];
+  let total = 0;
+  libraries.forEach(lib => (lib.documents || []).forEach(doc => { total++; dates.push(doc.date); }));
+  const years = yearsAvailable(dates);
+  return `
+    <div class="stat-tiles">
+      <div class="stat-tile stat-tile-accent">
+        <div class="stat-label">Most recent</div>
+        <div class="stat-value">${mostRecent ? formatDateShort(mostRecent.date) : 'None yet'}</div>
+        <div class="stat-sub">${mostRecent ? escHtml(mostRecent.library) : 'Check back soon'}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Documents on file</div>
+        <div class="stat-value">${total}</div>
+        <div class="stat-sub">Across ${libraries.length} categor${libraries.length === 1 ? 'y' : 'ies'}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Years available</div>
+        <div class="stat-value">${years || 'None yet'}</div>
+        <div class="stat-sub">From the dates on file</div>
+      </div>
+    </div>`;
+}
+
+function renderLibrarySection(lib) {
+  const docs = lib.documents || [];
+  // A file's subfolder (doc.folder from sync.py) becomes its group.
+  const body = docs.length
+    ? renderFolderDocs({ documents: docs.map(d => Object.assign({}, d, { group: d.folder || null })) })
+    : '<div class="no-docs">No documents posted yet.</div>';
+  return `
+    <div class="lib-section" id="lib-${slugify(lib.name)}">
+      <div class="section-label">${escHtml(lib.name)}</div>
+      <div class="file-list">${body}</div>
+    </div>`;
+}
+
+async function init() {
+  try {
+    const data = await loadData();
+    const libraries = (data.sites && data.sites.recordsArchive && data.sites.recordsArchive.libraries) || [];
+
+    document.getElementById('stat-tiles-container').innerHTML = renderArchiveStatTiles(libraries);
+
+    if (!libraries.length) {
+      document.getElementById('folder-grid').innerHTML = '<div class="no-docs">Records are being added. Check back soon.</div>';
+      return;
+    }
+
+    document.getElementById('folder-grid').innerHTML = libraries.map(lib => {
+      const count = (lib.documents || []).length;
+      return renderFolderCard(
+        escHtml(lib.name),
+        'Records Archive',
+        `${count} document${count !== 1 ? 's' : ''}`,
+        '#lib-' + slugify(lib.name)
+      );
+    }).join('');
+
+    document.getElementById('library-sections').innerHTML =
+      libraries.map(lib => renderLibrarySection(lib)).join('');
+  } catch (e) {
+    document.getElementById('folder-grid').innerHTML = '<div class="error-msg">Unable to load documents. Please try again later.</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>

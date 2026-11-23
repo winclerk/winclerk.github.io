@@ -130,13 +130,10 @@
     .tile-town-board .portal-tile-badge { color: #fff; }
     .tile-town-board .portal-tile-title { color: #fff; }
 
-    .tile-records-archive {
-      /* Grayscale while pages are unbuilt. To reactivate a tile:
-         1. Remove its class from this rule
-         2. Uncomment its live CSS block below
-         3. Swap <div> → <a href="..."> in the HTML (see commented live versions) */
-      opacity: 0.6;
-    }
+    .tile-records-archive { border: 1px solid var(--gold); }
+    .tile-records-archive .portal-tile-head { background: var(--tl); }
+    .tile-records-archive .portal-tile-badge { color: var(--tm); }
+    .tile-records-archive .portal-tile-title { color: var(--td); }
     .tile-governance { border: 1px solid var(--gold); }
     .tile-governance .portal-tile-head { background: var(--tm); }
     .tile-governance .portal-tile-badge { color: #fff; }
@@ -153,19 +150,6 @@
     .tile-boards-commissions .portal-tile-head { background: #F5F2EC; }
     .tile-boards-commissions .portal-tile-badge { color: var(--tm); }
     .tile-boards-commissions .portal-tile-title { color: var(--td); }
-
-    /* ── Live tile CSS (add when reactivating) ──
-    Records Archive: not yet decided
-    ──────────────────────────────────────────── */
-    .tile-records-archive .portal-tile-head {
-      background: #888780;
-    }
-    .tile-records-archive .portal-tile-badge {
-      color: #f1efe8;
-    }
-    .tile-records-archive .portal-tile-title {
-      color: #fff;
-    }
 
     .tile-elections {
       flex-direction: row;
@@ -370,15 +354,15 @@
         </div>
       </a>
 
-      <div class="portal-tile tile-records-archive">
+      <a class="portal-tile tile-records-archive" href="archive.html">
         <div class="portal-tile-head">
-          <div class="portal-tile-badge">Coming soon</div>
+          <div class="portal-tile-badge">Live</div>
           <div class="portal-tile-title">Records Archive</div>
         </div>
         <div class="portal-tile-body">
-          <div class="portal-tile-desc">Public historical town records</div>
+          <div class="portal-tile-desc">Contracts, taxes, infrastructure &amp; records schedule</div>
         </div>
-      </div>
+      </a>
 
     </div>
 
