@@ -3666,7 +3666,15 @@
         },
         {
           "name": "Records Retention Schedule",
-          "documents": []
+          "documents": [
+            {
+              "label": "Notification General Records Schedule Adoption Confirmation",
+              "filename": "Notification_GRS-Adoption-Confirmation_20260921.pdf",
+              "url": "https://townofwinchester54557.sharepoint.com/:b:/s/RecordsArchive/IQAFh31s6DAESJcY5X6Drcw3AbKiI2pbyx-JX1WcX4sAM_w",
+              "date": "2026-09-21",
+              "posted": "2026-09-21"
+            }
+          ]
         }
       ]
     }
