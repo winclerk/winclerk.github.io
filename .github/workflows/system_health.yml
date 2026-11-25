@@ -1,0 +1,46 @@
+name: System health report
+
+# Writes winchester-status-portal.json (read by the Clerk Hub's System status
+# page) to the System Status SharePoint site. Runs right after every portal
+# sync, plus a backup timer in case syncs stop happening (GitHub skips many
+# scheduled runs, so the timer is a backup only).
+on:
+  workflow_run:
+    workflows: ["Sync SharePoint to data.json"]
+    types: [completed]
+  schedule:
+    - cron: '37 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: system-health
+  cancel-in-progress: true
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Write system health report
+        env:
+          AZURE_TENANT_ID:     ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          GITHUB_TOKEN:        ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL:             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python system_health.py
