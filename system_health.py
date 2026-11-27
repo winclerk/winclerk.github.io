@@ -35,6 +35,9 @@ from zoneinfo import ZoneInfo
 
 import requests
 
+from github_batch import GitHubBatch
+from public_status import build_public_status, needs_commit
+
 GRAPH = "https://graph.microsoft.com/v1.0"
 GITHUB_API = "https://api.github.com"
 HOST = "townofwinchester54557.sharepoint.com"
@@ -421,7 +424,40 @@ def main():
         check_alerts(token, report)
     except Exception as e:  # noqa: BLE001 - alerts must never break the report
         print(f"Alerts not checked: {short_error(e)}", file=sys.stderr)
+    try:
+        publish_public_status(token, report)
+    except Exception as e:  # noqa: BLE001 - the public file must never break the report
+        print(f"Public status not updated: {short_error(e)}", file=sys.stderr)
     return 0
+
+
+# ---------------------------------------------------------------- public status
+# The plain lights for winchesterwi.com (see public_status.py and PUBLIC_STATUS.md).
+PUBLIC_STATUS_PATH = "public/status.json"
+
+
+def publish_public_status(token, report, now=None):
+    now = now or datetime.now(timezone.utc)
+    signs, _ = read_status_files(token, _drive_id(token))
+    new = build_public_status(report, signs, now)
+    try:
+        with open(PUBLIC_STATUS_PATH, encoding="utf-8") as f:
+            old = json.load(f)
+    except (OSError, ValueError):
+        old = None
+    if not needs_commit(new, old, now):
+        print("Public status: unchanged, not committed")
+        return False
+    pat = os.environ.get("GH_PAT", "")
+    if not pat:
+        print("Public status: GH_PAT not set, not committed", file=sys.stderr)
+        return False
+    repo = os.environ.get("GITHUB_REPOSITORY", "winclerk/winclerk.github.io")
+    batch = GitHubBatch(repo, pat)
+    batch.add(PUBLIC_STATUS_PATH, json.dumps(new, indent=1) + "\n")
+    batch.flush(f"Public status update [{new['generated']}]")
+    print("Public status: " + ", ".join(f"{s['name']} {s['level']}" for s in new["systems"]))
+    return True
 
 
 if __name__ == "__main__":

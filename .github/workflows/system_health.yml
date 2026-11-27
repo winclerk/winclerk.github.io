@@ -42,5 +42,6 @@ jobs:
           AZURE_CLIENT_ID:     ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           GITHUB_TOKEN:        ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT:              ${{ secrets.GH_PAT }}   # commits public/status.json for winchesterwi.com
           RUN_URL:             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: python system_health.py
