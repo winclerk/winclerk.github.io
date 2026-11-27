@@ -1,0 +1,81 @@
+<!-- Town of Winchester system status. Paste this whole file into a WordPress "Custom HTML" block.
+     It reads https://records.winchesterwi.com/public/status.json, which the portal's system health
+     check updates about once an hour. New systems show up here on their own; see PUBLIC_STATUS.md. -->
+<div class="wsb" id="wsb" aria-live="polite">
+  <div class="wsb-head">
+    <span class="wsb-title">Town systems status</span>
+    <span class="wsb-when" id="wsb-when">Checking&hellip;</span>
+  </div>
+  <ul class="wsb-list" id="wsb-list"></ul>
+  <p class="wsb-key"><span><i class="wsb-l green"></i>OK</span><span><i class="wsb-l yellow"></i>Needs a look</span><span><i class="wsb-l red"></i>Down or out of sync</span><span><i class="wsb-l gray"></i>Can't confirm</span></p>
+</div>
+<style>
+.wsb{--wsb-teal:#00505A;--wsb-deep:#193C3C;--wsb-gold:#A59664;--wsb-ink:#1E2B2B;--wsb-muted:#5C6B6A;--wsb-line:#D9E1DF;
+  --wsb-ok:#2E7D4F;--wsb-warn:#7F5800;--wsb-bad:#A23B2A;--wsb-off:#7C8B89;
+  box-sizing:border-box;max-width:640px;border:1px solid var(--wsb-line);border-top:4px solid var(--wsb-gold);border-radius:6px;
+  background:#fff;color:var(--wsb-ink);font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.4}
+.wsb *{box-sizing:border-box}
+.wsb-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;padding:12px 16px;background:var(--wsb-deep);color:#F2F5F4}
+.wsb-title{font-family:"Electrolize","Segoe UI",system-ui,sans-serif;font-size:18px;letter-spacing:.02em}
+.wsb-when{font-size:13px;color:#C9D6D4}
+.wsb-list{list-style:none;margin:0;padding:4px 16px}
+.wsb-list li{display:grid;grid-template-columns:18px 1fr;gap:2px 12px;padding:10px 0;border-bottom:1px solid var(--wsb-line);margin:0}
+.wsb-list li:last-child{border-bottom:0}
+.wsb-list .wsb-l{margin-top:3px}
+.wsb-name{font-weight:600}
+.wsb-word{font-weight:400;font-size:13px;margin-left:8px}
+.wsb-note{grid-column:2;color:var(--wsb-muted);font-size:14px}
+.wsb-word.green{color:var(--wsb-ok)}.wsb-word.yellow{color:var(--wsb-warn)}.wsb-word.red{color:var(--wsb-bad)}.wsb-word.gray{color:var(--wsb-muted)}
+.wsb-l{display:inline-grid;place-items:center;width:16px;height:16px;font-style:normal;vertical-align:-3px}
+.wsb-l::before{content:"";display:block}
+.wsb-l.green::before{width:14px;height:14px;border-radius:50%;background:var(--wsb-ok)}
+.wsb-l.yellow::before{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid var(--wsb-warn)}
+.wsb-l.red::before{width:13px;height:13px;border-radius:2px;background:var(--wsb-bad)}
+.wsb-l.gray::before{width:13px;height:13px;border-radius:50%;border:2px dashed var(--wsb-off)}
+.wsb-key{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0;padding:8px 16px 12px;border-top:1px solid var(--wsb-line);font-size:12px;color:var(--wsb-muted)}
+.wsb-key span{display:inline-flex;align-items:center;gap:6px}
+.wsb-key .wsb-l{width:12px;height:12px;transform:scale(.8)}
+</style>
+<script>
+(function(){
+  var URL = "https://records.winchesterwi.com/public/status.json";
+  var STALE_MS = 3 * 3600000;   // older than this, the lights can't be trusted
+  var WORD = { green:"OK", yellow:"Needs a look", red:"Down", gray:"Can't confirm" };
+  var list = document.getElementById("wsb-list"), when = document.getElementById("wsb-when");
+  if(!list || !when) return;
+  function light(level){ var i = document.createElement("i"); i.className = "wsb-l " + level; i.setAttribute("aria-hidden","true"); return i; }
+  function clock(d){
+    var same = d.toDateString() === new Date().toDateString();
+    return same ? d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})
+                : d.toLocaleString([], {month:"short", day:"numeric", hour:"numeric", minute:"2-digit"});
+  }
+  function show(data){
+    var gen = new Date(data.generated), stale = !(Date.now() - gen < STALE_MS);
+    list.textContent = "";
+    (data.systems || []).forEach(function(s){
+      var level = stale ? "gray" : (WORD[s.level] ? s.level : "gray");
+      var li = document.createElement("li"), name = document.createElement("span"), word = document.createElement("span"), note = document.createElement("span");
+      name.className = "wsb-name"; name.textContent = s.name || "";
+      word.className = "wsb-word " + level; word.textContent = WORD[level];
+      name.appendChild(word);
+      note.className = "wsb-note"; note.textContent = stale ? "Not confirmed since " + clock(gen) : (s.note || "");
+      li.append(light(level), name, note); list.appendChild(li);
+    });
+    when.textContent = isFinite(gen) ? "Updated " + clock(gen) : "";
+  }
+  function fail(){
+    if(!list.children.length){
+      var li = document.createElement("li"), note = document.createElement("span");
+      note.className = "wsb-note"; note.textContent = "Status isn't available right now. Please check back later.";
+      li.append(light("gray"), note); list.appendChild(li);
+    }
+    when.textContent = "Couldn't load";
+  }
+  function load(){
+    fetch(URL + "?t=" + Date.now(), { cache:"no-store" })
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(show).catch(fail);
+  }
+  load(); setInterval(load, 5 * 60000);
+})();
+</script>
