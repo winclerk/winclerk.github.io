@@ -1,0 +1,24 @@
+{
+ "version": 1,
+ "generated": "2026-11-27T23:33:19Z",
+ "systems": [
+  {
+   "id": "microsoft",
+   "name": "Microsoft 365",
+   "level": "yellow",
+   "note": "Exchange Online having problems"
+  },
+  {
+   "id": "portal",
+   "name": "Records portal sync",
+   "level": "green",
+   "note": "Last synced 4:49 PM"
+  },
+  {
+   "id": "sign-winchester-sign-1",
+   "name": "Window sign",
+   "level": "green",
+   "note": "Showing current postings"
+  }
+ ]
+}
