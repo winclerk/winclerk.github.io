@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generated": "2026-11-28T05:50:52Z",
+ "generated": "2026-11-28T12:16:39Z",
  "systems": [
   {
    "id": "microsoft",
@@ -12,7 +12,7 @@
    "id": "portal",
    "name": "Records portal sync",
    "level": "green",
-   "note": "Last synced 11:50 PM"
+   "note": "Last synced Nov 27, 11:50 PM"
   },
   {
    "id": "sign-winchester-sign-1",
